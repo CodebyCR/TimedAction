@@ -3,4 +3,12 @@ project("TimedAction")
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(TimedAction main.cpp TimedAction.hpp Cron/Cron.hpp)
+set(PROJECT_VERSION_MAJOR 0)
+set(PROJECT_VERSION_MINOR 1)
+set(PROJECT_VERSION_PATCH 0)
+set(PROJECT_VERSION ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH})
+
+message(NOTICE "${PROJECT_NAME}: ${PROJECT_VERSION}")
+
+
+add_executable(${PROJECT_NAME} main.cpp TimedAction.hpp Cron/Cron.hpp)

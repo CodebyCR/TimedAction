@@ -2,6 +2,7 @@
 #include <queue>
 #include "TimedAction.hpp"
 #include "Cron/Cron.hpp"
+#include <thread>
 
 void sayHallo(std::uint32_t &count){
 
@@ -51,7 +52,7 @@ int main() {
     std::string endValue = "endValue";
 
     job.setOnAction(onAction, (std::string &) actionValue);
-    job.setOnInterval(onInterval, (std::string &) intervalValue);
+//    job.setOnInterval(onInterval, (std::string &) intervalValue);
     job.setOnEnd(onEnd, (std::string &) endValue);
 
     job.start();
