@@ -11,5 +11,12 @@ set(PROJECT_VERSION ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_
 message(NOTICE "${PROJECT_NAME}: ${PROJECT_VERSION}")
 
 
-add_executable(${PROJECT_NAME} main.cpp
-        TimedAction_Types/TimedAction.hpp Cron/Cron.hpp TimedAction_Types/I_TimedAction.hpp TimedAction_Types/Light_TimedAction.hpp)
+set(LIBRARY_TIMED_ACTION "TimedAction_Types")
+add_subdirectory(${LIBRARY_TIMED_ACTION})
+
+
+add_executable(${PROJECT_NAME} main.cpp)
+
+target_include_directories(${PROJECT_NAME} PUBLIC
+        ${LIBRARY_TIMED_ACTION}
+        Cron)
