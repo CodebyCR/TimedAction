@@ -7,12 +7,13 @@
 #include <chrono>
 #include <thread>
 #include <iostream>
+#include "I_TimedAction.hpp"
 
 
 template<typename T, typename A, typename I, typename E>
 
 
-class TimedAction {
+class TimedAction : public I_TimedAction {
 
 private:
 
@@ -50,7 +51,7 @@ public:
 
     }
 
-    ~TimedAction() = default;
+    ~TimedAction() override = default;
 
     auto run() -> void {
         while (isRunning) {
@@ -74,17 +75,17 @@ public:
         }
     }
 
-    auto start() -> void{
+    auto start()  -> void override {
         isRunning = true;
         thread = std::thread(&TimedAction::run, this);
     }
 
-    auto stop() -> void {
+    auto stop() -> void override{
         isRunning = false;
         thread.join();
     }
 
-    auto restart() -> void {
+    auto restart() -> void override {
         stop();
         start();
     }
@@ -113,7 +114,7 @@ public:
     }
 
     [[nodiscard]]
-    auto getName() const -> std::string_view {
+    auto getName() const -> std::string_view override {
         return name;
     }
 
@@ -125,11 +126,13 @@ public:
         return interval;
     }
 
-    [[nodiscard]] auto getTimeSinceLastAction() const -> std::chrono::milliseconds {
+    [[nodiscard]]
+    auto getTimeSinceLastAction() const -> std::chrono::milliseconds {
         return timeSinceLastAction;
     }
 
-    [[nodiscard]] auto is_running() const -> bool {
+    [[nodiscard]]
+    auto is_running() const -> bool override {
         return isRunning;
     }
 
