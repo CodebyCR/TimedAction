@@ -1,4 +1,4 @@
-# Timed Action
+# Timed Action v.0.1.0 (Unofficial)
 
 ## _A simple, state-of-the-art cron job library._
 
@@ -9,5 +9,5 @@
 
 
 
-## **Documentation**
+## Documentation
 ### [Working with Cron... _can be easy_]()

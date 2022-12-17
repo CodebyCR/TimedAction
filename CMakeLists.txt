@@ -11,4 +11,5 @@ set(PROJECT_VERSION ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_
 message(NOTICE "${PROJECT_NAME}: ${PROJECT_VERSION}")
 
 
-add_executable(${PROJECT_NAME} main.cpp TimedAction.hpp Cron/Cron.hpp)
+add_executable(${PROJECT_NAME} main.cpp
+        TimedAction_Types/TimedAction.hpp Cron/Cron.hpp TimedAction_Types/I_TimedAction.hpp TimedAction_Types/Light_TimedAction.hpp)
