@@ -41,7 +41,7 @@ public:
 
 //    // overload << operator to_string
 //    friend std::ostream& operator << (std::ostream& os, const Cron& cron);
-//
+
 //    // overload >> operator from_string
 //    friend std::istream& operator>>(std::istream& is, Cron& cron);
 
