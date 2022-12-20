@@ -15,7 +15,7 @@ set(LIBRARY_TIMED_ACTION "TimedAction_Types")
 add_subdirectory(${LIBRARY_TIMED_ACTION})
 
 
-add_executable(${PROJECT_NAME} main.cpp)
+add_executable(${PROJECT_NAME} main.cpp Cron/CronRegex.hpp)
 
 target_include_directories(${PROJECT_NAME} PUBLIC
         ${LIBRARY_TIMED_ACTION}
