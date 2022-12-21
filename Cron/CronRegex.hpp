@@ -17,7 +17,9 @@ namespace CronRegex {
     const auto HOUR_REGEX  = std::regex(R"(^\s*(\*|[0-5]?\d)(/[0-5]?\d)?\s+)");
     const auto DAY_OF_MONTH_REGEX  = std::regex(R"(^\s*(\*|[0-5]?\d)(/[0-5]?\d)?\s+)");
     const auto MONTH_REGEX  = std::regex(R"(^\s*(\*|[0-5]?\d)(/[0-5]?\d)?\s+)");
-    const auto DAY_OF_WEEK_REGEX  = std::regex(R"(^\s*(\*|[0-9]|[0-5][0-9]|MON|TUE|WED|THU|FRI|SAT|SUN)(-MON|-TUE|-WED|-THU|-FRI|-SAT|-SUN)?\s*$)");
+
+    const auto DAY_OF_WEEK_REGEX  = std::regex(R"(^((\*)|(((([0-6])|(SUN|MON|TUE|WED|THU|FRI|SAT))(-(([0-6])|(SUN|MON|TUE|WED|THU|FRI|SAT)))?)(,((([0-6])|(SUN|MON|TUE|WED|THU|FRI|SAT))(-(([0-6])|(SUN|MON|TUE|WED|THU|FRI|SAT)))?))*)))$)");
+    const auto YEAR_REGEX  = std::regex(R"(^((\*)|(((([1970-2099])|(\*\*))(-(([1970-2099])|(\*\*)))?)(,((([1970-2099])|(\*\*))(-(([1970-2099])|(\*\*)))?))*)))$)");
 
     auto split(const std::string& str, char delimiter) -> std::vector<std::string> {
         std::vector<std::string> res;
