@@ -39,8 +39,12 @@ private:
 
 public:
 
-//    // overload << operator to_string
-//    friend std::ostream& operator << (std::ostream& os, const Cron& cron);
+    auto operator << (std::ostream& os) -> std::ostream& {
+        os << this->second << " " << this->minute << " " << this->hour << " " << this->dayOfMonth << " " << this->month << " " << this->dayOfWeek << " " << this->year;
+        return os;
+    }
+
+
 
 //    // overload >> operator from_string
 //    friend std::istream& operator>>(std::istream& is, Cron& cron);
@@ -114,6 +118,7 @@ public:
     [[nodiscard]] auto toString() const -> std::string {
         return std::to_string(this->second) + " " + std::to_string(this->minute) + " " + std::to_string(this->hour) + " " + std::to_string(this->dayOfMonth) + " " + std::to_string(this->month) + " " + this->dayOfWeek + " " + this->year;
     }
+
 
 };
 
