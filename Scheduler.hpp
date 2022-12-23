@@ -13,9 +13,7 @@ class Scheduler {
 
 private:
 
-    Scheduler() {
-
-    }
+    Scheduler() = default;
 
     std::vector<I_TimedAction*> actions;
 
@@ -28,39 +26,42 @@ public:
         return instance;
     }
 
-    Scheduler(Scheduler const&) = delete;
+    Scheduler(Scheduler const&) = default;
     void operator=(Scheduler const&) = delete;
 
     auto add(I_TimedAction* action) -> void {
         actions.push_back(action);
     }
 
-    auto start() -> void {
-        for (auto action : actions) {
+    auto start() const -> void {
+        for (auto &action : actions) {
             action->start();
         }
     }
 
-    auto stop() -> void {
-        for (auto action : actions) {
+    auto stop() const -> void {
+        for (auto &action : actions) {
             action->stop();
         }
     }
 
-    auto restart() -> void {
-        for (auto action : actions) {
+    auto restart() const -> void {
+        for (auto &action : actions) {
             action->restart();
         }
     }
 
+    [[nodiscard]]
     auto is_running() const -> bool {
-        for (auto action : actions) {
+        for (auto &action : actions) {
             if (action->is_running()) {
                 return true;
             }
         }
         return false;
     }
+
+
 
 
 

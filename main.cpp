@@ -4,6 +4,7 @@
 #include "TimedAction_Types/TimedAction.hpp"
 #include "Cron/Cron.hpp"
 #include <thread>
+#include "Scheduler.hpp"
 
 
 void sayHallo(std::uint32_t &count){
@@ -57,17 +58,6 @@ int main() {
 //    job.setOnInterval(onInterval, (std::string &) intervalValue);
     job.setOnEnd(onEnd, (std::string &) endValue);
 
-    job.start();
-
-    std::this_thread::sleep_for(std::chrono::seconds(10));
-
-
-    job.stop();
-
-    std::cout << "Job has paused" << std::endl;
-
-    std::this_thread::sleep_for(std::chrono::seconds(2));
-
 
     std::string value = "Hallo_from_test";
 
@@ -78,13 +68,14 @@ int main() {
             std::chrono::seconds(1)
     );
 
-    newJob.start();
+    auto scheduler = Scheduler::get_instance();
 
-    std::this_thread::sleep_for(std::chrono::seconds(2));
+    scheduler.add(&job);
+    scheduler.add(&newJob);
 
+    scheduler.start();
 
-    newJob.stop();
-
+    std::this_thread::sleep_for(std::chrono::seconds(10));
 
     std::vector<I_TimedAction> jobs;
 
