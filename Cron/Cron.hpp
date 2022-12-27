@@ -4,6 +4,9 @@
 
 #pragma once
 #include <iostream>
+#include <sstream>
+#include <optional>
+#include <variant>
 
 
 /**
@@ -22,15 +25,19 @@
  */
 class Cron{
 
+    using CronPart = std::optional< std::variant<std::uint8_t, std::string> >;
+
 private:
-    uint8_t second;
-    uint8_t minute;
-    uint8_t hour;
-    uint8_t dayOfMonth;
-    uint8_t month;
-    std::string dayOfWeek; // array of days
+    CronPart seconds;
+    CronPart minutes; // 0-59 || * || */2 || 1,2,3 || 1-5 || 1-5/2 || 1-5,7,9  String
+    CronPart hours; // 0-23 || * || */2 || 1,2,3 || 1-5 || 1-5/2 || 1-5,7,9  String
+    CronPart daysOfMonth; // 1-31 || * || */2 || 1,2,3 || 1-5 || 1-5/2 || 1-5,7,9  String
+    CronPart months; // 1-12 || * || */2 || 1,2,3 || 1-5 || 1-5/2 || 1-5,7,9  String
+    CronPart daysOfWeek; // 0-6 || MON || TUE || WED-THU || FRI || SAT || SUN || * || */2 || 1,2,3 || 1-5 || 1-5/2 || 1-5,7,9  String
+    CronPart years;
+
     // 0-6 or sun-sat or sunday-saturday or mon-fri
-    std::string year; // array of years
+
 
 //    std::ostream& operator<<(std::ostream& os, const Cron& cron) {
 //        os << "Cron: " << cron.second << " " << cron.minute << " " << cron.hour << " " << cron.dayOfMonth << " " << cron.month << " " << cron.dayOfWeek << " " << cron.year;
@@ -39,8 +46,14 @@ private:
 
 public:
 
-    auto operator << (std::ostream& os) -> std::ostream& {
-        os << this->second << " " << this->minute << " " << this->hour << " " << this->dayOfMonth << " " << this->month << " " << this->dayOfWeek << " " << this->year;
+     auto operator << (std::ostream& os) const -> std::ostream& {
+        os << this->seconds
+        << " " << this->minute.value_or(0)
+        << " " << this->hour.value_or(0)
+        << " " << this->dayOfMonth.value_or(1)
+        << " " << this->month.value_or(0)
+        << " " << this->dayOfWeek
+        << " " << this->year;
         return os;
     }
 
@@ -99,24 +112,32 @@ public:
         return this->hour;
     }
 
-    [[nodiscard]] auto getDaysOfMonth() const -> uint8_t {
-        return this->dayOfMonth;
+    [[nodiscard]] auto getDaysOfMonth() const  {
+        return this->daysOfMonth;
     }
 
-    [[nodiscard]] auto getMonths() const -> uint8_t {
-        return this->month;
+    [[nodiscard]] auto getMonths() const {
+        return this->months;
     }
 
-    [[nodiscard]] auto getDaysOfWeek() const -> std::string {
-        return this->dayOfWeek;
+    [[nodiscard]] auto getDaysOfWeek() const {
+        return this->daysOfWeek;
     }
 
-    [[nodiscard]] auto getYears() const -> std::string {
-        return this->year;
+    [[nodiscard]] auto getYears() const  {
+        return this->years;
     }
 
-    [[nodiscard]] auto toString() const -> std::string {
-        return std::to_string(this->second) + " " + std::to_string(this->minute) + " " + std::to_string(this->hour) + " " + std::to_string(this->dayOfMonth) + " " + std::to_string(this->month) + " " + this->dayOfWeek + " " + this->year;
+    [[nodiscard]] auto toString() const {
+        std::stringstream ss;
+        ss << this->second
+           << " " << this->minute
+           << " " << this->hour
+           << " " << this->dayOfMonth
+           << " " << this->month
+           << " " << this->dayOfWeek
+           << " " << this->year;
+        return ss.str();
     }
 
 
