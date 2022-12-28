@@ -10,6 +10,7 @@
 #include <forward_list>
 #include "LeapYearUtils.hpp"
 
+
 class CronPart {
 private:
 
@@ -106,8 +107,8 @@ private:
             return std::make_pair(86'400 * 7, 7);
         }
         if (this->name == "year") {
-            // TODO: make working with leap years
-            return std::make_pair(86'400 * 30 * 12, 365);
+            auto currentYearInSeconds = LeapYearUtils::getCurrentYearInSeconds();
+            return std::make_pair(currentYearInSeconds, 365);
         }
 
         std::cout << "CronPart::getPartRangeSize: unknown part name: " << this->name << std::endl;
@@ -235,6 +236,7 @@ private:
 
 public:
 
+    CronPart() = default;
 
     CronPart(std::string const &name, const std::string &rawValue)
             : name(name), rawValue(rawValue) {
