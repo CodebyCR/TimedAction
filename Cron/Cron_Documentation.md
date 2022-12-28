@@ -1,5 +1,7 @@
 # Working with Cron... _can be easy_
 
+- You can also read the [Cron Format](Cron_Format.md), of this Library for more information.
+
 ## Initialization
 
 ### Use a builder pattern
