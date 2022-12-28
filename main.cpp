@@ -2,11 +2,12 @@
 //#include <queue>
 //#include "TimedAction_Types/I_TimedAction.hpp"
 //#include "TimedAction_Types/TimedAction.hpp"
-//#include "Cron/Cron.hpp"
+#include "Cron/Cron.hpp"
 #include <thread>
 //#include "Scheduler.hpp"
 #include "StringUtils.hpp"
 #include "CronPart.hpp"
+#include "Cron/CronInterpreter.hpp"
 
 
 void sayHallo(std::uint32_t &count){
@@ -55,13 +56,19 @@ int main() {
 
 
 
-    auto months = CronPart("month", "*/5");
-//    auto weekdays = CronPart("weekday", "*/5");
+//    // TODO: right days in month && leap years
+//    auto months = CronPart("year", "*");
+////    auto weekdays = CronPart("weekday", "*/5");
+//
+//    for (const auto &timeSeconds : months.getTimes()){
+//        // To String
+//        std::cout << "Count of seconds: " << timeSeconds.count() << std::endl;
+//    }
 
-    for (const auto &timeSeconds : months.getTimes()){
-        // To String
-        std::cout << "Count of seconds: " << timeSeconds.count() << std::endl;
-    }
+    auto everyDay = Cron("0 0 0 * * * *");
+    CronInterpreter::print_time_points(everyDay);
+
+
 
 
 
