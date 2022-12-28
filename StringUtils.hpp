@@ -39,6 +39,10 @@ namespace StringUtils{
     auto split_by_any_of( std::string& str , std::string_view const& delimiters) -> std::vector<std::string> {
         std::vector<std::string> result;
 
+        if(str.empty()) {
+            return result;
+        }
+
         for(auto delimiter : delimiters) {
             auto split = split_by(str, delimiter);
 
