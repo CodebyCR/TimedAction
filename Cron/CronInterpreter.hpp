@@ -19,6 +19,12 @@ namespace CronInterpreter {
         //const std::vector<u_long> weekDayTimes = cronObject.getWeekDayTimes(); has filter function
         const std::forward_list<std::chrono::seconds> yearTimes = cronObject.getYearTimes();
 
+
+        for (auto year : yearTimes) {
+            // print year
+            std::cout << std::setfill('0') << std::setw(4) << year.count() << " ";
+        }
+
         std::vector<std::vector<std::chrono::seconds>> result;
 
         for (auto &second : secondTimes) {
