@@ -114,5 +114,28 @@ namespace LeapYearUtils {
         return nextMonthStart - monthStart;
     }
 
+    /**
+     * @return The current year in seconds since 1970
+     */
+    auto seconds_since_1970() -> int {
+        std::chrono::system_clock::time_point current_time = std::chrono::system_clock::now();
+        std::time_t time = std::chrono::system_clock::to_time_t(current_time);
+        tm* time_info = localtime(&time);
+        int year = getCurrentYear();
+
+        int days_since_1970 = (year - 1970) * 365;
+        days_since_1970 += (year - 1968) / 4;
+        days_since_1970 -= (year - 1900) / 100;
+        days_since_1970 += (year - 1600) / 400;
+
+        int seconds_since_1970 = days_since_1970 * 24 * 60 * 60;
+        seconds_since_1970 += time_info->tm_yday * 24 * 60 * 60;
+        seconds_since_1970 += time_info->tm_hour * 60 * 60;
+        seconds_since_1970 += time_info->tm_min * 60;
+        seconds_since_1970 += time_info->tm_sec;
+
+        return seconds_since_1970;
+    }
+
 
 };
