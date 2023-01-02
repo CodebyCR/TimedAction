@@ -9,6 +9,7 @@
 #include <../StringUtils.hpp>
 #include <forward_list>
 #include "LeapYearUtils.hpp"
+#include <ctime>
 
 
 class CronPart {
@@ -38,8 +39,13 @@ private:
         if (this->isWildcard) {
             // *
             // basicString is wildcard
-            for (int index = 0; index < this->range; index++) {
-                this->times.emplace_front(index * this->multiplier);
+            if(this->name == "year"){
+                auto current_year = LeapYearUtils::getCurrentYear();
+                numberValue(std::to_string(current_year));
+            }else{
+                for (int index = 0; index < this->range; index++) {
+                    this->times.emplace_front(index * this->multiplier);
+                }
             }
         }
 
@@ -107,8 +113,12 @@ private:
             return std::make_pair(86'400 * 7, 7);
         }
         if (this->name == "year") {
-            auto currentYearInSeconds = LeapYearUtils::getCurrentYearInSeconds();
-            return std::make_pair(currentYearInSeconds, 365);
+            const auto currentYear = LeapYearUtils::getCurrentYear();
+            const auto currentYearInSeconds = LeapYearUtils::seconds_since_1970();
+            std::cout << "currentYearInSeconds: " << currentYearInSeconds << std::endl;
+
+            const auto daysInCurrentYear = LeapYearUtils::getDaysInYear(currentYear);
+            return std::make_pair(currentYearInSeconds, daysInCurrentYear);
         }
 
         std::cout << "CronPart::getPartRangeSize: unknown part name: " << this->name << std::endl;
@@ -179,7 +189,7 @@ private:
         // 1
         // basicString is value
 
-        uint8_t value = 0;
+        int value = 0;
         if(this->name == "weekday" && !StringUtils::is_number(basicString)) {
             value = LeapYearUtils::weekdayValue(basicString);
         } else {
