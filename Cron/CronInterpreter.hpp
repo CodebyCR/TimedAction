@@ -54,6 +54,9 @@ namespace CronInterpreter {
 
     auto to_date_time(std::vector<std::chrono::seconds> const& timeVector)
     {
+
+        //std::cout << "secunden: " << std::setfill('0') << std::setw(2) << std::to_string(static_cast<long long>(timeVector[4])) << " ";
+
         std::tm tm = {};
         tm.tm_sec = timeVector[0].count();
         tm.tm_min = timeVector[1].count();
