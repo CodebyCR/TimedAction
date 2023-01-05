@@ -65,7 +65,7 @@ int main() {
 //        std::cout << "Count of seconds: " << timeSeconds.count() << std::endl;
 //    }
 
-    auto everyDay = Cron("0 0 0 * * * *");
+    auto everyDay = Cron("0 0 0 1 * 3 2021-2023");
     CronInterpreter::print_time_points(everyDay);
 
 

@@ -6,8 +6,52 @@
 #include <iostream>
 #include <Cron.hpp>
 #include <iomanip>
+#include <ctime>
+#include <chrono>
 
 namespace CronInterpreter {
+
+
+
+    /**
+     * @brief Prints the cartesian product of the cron object as a table
+     * @param cronObject
+     */
+    auto printCartesianProduct(const std::vector<std::vector<std::chrono::seconds>> &cartesianProduct)
+    {
+        std::cout << "\n\nSecond Minute Hour DayOfMonth Month Year" << std::endl;
+        for (auto &timeVector : cartesianProduct) {
+            std::cout << "Execution: ";
+            for (auto &time : timeVector) {
+                std::cout << std::setfill('0') << std::setw(2) << time.count() << " ";
+            }
+            std::cout << std::endl;
+        }
+        std::cout << std::endl;
+    }
+
+    /**
+     * @brief Prints the result of the converted cartesian product of the cron object to a time as a table
+     * @param cronObject
+     */
+    auto convertCartesianProduct(const std::vector<std::vector<std::chrono::seconds>> &cartesianProduct)
+    {
+        auto currentTime = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch());
+        auto yearVal = std::chrono::duration_cast<std::chrono::years>(currentTime);
+        std::cout <<"Seconds:" << currentTime.count() << std::endl;
+        std::cout << "\nYear: " << std::setfill('0') << std::setw(4) << (yearVal.count() + 1970) << std::endl;
+
+        std::cout << "\n\nSecond Minute Hour DayOfMonth Month Year" << std::endl;
+        for (auto &timeVector : cartesianProduct) {
+            for (auto &time : timeVector) {
+                std::cout << std::setfill('0') << std::setw(2) << time.count() << " ";
+
+            }
+            std::cout << std::endl;
+        }
+        std::cout << std::endl;
+    }
+
 
     auto cartesian_product(Cron const& cronObject)
     {
@@ -31,8 +75,13 @@ namespace CronInterpreter {
             for (auto &minute : minuteTimes) {
                 for (auto &hour : hourTimes) {
                     for (auto &dayOfMonth : dayOfMonthTimes) {
+                        auto dayVal = std::chrono::duration_cast<std::chrono::days>(dayOfMonth);
+                        std::cout << "\nDay: " << std::setfill('0') << std::setw(4) << dayVal.count() << std::endl;
                         for (auto &month : monthTimes) {
                             for (auto &year : yearTimes) {
+                                auto yearVal = std::chrono::duration_cast<std::chrono::years>(year);
+//                                std::cout << "\nYear: " << std::setfill('0') << std::setw(4) << yearVal.count() << std::endl;
+
                                 std::vector<std::chrono::seconds> timeVector;
                                 timeVector.push_back(second);
                                 timeVector.push_back(minute);
@@ -48,9 +97,14 @@ namespace CronInterpreter {
             }
         }
 
-
+        convertCartesianProduct(result);
+        printCartesianProduct(result);
         return result;
     }
+
+
+
+
 
     auto to_date_time(std::vector<std::chrono::seconds> const& timeVector)
     {
@@ -73,7 +127,9 @@ namespace CronInterpreter {
         std::vector<std::chrono::system_clock::time_point> result;
         for (const auto& x : timeVector)
         {
-            result.emplace_back(to_date_time(x));
+            auto date_time = to_date_time(x);
+            std::cout << "dateTime: " << std::ctime(reinterpret_cast<const time_t *>(&date_time));
+            result.push_back(date_time);
         }
         return result;
     }

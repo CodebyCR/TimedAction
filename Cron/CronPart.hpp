@@ -41,8 +41,10 @@ private:
             // basicString is wildcard
             if(this->name == "year"){
                 auto current_year = LeapYearUtils::getCurrentYear();
-                numberValue(std::to_string(current_year));
+                //this->value = current_year;
             }else{
+
+                /// Range works
                 for (int index = 0; index < this->range; index++) {
                     this->times.emplace_front((index + 1) * this->multiplier);
                 }
@@ -96,6 +98,7 @@ private:
             auto monthMultiplier = LeapYearUtils::getDaysInCurrentMonth();
             std::cout << "monthMultiplier: " << monthMultiplier << std::endl;
 
+            // seconds for the specific month in the current year, multiplied by
             return std::make_pair(86'400 * monthMultiplier, 12);
         }
         if (this->name == "weekday") {
