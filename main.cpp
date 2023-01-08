@@ -66,7 +66,10 @@ int main() {
 //    }
 
     auto everyDay = Cron("0 0 0 1 * 3 2021-2023");
+    // Year is already translated?
+
     CronInterpreter::print_time_points(everyDay);
+
 
 
 

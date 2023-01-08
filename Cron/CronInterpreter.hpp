@@ -11,8 +11,6 @@
 
 namespace CronInterpreter {
 
-
-
     /**
      * @brief Prints the cartesian product of the cron object as a table
      * @param cronObject
@@ -69,15 +67,18 @@ namespace CronInterpreter {
             std::cout << std::setfill('0') << std::setw(4) << year.count() << " ";
         }
 
-        std::vector<std::vector<std::chrono::seconds>> result;
+        std::vector<std::vector<std::chrono::seconds>> result; // to list from time points
 
         for (auto &second : secondTimes) {
             for (auto &minute : minuteTimes) {
                 for (auto &hour : hourTimes) {
                     for (auto &dayOfMonth : dayOfMonthTimes) {
                         auto dayVal = std::chrono::duration_cast<std::chrono::days>(dayOfMonth);
-                        std::cout << "\nDay: " << std::setfill('0') << std::setw(4) << dayVal.count() << std::endl;
+                        std::cout << "\nDay: " << std::setfill('0') << std::setw(2) << dayVal.count() << std::endl;
                         for (auto &month : monthTimes) {
+                            auto monthVal = std::chrono::duration_cast<std::chrono::months>(month);
+                            std::cout << "\nMonth: " << std::setfill('0') << std::setw(2) << monthVal.count() << std::endl;
+
                             for (auto &year : yearTimes) {
                                 auto yearVal = std::chrono::duration_cast<std::chrono::years>(year);
 //                                std::cout << "\nYear: " << std::setfill('0') << std::setw(4) << yearVal.count() << std::endl;
@@ -155,8 +156,6 @@ namespace CronInterpreter {
 
         return result;
     }
-
-
 
     static auto print_time_points(Cron const& cronObject){
         auto timeMatrix = cartesian_product(cronObject);

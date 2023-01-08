@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.24)
 project("TimedAction")
 
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 23)
 
 set(PROJECT_VERSION_MAJOR 0)
 set(PROJECT_VERSION_MINOR 1)
