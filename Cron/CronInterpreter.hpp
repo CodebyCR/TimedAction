@@ -62,26 +62,40 @@ namespace CronInterpreter {
         const std::forward_list<std::chrono::seconds> yearTimes = cronObject.getYearTimes();
 
 
-        for (auto year : yearTimes) {
-            // print year
-            std::cout << std::setfill('0') << std::setw(4) << year.count() << " ";
-        }
+//        for (auto year : yearTimes) {
+//            // print year
+//            std::cout << std::setfill('0') << std::setw(4) << year.count() << " ";
+//        }
 
         std::vector<std::vector<std::chrono::seconds>> result; // to list from time points
 
+        // Revers order of the cartesian product for Order of the time points
         for (auto &second : secondTimes) {
+
             for (auto &minute : minuteTimes) {
+
                 for (auto &hour : hourTimes) {
+
                     for (auto &dayOfMonth : dayOfMonthTimes) {
-                        auto dayVal = std::chrono::duration_cast<std::chrono::days>(dayOfMonth);
-                        std::cout << "\nDay: " << std::setfill('0') << std::setw(2) << dayVal.count() << std::endl;
+
                         for (auto &month : monthTimes) {
-                            auto monthVal = std::chrono::duration_cast<std::chrono::months>(month);
-                            std::cout << "\nMonth: " << std::setfill('0') << std::setw(2) << monthVal.count() << std::endl;
 
                             for (auto &year : yearTimes) {
-                                auto yearVal = std::chrono::duration_cast<std::chrono::years>(year);
-//                                std::cout << "\nYear: " << std::setfill('0') << std::setw(4) << yearVal.count() << std::endl;
+
+                                auto minuteVal = std::chrono::duration_cast<std::chrono::minutes>(minute);
+                                auto hourVal = std::chrono::duration_cast<std::chrono::hours>(hour);
+                                auto dayVal = std::chrono::duration_cast<std::chrono::days>(dayOfMonth);
+                                auto monthVal = std::chrono::duration_cast<std::chrono::months>(month);
+//                                auto yearVal = std::chrono::duration_cast<std::chrono::years>(year);
+
+
+                                std::cout << "\n\nSecond Minute Hour DayOfMonth Month Year" << std::endl;
+                                std::cout << std::setfill(' ') << std::setw(6) << second.count() << " ";
+                                std::cout << std::setfill(' ') << std::setw(6) << minuteVal.count() << " ";
+                                std::cout << std::setfill(' ') << std::setw(4) << hourVal.count() << " ";
+                                std::cout << std::setfill(' ') << std::setw(10) << dayVal.count() << " ";
+                                std::cout << std::setfill(' ') << std::setw(5) << monthVal.count() << " ";
+                                std::cout << std::setfill(' ') << std::setw(4) << year.count() << std::endl;
 
                                 std::vector<std::chrono::seconds> timeVector;
                                 timeVector.push_back(second);
@@ -98,8 +112,8 @@ namespace CronInterpreter {
             }
         }
 
-        convertCartesianProduct(result);
-        printCartesianProduct(result);
+//        convertCartesianProduct(result);
+//        printCartesianProduct(result);
         return result;
     }
 
