@@ -4,6 +4,18 @@
 
 ## Initialization
 
+### Use designated initializers for complex cron expressions
+```C++
+    auto someCron = Cron({.second = "0",
+                          .minute = "30",
+                          .hour = "*/2",
+                          .dayOfMonth = "15",
+                          .month = "*/2",
+                          .weekday = "*",
+                          .year = "2023-2024"});
+```
+
+
 ### Use a builder pattern
 ```C++
     auto cron = Cron()
