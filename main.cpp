@@ -65,10 +65,18 @@ int main() {
 //        std::cout << "Count of seconds: " << timeSeconds.count() << std::endl;
 //    }
 
-    auto everyDay = Cron("0 30 */2 1 * 3 2021-2023");
+    auto someCron = Cron({.second = "0",
+                          .minute = "30",
+                          .hour = "*/2",
+                          .dayOfMonth = "15",
+                          .month = "*/2",
+                          .weekday = "*",
+                          .year = "2023-2024"});
+
+//    auto everyDay = Cron("0 30 */2 1 3 * 2021-2023");
     // Year is already translated?
 
-    CronInterpreter::print_time_points(everyDay);
+    std::cout << CronInterpreter::get_time_points(someCron);
 
 
 

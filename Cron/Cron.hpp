@@ -7,7 +7,7 @@
 #include <iostream>
 #include <sstream>
 
-
+#include "CronCapsule.hpp"
 #include <CronPart.hpp>
 #include <CronRegex.hpp>
 
@@ -45,12 +45,7 @@ private:
 //        os << "Cron: " << cron.second << " " << cron.minute << " " << cron.hour << " " << cron.dayOfMonth << " " << cron.month << " " << cron.dayOfWeek << " " << cron.year;
 //        return os;
 //    }
-
-public:
-
-    explicit Cron(std::string cronString) {
-        auto cronParts = StringUtils::split_by(cronString, ' ');
-
+auto processCronParts(std::vector<std::string> &cronParts) -> void {
         if (!CronRegex::isValidCron(cronParts)){
             throw std::invalid_argument("Invalid cron string");
         }
@@ -67,7 +62,32 @@ public:
         this->months = CronPart("month", cronParts[4]);
         this->daysOfWeek = CronPart("weekday", cronParts[5]);
         this->years = CronPart("year", cronParts[6]);
+}
+
+
+public:
+
+    Cron(CronCapsule capsule) {
+   std::vector<std::string> cronParts = {
+           capsule.second,
+           capsule.minute,
+           capsule.hour,
+           capsule.dayOfMonth,
+           capsule.month,
+           capsule.weekday,
+           capsule.year};
+
+        processCronParts(cronParts);
     }
+
+    explicit Cron(std::string cronString) {
+        auto cronParts = StringUtils::split_by(cronString, ' ');
+        processCronParts(cronParts);
+    }
+
+
+
+
 
 //    auto operator<<(std::ostream &os) const -> std::ostream & {
 //        os << this->seconds
