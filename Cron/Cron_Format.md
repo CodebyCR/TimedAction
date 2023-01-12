@@ -31,7 +31,7 @@
 ## Special Characters
 - `*` means all possible values.
 - `,` means a list of values.
-- `-` means a range of values.
+- `-` means a partRange of values.
 - `/` means a step of values.
 
 > Example:
