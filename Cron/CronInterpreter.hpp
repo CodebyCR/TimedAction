@@ -64,34 +64,21 @@ namespace CronInterpreter {
 //        std::vector<std::vector<std::chrono::seconds>> result; // to list from time points
         std::vector<std::tm> resultTime; // to list from time points
 
-        // Revers order of the cartesian product for Order of the time points
-//        std::cout << "\n\nSecond Minute Hour DayOfMonth Month Year" << std::endl;
         for (auto &year: yearTimes) {
 
             for (auto &month: monthTimes) {
+                auto monthVal = std::chrono::duration_cast<std::chrono::months>(month);
 
                 for (auto &dayOfMonth: dayOfMonthTimes) {
+                    auto dayVal = std::chrono::duration_cast<std::chrono::days>(dayOfMonth);
 
                     for (auto &hour: hourTimes) {
+                        auto hourVal = std::chrono::duration_cast<std::chrono::hours>(hour);
 
                         for (auto &minute: minuteTimes) {
+                            auto minuteVal = std::chrono::duration_cast<std::chrono::minutes>(minute);
 
                             for (auto &second: secondTimes) {
-
-                                auto minuteVal = std::chrono::duration_cast<std::chrono::minutes>(minute);
-                                auto hourVal = std::chrono::duration_cast<std::chrono::hours>(hour);
-                                auto dayVal = std::chrono::duration_cast<std::chrono::days>(dayOfMonth);
-                                auto monthVal = std::chrono::duration_cast<std::chrono::months>(month);
-//                                auto yearVal = std::chrono::duration_cast<std::chrono::years>(year);
-
-
-
-//                                std::cout  second.count() << " ";
-//                                std::cout  minuteVal.count() << " ";
-//                                std::cout << std::setfill(' ') << std::setw(4) << hourVal.count() << " ";
-//                                std::cout << std::setfill(' ') << std::setw(10) << dayVal.count() << " ";
-//                                std::cout << std::setfill(' ') << std::setw(5) << monthVal.count() << " ";
-//                                std::cout << std::setfill(' ') << std::setw(4) << year.count() << std::endl;
 
                                 auto timeStruct = std::tm();
                                 timeStruct.tm_sec = second.count();
@@ -101,29 +88,8 @@ namespace CronInterpreter {
                                 timeStruct.tm_mon = monthVal.count();
                                 timeStruct.tm_year = year.count();
 
-                                //std::cout << std::put_time(&timeStruct, "%c") << std::endl;
-//                                std::cout
-//                                        << std::setfill(' ') << std::setw(6) << timeStruct.tm_sec << " "
-//                                        << std::setfill(' ') << std::setw(6) << timeStruct.tm_min << " "
-//                                        << std::setfill(' ') << std::setw(4) << timeStruct.tm_hour << " "
-//                                        << std::setfill(' ') << std::setw(10) << timeStruct.tm_mday << " "
-//                                        << std::setfill(' ') << std::setw(5) << timeStruct.tm_mon << " "
-//                                        << std::setfill(' ') << std::setw(4) << timeStruct.tm_year
-//                                        << std::endl;
-
-
-
                                 resultTime.push_back(timeStruct);
 
-//                                std::vector<std::chrono::seconds> timeVector;
-//                                timeVector.push_back(second);
-//                                timeVector.push_back(minute);
-//                                timeVector.push_back(hour);
-//                                timeVector.push_back(dayOfMonth);
-//                                timeVector.push_back(month);
-//                                timeVector.push_back(year);
-//
-//                                result.push_back(timeVector);
                             }
                         }
                     }
@@ -131,8 +97,6 @@ namespace CronInterpreter {
             }
         }
 
-//        convertCartesianProduct(result);
-//        printCartesianProduct(result);
         return resultTime;
     }
 
@@ -143,23 +107,16 @@ namespace CronInterpreter {
 
 
         for (auto time: cartesianProduct) {
-            time.tm_year -=1900;
             auto currentTime = std::mktime(&time);
             auto currentTime_ = std::chrono::system_clock::from_time_t(currentTime);
 
+            const auto timeDifferance = std::chrono::duration_cast<std::chrono::seconds>(currentTime_ - now).count();
 
-
-            auto currenTime__ = std::chrono::duration_cast<std::chrono::seconds>(currentTime_ - now).count();
-
-            std::cout << "currenTime: " << currenTime__ << std::endl;
-
-
-
-            if(currenTime__ > 0){
+            if (timeDifferance > 0) {
                 result.push_back(time);
             }
         }
-            
+
         return result;
     }
 
@@ -171,7 +128,7 @@ namespace CronInterpreter {
         for (auto time: times) {
             auto currentTime = std::mktime(&time);
             auto weekday = std::localtime(&currentTime)->tm_wday;
-            if(weekday == 0 || weekday == 6){
+            if (weekday == 0 || weekday == 6) {
                 result.push_back(time);
             }
         }
@@ -179,7 +136,7 @@ namespace CronInterpreter {
         return result;
     }
 
-    static auto get_time_points(Cron const &cronObject) -> std::string{
+    static auto get_time_points(Cron const &cronObject) -> std::string {
         auto cartesianProduct = cartesian_product(cronObject);
         auto filteredOfReachedTimes = filterOfReachedTimes(cartesianProduct);
         auto totalTimes = filteredOfWeekdayPart(filteredOfReachedTimes, cronObject.getWeekDayTimes());
@@ -190,14 +147,14 @@ namespace CronInterpreter {
         auto ss = std::stringstream();
 
         ss << "\n\nHour Minute Second DayOfMonth Month Year" << std::endl;
-        for(auto &timeStruct: filteredOfReachedTimes){
-             ss << std::setfill(' ') << std::setw(4) << timeStruct.tm_hour << " "
-                << std::setfill(' ') << std::setw(6) << timeStruct.tm_min << " "
-                << std::setfill(' ') << std::setw(6) << timeStruct.tm_sec << " "
-                << std::setfill(' ') << std::setw(10) << timeStruct.tm_mday << " "
-                << std::setfill(' ') << std::setw(5) << timeStruct.tm_mon << " "
-                << std::setfill(' ') << std::setw(4) << (timeStruct.tm_year + 1900)
-                << std::endl;
+        for (auto &timeStruct: filteredOfReachedTimes) {
+            ss << std::setfill(' ') << std::setw(4) << timeStruct.tm_hour << " "
+               << std::setfill(' ') << std::setw(6) << timeStruct.tm_min << " "
+               << std::setfill(' ') << std::setw(6) << timeStruct.tm_sec << " "
+               << std::setfill(' ') << std::setw(10) << timeStruct.tm_mday << " "
+               << std::setfill(' ') << std::setw(5) << timeStruct.tm_mon << " "
+               << std::setfill(' ') << std::setw(4) << timeStruct.tm_year
+               << std::endl;
         }
 
         return ss.str();
@@ -205,9 +162,6 @@ namespace CronInterpreter {
 
 
     auto to_date_time(std::vector<std::chrono::seconds> const &timeVector) {
-
-        //std::cout << "secunden: " << std::setfill('0') << std::setw(2) << std::to_string(static_cast<long long>(timeVector[4])) << " ";
-
         std::tm tm = {};
         tm.tm_sec = timeVector[0].count();
         tm.tm_min = timeVector[1].count();
@@ -249,24 +203,5 @@ namespace CronInterpreter {
 
         return result;
     }
-
-//    static auto print_time_points(Cron const &cronObject) {
-//        auto timeMatrix = cartesian_product(cronObject);
-//        auto timePoints = to_date_time(timeMatrix);
-//
-//        // timePoint vector to local time
-//        std::vector<std::tm> localTimePoints;
-//        for (const auto &x: timePoints) {
-//            auto time = std::chrono::system_clock::to_time_t(x);
-//            localTimePoints.emplace_back(*std::localtime(&time));
-//        }
-//
-//        // print timePoints
-//        std::cout << " TimePoints size: " << timePoints.size() << std::endl;
-//        std::cout << " Local TimePoints size: " << localTimePoints.size() << std::endl;
-//        for (const auto &x: localTimePoints) {
-//            std::cout << std::put_time(&x, "%c") << std::endl;
-//        }
-//    }
 
 }

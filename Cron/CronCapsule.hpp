@@ -7,6 +7,7 @@
 #include <iostream>
 #include <string>
 
+/** For designated initializer cron expression */
 struct CronCapsule {
     std::string second;
     std::string minute;
@@ -15,8 +16,4 @@ struct CronCapsule {
     std::string month;
     std::string weekday;
     std::string year;
-
-
 };
-
-

@@ -9,7 +9,7 @@
 #include <sstream>
 #include <../StringUtils.hpp>
 
-auto cron_to_utc(const std::string& cron_string) -> std::string {
+auto cron_to_utc(const std::string &cron_string) -> std::string {
     // Split the Cron string into its component parts
     auto cron_parts = StringUtils::split_by(cron_string, ' ');
     std::stringstream cron_stream(cron_string);
@@ -26,7 +26,7 @@ auto cron_to_utc(const std::string& cron_string) -> std::string {
     // Get the current year and month
     auto now = std::chrono::system_clock::now();
     std::time_t now_time = std::chrono::system_clock::to_time_t(now);
-    std::tm const* now_tm = std::gmtime(&now_time);
+    std::tm const *now_tm = std::gmtime(&now_time);
     int year = now_tm->tm_year + 1900;
     int month = now_tm->tm_mon + 1;
 

@@ -30,27 +30,27 @@ class Cron {
 
 private:
     CronPart seconds;
-    CronPart minutes; // 0-59 || * || */2 || 1,2,3 || 1-5 || 1-5/2 || 1-5,7,9  String
-    CronPart hours; // 0-23 || * || */2 || 1,2,3 || 1-5 || 1-5/2 || 1-5,7,9  String
-    CronPart daysOfMonth; // 1-31 || * || */2 || 1,2,3 || 1-5 || 1-5/2 || 1-5,7,9  String
-    CronPart months; // 1-12 || * || */2 || 1,2,3 || 1-5 || 1-5/2 || 1-5,7,9  String
+    CronPart minutes;
+    CronPart hours;
+    CronPart daysOfMonth;
+    CronPart months;
 
     CronPart daysOfWeek; // 0-6 || MON || TUE || WED-THU || FRI || SAT || SUN || * || */2 || 1,2,3 || 1-5 || 1-5/2 || 1-5,7,9  String
     CronPart years;
 
     // 0-6 or sun-sat or sunday-saturday or mon-fri
 
-
 //    std::ostream& operator<<(std::ostream& os, const Cron& cron) {
 //        os << "Cron: " << cron.second << " " << cron.minute << " " << cron.hour << " " << cron.dayOfMonth << " " << cron.month << " " << cron.dayOfWeek << " " << cron.year;
 //        return os;
 //    }
-auto processCronParts(std::vector<std::string> &cronParts) -> void {
-        if (!CronRegex::isValidCron(cronParts)){
+
+    auto processCronParts(std::vector<std::string> &cronParts) -> void {
+        if (!CronRegex::isValidCron(cronParts)) {
             throw std::invalid_argument("Invalid cron string");
         }
 
-        if(cronParts.size() != 7){
+        if (cronParts.size() != 7) {
             throw std::invalid_argument("Cron string has to have 6 parts");
         }
 
@@ -62,20 +62,20 @@ auto processCronParts(std::vector<std::string> &cronParts) -> void {
         this->months = CronPart("month", cronParts[4]);
         this->daysOfWeek = CronPart("weekday", cronParts[5]);
         this->years = CronPart("year", cronParts[6]);
-}
+    }
 
 
 public:
 
-    Cron(CronCapsule capsule) {
-   std::vector<std::string> cronParts = {
-           capsule.second,
-           capsule.minute,
-           capsule.hour,
-           capsule.dayOfMonth,
-           capsule.month,
-           capsule.weekday,
-           capsule.year};
+    explicit Cron(CronCapsule capsule) {
+        std::vector<std::string> cronParts = {
+                capsule.second,
+                capsule.minute,
+                capsule.hour,
+                capsule.dayOfMonth,
+                capsule.month,
+                capsule.weekday,
+                capsule.year};
 
         processCronParts(cronParts);
     }
@@ -84,10 +84,6 @@ public:
         auto cronParts = StringUtils::split_by(cronString, ' ');
         processCronParts(cronParts);
     }
-
-
-
-
 
 //    auto operator<<(std::ostream &os) const -> std::ostream & {
 //        os << this->seconds
@@ -105,90 +101,6 @@ public:
 //    friend std::istream& operator>>(std::istream& is, Cron& cron);
 
     auto operator<=>(const Cron &other) const = default;
-
-
-//    auto seconds(const uint8_t seconds) -> Cron & {
-//        this->second = seconds;
-//        return *this;
-//    }
-//
-//    auto minutes(const uint8_t minutes) -> Cron & {
-//        this->minute = minutes;
-//        return *this;
-//    }
-//
-//    auto hours(const uint8_t hours) -> Cron & {
-//        this->hour = hours;
-//        return *this;
-//    }
-//
-//    auto daysOfMonth(const uint8_t daysOfMonth) -> Cron & {
-//        this->dayOfMonth = daysOfMonth;
-//        return *this;
-//    }
-//
-//    auto months(const uint8_t months) -> Cron & {
-//        this->month = months;
-//        return *this;
-//    }
-//
-//    auto daysOfWeek(const std::string_view &daysOfWeek) -> Cron & {
-//        this->dayOfWeek = daysOfWeek;
-//        return *this;
-//    }
-//
-//    auto years(const std::string_view &years) -> Cron & {
-//        this->year = years;
-//        return *this;
-//    }
-//
-//    [[nodiscard]]
-//    auto getSeconds() const -> uint8_t {
-//        return this->second;
-//    }
-//
-//    [[nodiscard]]
-//    auto getMinutes() const -> uint8_t {
-//        return this->minute;
-//    }
-//
-//    [[nodiscard]]
-//    auto getHours() const -> uint8_t {
-//        return this->hour;
-//    }
-//
-//    [[nodiscard]]
-//    auto getDaysOfMonth() const {
-//        return this->daysOfMonth;
-//    }
-//
-//    [[nodiscard]]
-//    auto getMonths() const {
-//        return this->months;
-//    }
-//
-//    [[nodiscard]]
-//    auto getDaysOfWeek() const {
-//        return this->daysOfWeek;
-//    }
-//
-//    [[nodiscard]]
-//    auto getYears() const {
-//        return this->years;
-//    }
-//
-//    [[nodiscard]]
-//    auto toString() const {
-//        std::stringstream ss;
-//        ss << this->second
-//           << " " << this->minute
-//           << " " << this->hour
-//           << " " << this->dayOfMonth
-//           << " " << this->month
-//           << " " << this->dayOfWeek
-//           << " " << this->year;
-//        return ss.str();
-//    }
 
     [[nodiscard]]
     auto getSecondTimes() const {
@@ -226,4 +138,3 @@ public:
     }
 
 };
-

@@ -9,12 +9,11 @@
 #include <../StringUtils.hpp>
 #include <forward_list>
 #include "LeapYearUtils.hpp"
-#include <ctime>
 
 
 class CronPart {
-private:
 
+private:
     std::string name;
     std::forward_list<std::chrono::seconds> times;
     std::string rawValue;
@@ -25,8 +24,8 @@ private:
     bool isWildcard;
     bool isPeriodic;
 
-    u_long multiplier;
-    uint8_t range;
+    u_long partMultiplier;
+    uint8_t partRange;
 
 
     /** 1-31 || * || *\/2 || 1,2,3 || 1-5 || 1-5/2 || 1-5,7,9  String */
@@ -38,34 +37,28 @@ private:
 
         if (this->isWildcard) {
             // *
-            // basicString is wildcard
-            if(this->name == "year"){
+            if (this->name == "year") {
                 auto current_year = LeapYearUtils::getCurrentYear();
-                //this->value = current_year;
-            }else{
-
+            } else {
                 /// Range works
-                for (int index = 0; index < this->range; index++) {
-                    this->times.emplace_front((index + 1) * this->multiplier);
+                for (int index = 0; index < this->partRange; index++) {
+                    this->times.emplace_front((index + 1) * this->partMultiplier);
                 }
             }
         }
 
         if (StringUtils::contains(basicString, "*") && basicString.length() > 1) {
             // */2
-            // basicString is periodic
             stepValue(basicString);
         }
 
         if (this->isRange) {
             // 1-5
-            // basicString is range
             rangeValue(basicString);
         }
 
         if (this->isList) {
             // 1,2,3
-            // basicString is list
             listValue(basicString);
         }
 
@@ -77,7 +70,7 @@ private:
     }
 
     /**
-     * @return multiplier (value of section in seconds) & range (max value of section)
+     * @return partMultiplier (value of section in seconds) & partRange (max value of section)
      */
     [[nodiscard]]
     auto getPartRangeSize() const -> std::pair<u_long, uint8_t> {
@@ -128,35 +121,35 @@ private:
         return std::make_pair(1, 0);
     }
 
+
+    /** processing of step values */
     auto stepValue(const std::string &basicString) -> void {
         // */2
-        // basicString is periodic
         auto components = StringUtils::split_by(basicString, '/');
         const auto step = std::stoi(components.at(1));
 
-        for (int i = 0; i < this->range; i += step) {
-            this->times.emplace_front(i * this->multiplier);
+        for (int i = 0; i < this->partRange; i += step) {
+            this->times.emplace_front(i * this->partMultiplier);
         }
 
     }
 
+    /** processing of range values */
     auto rangeValue(const std::string &basicString) -> void {
         std::vector<std::string> range = StringUtils::split_by(basicString, '-');
         auto min = 0;
         auto max = 0;
 
-        if(this->name == "weekday") {
-            if(!StringUtils::is_number(range[0])) {
+        if (this->name == "weekday") {
+            if (!StringUtils::is_number(range[0])) {
                 min = LeapYearUtils::weekdayValue(range.at(0));
-            }
-            else{
+            } else {
                 min = std::stoi(range.at(0));
             }
 
-            if(!StringUtils::is_number(range[1])) {
+            if (!StringUtils::is_number(range[1])) {
                 max = LeapYearUtils::weekdayValue(range.at(1));
-            }
-            else{
+            } else {
                 max = std::stoi(range.at(1));
             }
         } else {
@@ -171,15 +164,15 @@ private:
 
     }
 
+    /** processing of list values */
     auto listValue(const std::string &basicString) -> void {
         std::vector<std::string> list = StringUtils::split_by(basicString, ',');
 
         for (const auto &time: list) {
-            if(this->name == "weekday") {
-                if(!StringUtils::is_number(time)) {
+            if (this->name == "weekday") {
+                if (!StringUtils::is_number(time)) {
                     this->times.emplace_front(LeapYearUtils::weekdayValue(time));
-                }
-                else{
+                } else {
                     this->times.emplace_front(std::stoi(time));
                 }
             } else {
@@ -188,21 +181,21 @@ private:
         }
     }
 
+    /** processing of number values */
     auto numberValue(const std::string &basicString) -> void {
         // 1
-        // basicString is value
-
         int value = 0;
-        if(this->name == "weekday" && !StringUtils::is_number(basicString)) {
+        if (this->name == "weekday" && !StringUtils::is_number(basicString)) {
             value = LeapYearUtils::weekdayValue(basicString);
         } else {
             value = std::stoi(basicString);
         }
 
-        std::chrono::seconds currentTime(value * this->multiplier);
+        std::chrono::seconds currentTime(value * this->partMultiplier);
         this->times.emplace_front(currentTime);
     }
 
+    /** processing of period values */
     auto periodValue(const std::string &basicString) -> void {
         // 1-5/2
         // basicString is periodic
@@ -213,46 +206,41 @@ private:
         auto max = std::stoi(range.at(1));
         auto step = std::stoi(periodic.at(1));
 
-        if(this->name == "weekday") {
-            if(!StringUtils::is_number(range[0])) {
+        if (this->name == "weekday") {
+            if (!StringUtils::is_number(range[0])) {
                 min = LeapYearUtils::weekdayValue(range.at(0));
-            }
-            else{
+            } else {
                 min = std::stoi(range.at(0));
             }
 
-            if(!StringUtils::is_number(range[1])) {
+            if (!StringUtils::is_number(range[1])) {
                 max = LeapYearUtils::weekdayValue(range.at(1));
-            }
-            else{
+            } else {
                 max = std::stoi(range.at(1));
             }
 
-            if(!StringUtils::is_number(periodic[1])) {
+            if (!StringUtils::is_number(periodic[1])) {
                 step = LeapYearUtils::weekdayValue(periodic.at(1));
-            }
-            else{
+            } else {
                 step = std::stoi(periodic.at(1));
             }
         }
 
 
         for (int i = min; i <= max; i += step) {
-            std::chrono::seconds currentTime(i * this->multiplier);
+            std::chrono::seconds currentTime(i * this->partMultiplier);
             this->times.emplace_front(currentTime);
         }
 
     }
 
 
-
-
 public:
 
     CronPart() = default;
 
-    CronPart(std::string const &name, const std::string &rawValue)
-            : name(name), rawValue(rawValue) {
+    CronPart(std::string name, const std::string &rawValue)
+            : name(std::move(name)), rawValue(rawValue) {
 
         this->isNumber = StringUtils::is_number(rawValue);
         this->isWildcard = rawValue == "*";
@@ -261,8 +249,8 @@ public:
         this->isPeriodic = StringUtils::contains(rawValue, "/") && !StringUtils::contains(rawValue, "*");
 
         const auto [multiplier, range] = getPartRangeSize();
-        this->multiplier = multiplier;
-        this->range = range;
+        this->partMultiplier = multiplier;
+        this->partRange = range;
 
         processValue(rawValue);
 
@@ -271,15 +259,14 @@ public:
     ~CronPart() = default;
 
 
+    [[nodiscard]]
     auto getName() const -> std::string {
         return name;
     }
 
-    // -> std::deque<std::chrono::seconds>
-
+    [[nodiscard]]
     auto getTimes() const -> std::forward_list<std::chrono::seconds> {
         return times;
     }
-
 
 };

@@ -8,94 +8,90 @@
 
 
 namespace LeapYearUtils {
-    long getCurrentYear() {
+    auto getCurrentYear() {
         time_t t = time(nullptr);
-        tm* timePtr = localtime(&t);
-        return timePtr->tm_year + 1900;
+        tm *timePtr = localtime(&t);
+        return timePtr->tm_year;
     }
 
 
-    auto getCurrentMonth() -> int
-    {
+    auto getCurrentMonth() -> int {
         // Get the current time
         time_t currentTime = time(nullptr);
 
         // Convert the current time to a tm structure
-        tm const* timeStruct = localtime(&currentTime);
+        tm const *timeStruct = localtime(&currentTime);
 
         // Return the month field of the tm structure as an integer (0-based)
         return (timeStruct->tm_mon) + 1;
     }
 
 
+    static auto isLeapYear(int year) -> bool {
+        return (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0);
+    }
 
-        static auto isLeapYear(int year) -> bool {
-            return (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0);
+    static auto getDaysInCurrentMonth() {
+        auto year = getCurrentYear();
+        auto month = getCurrentMonth();
+
+        if (month == 2) {
+            return isLeapYear(year) ? 29 : 28;
+        } else if (month == 4 || month == 6 || month == 9 || month == 11) {
+            return 30;
+        } else {
+            return 31;
         }
+    }
 
-        static auto getDaysInCurrentMonth()  {
-            auto year = getCurrentYear();
-            auto month = getCurrentMonth();
+    static auto getDaysInYear(int year) -> int {
+        return isLeapYear(year) ? 366 : 365;
+    }
 
-            if (month == 2) {
-                return isLeapYear(year) ? 29 : 28;
-            } else if (month == 4 || month == 6 || month == 9 || month == 11) {
-                return 30;
-            } else {
-                return 31;
-            }
+
+    static auto getDaysInMonth(std::string_view month) -> int {
+        if (month == "February") {
+            return 29;
+        } else if (month == "April" || month == "June" || month == "September" || month == "November") {
+            return 30;
+        } else {
+            return 31;
         }
+    }
 
-        static auto getDaysInYear(int year) -> int {
-            return isLeapYear(year) ? 366 : 365;
+
+    [[nodiscard]]
+    auto weekdayValue(std::string_view const &dayName) -> uint8_t {
+        // dayNameOfToday
+
+        // weekday alias
+        if (dayName == "SUN") {
+            return 0;
         }
-
-
-        static auto getDaysInMonth(std::string_view month) -> int {
-            if (month == "February") {
-                return 29;
-            } else if (month == "April" || month == "June" || month == "September" || month == "November") {
-                return 30;
-            } else {
-                return 31;
-            }
+        if (dayName == "MON") {
+            return 1;
         }
-
-
-
-        [[nodiscard]]
-        auto weekdayValue(std::string_view const& dayName)  -> uint8_t {
-            // dayNameOfToday
-
-            // weekday alias
-            if (dayName == "SUN") {
-                return 0;
-            }
-            if (dayName == "MON") {
-                return 1;
-            }
-            if (dayName == "TUE") {
-                return 2;
-            }
-            if (dayName == "WED") {
-                return 3;
-            }
-            if (dayName == "THU") {
-                return 4;
-            }
-            if (dayName == "FRI") {
-                return 5;
-            }
-            if (dayName == "SAT") {
-                return 6;
-            }
+        if (dayName == "TUE") {
+            return 2;
         }
+        if (dayName == "WED") {
+            return 3;
+        }
+        if (dayName == "THU") {
+            return 4;
+        }
+        if (dayName == "FRI") {
+            return 5;
+        }
+        if (dayName == "SAT") {
+            return 6;
+        }
+    }
 
 
-    auto getCurrentYearInSeconds() -> u_long
-    {
+    auto getCurrentYearInSeconds() -> u_long {
         time_t t = time(nullptr);
-        tm* timePtr = localtime(&t);
+        tm *timePtr = localtime(&t);
         time_t yearStart = mktime(timePtr);
         timePtr->tm_year += 1;
         timePtr->tm_mon = 0;
@@ -106,7 +102,7 @@ namespace LeapYearUtils {
 
     long getCurrentMonthInSeconds() {
         time_t t = time(nullptr);
-        tm* timePtr = localtime(&t);
+        tm *timePtr = localtime(&t);
         time_t monthStart = mktime(timePtr);
         timePtr->tm_mon += 1;
         timePtr->tm_mday = 1;
@@ -120,7 +116,7 @@ namespace LeapYearUtils {
     auto seconds_since_1970() -> int {
         std::chrono::system_clock::time_point current_time = std::chrono::system_clock::now();
         std::time_t time = std::chrono::system_clock::to_time_t(current_time);
-        tm* time_info = localtime(&time);
+        tm *time_info = localtime(&time);
         int year = getCurrentYear();
 
         int days_since_1970 = (year - 1970) * 365;
