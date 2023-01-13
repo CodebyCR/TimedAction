@@ -17,14 +17,13 @@
  * Using a builder pattern.
  *
  * Example:
- * auto cron = Cron();
- * cron.seconds(1)
- *    .minutes(1)
- *    .hours(1)
- *    .daysOfMonth(1)
- *    .months(1)
- *    .daysOfWeek("mon-fri")
- *    .years("2021");
+ * auto cron =  Cron({.second = "0",
+ *                    .minute = "30",
+ *                    .hour = "*\/2",
+ *                    .dayOfMonth = "15",
+ *                    .month = "*\/2",
+ *                    .weekday = "*",
+ *                    .year = "2023-2024"});
  */
 class Cron {
 
@@ -100,7 +99,7 @@ public:
 //    // overload >> operator from_string
 //    friend std::istream& operator>>(std::istream& is, Cron& cron);
 
-    auto operator<=>(const Cron &other) const = default;
+//    auto operator<=>(const Cron &other) const = default;
 
     [[nodiscard]]
     auto getSecondTimes() const {

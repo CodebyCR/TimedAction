@@ -10,26 +10,26 @@
 #include "Cron/CronInterpreter.hpp"
 
 
-void sayHallo(std::uint32_t &count){
+void sayHallo(std::uint32_t &count) {
 
     std::cout << "Hallo " << count << std::endl;
     ++count;
     std::cout << "Hallo nr." << std::to_string(count) << std::endl;
 }
 
-void onAction(const std::string_view &value){
+void onAction(const std::string_view &value) {
     std::cout << "onAction " << value << std::endl;
 }
 
-void onInterval(const std::string_view &value){
+void onInterval(const std::string_view &value) {
     std::cout << "onInterval " << value << std::endl;
 }
 
-void onEnd(const std::string_view &value){
+void onEnd(const std::string_view &value) {
     std::cout << "onEnd " << value << std::endl;
 }
 
-void test(std::string_view const& value){
+void test(std::string_view const &value) {
     std::cout << value << std::endl;
 }
 
@@ -65,15 +65,16 @@ int main() {
 //        std::cout << "Count of seconds: " << timeSeconds.count() << std::endl;
 //    }
 
-    auto someCron = Cron({.second = "0",
-                          .minute = "30",
-                          .hour = "*/2",
-                          .dayOfMonth = "15",
-                          .month = "*/2",
-                          .weekday = "*",
-                          .year = "2023-2024"});
+    auto someCron = Cron("0 30 */2 1 3 * 2021-2023");
+//    auto someCron = Cron({.second = "0",
+//                         .minute = "30",
+//                         .hour = "*/2",
+//                         .dayOfMonth = "15",
+//                         .month = "*/2",
+//                         .weekday = "*",
+//                         .year = "2023-2024"});
 
-//    auto everyDay = Cron("0 30 */2 1 3 * 2021-2023");
+
     // Year is already translated?
 
     std::cout << CronInterpreter::get_time_points(someCron);

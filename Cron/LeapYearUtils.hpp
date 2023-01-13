@@ -65,9 +65,9 @@ namespace LeapYearUtils {
         // dayNameOfToday
 
         // weekday alias
-        if (dayName == "SUN") {
-            return 0;
-        }
+//        if (dayName == "SUN") {
+//            return 0;
+//        }
         if (dayName == "MON") {
             return 1;
         }
@@ -86,6 +86,8 @@ namespace LeapYearUtils {
         if (dayName == "SAT") {
             return 6;
         }
+
+        return 0;
     }
 
 
