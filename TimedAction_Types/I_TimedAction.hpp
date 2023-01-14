@@ -24,7 +24,4 @@ public:
     [[nodiscard]]
     virtual auto getName() const -> std::string_view = 0;
 
-
-
-
 };

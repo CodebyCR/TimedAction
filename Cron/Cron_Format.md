@@ -15,7 +15,7 @@
  * * * * * * *
 ```
 
-## Possilbe values
+## Possible values
 - [Special characters](#Special-characters)
 
 ## The Parts

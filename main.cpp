@@ -5,8 +5,7 @@
 #include "Cron/Cron.hpp"
 #include <thread>
 //#include "Scheduler.hpp"
-#include "StringUtils.hpp"
-#include "CronPart.hpp"
+
 #include "Cron/CronInterpreter.hpp"
 
 
@@ -48,22 +47,6 @@ int main() {
     // 0,1,2,3,4,5
     // 1-23/2
 
-    // works fine
-    // auto seconds = CronPart("second", "1-23/2");
-    // auto minutes = CronPart("minute", "0-5");
-    // auto hours = CronPart("hour", "1-13/2");
-    // auto dayOfMonth = CronPart("day", "1-31/2");
-
-
-
-//    // TODO: right days in month && leap years
-//    auto months = CronPart("year", "*");
-////    auto weekdays = CronPart("weekday", "*/5");
-//
-//    for (const auto &timeSeconds : months.getTimes()){
-//        // To String
-//        std::cout << "Count of seconds: " << timeSeconds.count() << std::endl;
-//    }
 
     auto someCron = Cron("0 30 */2 1 3 * 2021-2023");
 //    auto someCron = Cron({.second = "0",
@@ -75,17 +58,10 @@ int main() {
 //                         .year = "2023-2024"});
 
 
-    // Year is already translated?
+    //TODO: Year is already translated?
 
     std::cout << CronInterpreter::get_time_points(someCron);
 
-
-
-
-
-
-
-//
 //    CronInterpreter interpreter("0 */5 12 15,16 0-6");
 //    std::cout << "test" << std::endl;
 //    auto next_trigger_time = interpreter.NextTriggerTime();
@@ -94,11 +70,6 @@ int main() {
     // next_trigger_time to string
 //    std::time_t t = std::chrono::system_clock::to_time_t(next_trigger_time);
 //    std::cout << std::ctime(&t) << std::endl;
-
-
-//    CronPart part = CronPart("Minute", "0-59");
-
-
 
 
 //    std::string cronTest = "1-12 || * || */2 ";
@@ -162,10 +133,6 @@ int main() {
 //    std::this_thread::sleep_for(std::chrono::seconds(10));
 //
 //    std::vector<I_TimedAction> jobs;
-
-
-
-
 
     return 0;
 }
