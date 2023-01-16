@@ -83,6 +83,11 @@ public:
         auto cronParts = StringUtils::split_by(cronString, ' ');
         processCronParts(cronParts);
     }
+    
+    constexpr auto operator"" _cron(const char* cron_expression)
+    {
+        return Cron(cron_expression);
+    }
 
 //    auto operator<<(std::ostream &os) const -> std::ostream & {
 //        os << this->seconds
