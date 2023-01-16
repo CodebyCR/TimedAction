@@ -13,6 +13,9 @@
                           .month = "*/2",
                           .weekday = "*",
                           .year = "2023-2024"});
+                          
+    // instead of            
+    // auto someCron = Cron("0 30 */2 1 3 * 2021-2023");
 ```
 
 
