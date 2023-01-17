@@ -67,14 +67,11 @@ private:
 public:
 
     explicit Cron(CronCapsule capsule) {
+        
+        const auto& [second, minute, hour, dayOfMonth, month, weekday, year] = capsule;
+        
         std::vector<std::string> cronParts = {
-                capsule.second,
-                capsule.minute,
-                capsule.hour,
-                capsule.dayOfMonth,
-                capsule.month,
-                capsule.weekday,
-                capsule.year};
+                second, minute, hour, dayOfMonth, month, weekday, year};
 
         processCronParts(cronParts);
     }
