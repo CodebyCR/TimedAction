@@ -1,5 +1,10 @@
 # Timed Action v.0.1.0 (Unofficial)
 
+![C++](https://img.shields.io/badge/C%2B%2B-00599C?style=for-the-badge&logo=c%2B%2B&logoColor=white)
+![GitHub](https://img.shields.io/badge/SonarLint-CB2029?style=for-the-badge&logo=sonarlint&logoColor=white)
+![CMake](https://img.shields.io/badge/CMake-064F8C?style=for-the-badge&logo=cmake&logoColor=white)
+![GitHub](https://img.shields.io/github/license/CodeByCR/TimedAction?style=for-the-badge)
+
 ## _A simple, state-of-the-art cron job library._
 
 - [ ] Thread safe
