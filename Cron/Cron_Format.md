@@ -31,7 +31,7 @@
 ## Special Characters
 - `*` means all possible values.
 - `,` means a list of values.
-- `-` means a partRange of values.
+- `-` means a range of values.
 - `/` means a step of values.
 
 > Example:
@@ -62,12 +62,12 @@
 - If the day of the month is greater than the number of days in the month (like February), the cron will not be executed.
 
 ## Month
+- **The value `0` is invalid.**
 - The month part is a number between `1` and `12`.
 
 ## Day of the Week
 - The day of the week part is a number between `0` and `6`.
-- `0` is Sunday.
-- `6` is Saturday.
+- from `0` (is Sunday) to `6` (is Saturday).
 - `7` will be also interpreted as Sunday.
 - you can also use `MON`, `TUE`, `WED`, `THU`, `FRI`, `SAT`, `SUN` as values.
 
