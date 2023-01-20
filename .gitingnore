@@ -1,10 +1,17 @@
 
-# CLion
-/cmake-build-debug
-
-# CMake
-cmake-build-debug/
-/build
+# CLion / CMake
+**/cmake-build-debug
+**/build
 
 # Mac OS
-.DS_Store
+**/.DS_Store
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Executables
+*.exe
+*.out
+*.app
