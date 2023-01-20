@@ -2,5 +2,9 @@
 # CLion
 /cmake-build-debug
 
+# CMake
+cmake-build-debug/
+build/
+
 # Mac OS
 .DS_Store
