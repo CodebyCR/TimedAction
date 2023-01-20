@@ -1,0 +1,24 @@
+
+# CLion
+.idea
+
+# CMake
+/cmake-build-debug
+/cmake-build-release
+/build
+
+# Mac OS
+.DS_Store
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+/dir
+/bil
+
+# Executables
+*.exe
+*.out
+*.app
+
