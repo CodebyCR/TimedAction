@@ -48,7 +48,10 @@ int main() {
     // 1-23/2
 
 
-    auto someCron = Cron("0 30 */2 1 3 * 2021-2023");
+//    auto someCron = Cron("0 30 */2 1 3 * 2021-2023");
+
+    auto someCron = std::to_cron("0 30 */2 1 3 * 2021-2023");
+
 //    auto someCron = Cron({.second = "0",
 //                         .minute = "30",
 //                         .hour = "*/2",
