@@ -1,0 +1,7 @@
+
+files.
+# CLion
+cmake-build-debug/
+
+# Mac OS
+.DS_Store
