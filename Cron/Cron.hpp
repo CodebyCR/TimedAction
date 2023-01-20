@@ -8,8 +8,8 @@
 #include <sstream>
 
 #include "CronCapsule.hpp"
-#include <CronPart.hpp>
-#include <CronRegex.hpp>
+#include "CronPart.hpp"
+#include "CronRegex.hpp"
 
 
 /**
@@ -43,6 +43,8 @@ private:
 //        os << "Cron: " << cron.second << " " << cron.minute << " " << cron.hour << " " << cron.dayOfMonth << " " << cron.month << " " << cron.dayOfWeek << " " << cron.year;
 //        return os;
 //    }
+
+
 
     auto processCronParts(std::vector<std::string> &cronParts) -> void {
         if (!CronRegex::isValidCron(cronParts)) {
@@ -80,11 +82,10 @@ public:
         auto cronParts = StringUtils::split_by(cronString, ' ');
         processCronParts(cronParts);
     }
-    
-    constexpr auto operator"" _cron(const char* cron_expression)
-    {
-        return Cron(cron_expression);
-    }
+
+
+
+
 
 //    auto operator<<(std::ostream &os) const -> std::ostream & {
 //        os << this->seconds
@@ -138,4 +139,32 @@ public:
         return this->years.getTimes();
     }
 
+
+
 };
+
+namespace std {
+//    template<>
+//    struct hash<Cron> {
+//        auto operator()(const Cron &cron) const -> size_t {
+//            return hash<std::string>()(cron);
+//        }
+//    };
+
+
+}
+
+namespace std {
+    auto to_cron(const std::string &cronString) -> Cron {
+        return Cron(cronString);
+    }
+
+//    auto operator "" _cron(const char* cron_expression)
+//    {
+//        return Cron(cron_expression);
+//    }
+}
+
+
+
+
