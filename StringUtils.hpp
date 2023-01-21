@@ -74,5 +74,10 @@ namespace StringUtils {
         return std::count(str.begin(), str.end(), character);
     }
 
+
+    auto to_upper(std::string &str) -> void {
+        std::transform(str.begin(), str.end(), str.begin(), ::toupper);
+    }
+
 }
 
