@@ -154,7 +154,7 @@ namespace CronInterpreter {
     static auto get_time_points(Cron const &cronObject) -> std::string {
         auto cartesianProduct = cartesian_product(cronObject);
         auto filteredOfReachedTimes = filterOfReachedTimes(cartesianProduct);
-// auto totalTimes = filteredOfWeekdayPart(filteredOfReachedTimes, cronObject.getWeekDayTimes());
+    //    auto totalTimes = filteredOfWeekdayPart(filteredOfReachedTimes, cronObject.getWeekDayTimes());
 
 
         std::cout << "Valid entries: " << filteredOfReachedTimes.size() << std::endl;
@@ -172,7 +172,16 @@ namespace CronInterpreter {
                << std::endl;
         }
 
+
+
         return ss.str();
+    }
+
+    auto pretty_print(std::vector<std::tm> &timePoints){
+            for (auto &timeStruct: timePoints) {
+                std::time_t time = std::mktime(&timeStruct);
+                std::cout << std::ctime(&time);
+            }
     }
 
 }
