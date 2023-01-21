@@ -8,12 +8,12 @@
 
 
 namespace LeapYearUtils {
+
     auto getCurrentYear() {
         time_t t = time(nullptr);
         tm *timePtr = localtime(&t);
         return timePtr->tm_year;
     }
-
 
     auto getCurrentMonth() -> int {
         // Get the current time

@@ -9,6 +9,7 @@
 
 #include "CronCapsule.hpp"
 #include "CronPart.hpp"
+#include "WeekdayPart.hpp"
 #include "CronRegex.hpp"
 
 
@@ -33,8 +34,7 @@ private:
     CronPart hours;
     CronPart daysOfMonth;
     CronPart months;
-
-    CronPart daysOfWeek; // 0-6 || MON || TUE || WED-THU || FRI || SAT || SUN || * || */2 || 1,2,3 || 1-5 || 1-5/2 || 1-5,7,9  String
+    WeekdayPart daysOfWeek; // 0-6 || MON || TUE || WED-THU || FRI || SAT || SUN || * || */2 || 1,2,3 || 1-5 || 1-5/2 || 1-5,7,9  String
     CronPart years;
 
     // 0-6 or sun-sat or sunday-saturday or mon-fri
@@ -61,7 +61,7 @@ private:
         this->daysOfMonth = CronPart("day", cronParts[3]);
 
         this->months = CronPart("month", cronParts[4]);
-        this->daysOfWeek = CronPart("weekday", cronParts[5]);
+        this->daysOfWeek = WeekdayPart( cronParts[5]);
         this->years = CronPart("year", cronParts[6]);
     }
 
@@ -78,7 +78,7 @@ public:
         processCronParts(cronParts);
     }
 
-    explicit Cron(std::string cronString) {
+    explicit Cron(std::string const& cronString) {
         auto cronParts = StringUtils::split_by(cronString, ' ');
         processCronParts(cronParts);
     }
@@ -131,7 +131,7 @@ public:
 
     [[nodiscard]]
     auto getWeekDayTimes() const {
-        return this->daysOfWeek.getTimes();
+        return this->daysOfWeek.getContainedWeekdays();
     }
 
     [[nodiscard]]
@@ -143,7 +143,7 @@ public:
 
 };
 
-namespace std {
+//namespace std {
 //    template<>
 //    struct hash<Cron> {
 //        auto operator()(const Cron &cron) const -> size_t {
@@ -152,7 +152,7 @@ namespace std {
 //    };
 
 
-}
+//}
 
 namespace std {
     auto to_cron(const std::string &cronString) -> Cron {

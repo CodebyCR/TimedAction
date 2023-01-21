@@ -9,11 +9,11 @@
 
 /** For designated initializer cron expression */
 struct CronCapsule {
-    std::string second;
-    std::string minute;
-    std::string hour;
-    std::string dayOfMonth;
-    std::string month;
-    std::string weekday;
-    std::string year;
+    const std::string second;
+    const std::string minute;
+    const std::string hour;
+    const std::string dayOfMonth;
+    const std::string month;
+    const std::string weekday;
+    const std::string year;
 };
