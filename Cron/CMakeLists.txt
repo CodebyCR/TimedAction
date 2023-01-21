@@ -4,7 +4,7 @@ set(CRON_SOURCES
         "LeapYearUtils.hpp"
         "CronPart.hpp"
         "Cron.hpp"
-        "CronInterpreter.hpp" CronCapsule.hpp)
+        "CronInterpreter.hpp" CronCapsule.hpp WeekdayPart.hpp)
 
 add_library(${LIBRARY_CRON} INTERFACE ${CRON_SOURCES} )
 
