@@ -39,6 +39,9 @@ private:
             // *
             if (this->name == "year") {
                 auto current_year = LeapYearUtils::getCurrentYear();
+                // Current year to str
+                std::cout << "Current year: " << current_year << std::endl;
+                this->times.emplace_front(current_year);
             } else {
                 /// Range works
                 for (int index = 0; index < this->partRange; index++) {
@@ -134,7 +137,7 @@ private:
 
     }
 
-    /** processing of range values */
+    /** processing of list values */
     auto rangeValue(const std::string &basicString) -> void {
         std::vector<std::string> range = StringUtils::split_by(basicString, '-');
         auto min = 0;
@@ -152,13 +155,22 @@ private:
             } else {
                 max = std::stoi(range.at(1));
             }
+        } else if (this->name == "year"){
+            min= std::stoi(range.at(0));
+            max = std::stoi(range.at(1));
+
+            for (auto index = min; index <= max; ++index) {
+                const auto year_in_seconds = std::chrono::years(index);
+                this->times.push_front(year_in_seconds);
+            }
+            return;
         } else {
             min = std::stoi(range.at(0));
             max = std::stoi(range.at(1));
         }
 
         for (auto i = min; i <= max; ++i) {
-            std::chrono::seconds currentTime(i);
+            std::chrono::seconds currentTime(i );
             this->times.push_front(currentTime);
         }
 
@@ -183,6 +195,14 @@ private:
 
     /** processing of number values */
     auto numberValue(const std::string &basicString) -> void {
+
+        if(this->name == "year") {
+            const auto year_count = std::stoi(basicString);
+            const auto year_in_seconds = std::chrono::years(year_count);
+            this->times.emplace_front(year_in_seconds);
+            return;
+        }
+
         // 1
         int value = 0;
         if (this->name == "weekday" && !StringUtils::is_number(basicString)) {
@@ -226,7 +246,6 @@ private:
             }
         }
 
-
         for (int i = min; i <= max; i += step) {
             std::chrono::seconds currentTime(i * this->partMultiplier);
             this->times.emplace_front(currentTime);
@@ -239,8 +258,8 @@ public:
 
     CronPart() = default;
 
-    CronPart(std::string name, const std::string &rawValue)
-            : name(std::move(name)), rawValue(rawValue) {
+    CronPart(std::string name, const std::string &rawValue):
+            name(std::move(name)), rawValue(rawValue) {
 
         this->isNumber = StringUtils::is_number(rawValue);
         this->isWildcard = rawValue == "*";
@@ -253,11 +272,9 @@ public:
         this->partRange = range;
 
         processValue(rawValue);
-
     }
 
     ~CronPart() = default;
-
 
     [[nodiscard]]
     auto getName() const -> std::string {

@@ -50,6 +50,17 @@ namespace CronInterpreter {
 //        std::cout << std::endl;
 //    }
 
+    auto get_year_dif_in_sec() -> long long {//Current year as seconds
+        auto currentTime = std::__1::chrono::duration_cast<std::chrono::seconds>(
+                std::chrono::system_clock::now().time_since_epoch());
+        auto yearVal = std::__1::chrono::duration_cast<std::chrono::years>(currentTime);
+        auto currentYear = yearVal.count() ;
+
+        // 53 as seconds
+        auto weekDaySeconds = std::__1::chrono::duration_cast<std::chrono::seconds>(std::chrono::years(53));
+        auto count = weekDaySeconds.count();
+        return count;
+    }
 
     auto cartesian_product(Cron const &cronObject) {
         const std::forward_list<std::chrono::seconds> secondTimes = cronObject.getSecondTimes();
@@ -61,10 +72,12 @@ namespace CronInterpreter {
         const std::forward_list<std::chrono::seconds> yearTimes = cronObject.getYearTimes();
 
 
+
 //        std::vector<std::vector<std::chrono::seconds>> result; // to list from time points
         std::vector<std::tm> resultTime; // to list from time points
 
         for (auto &year: yearTimes) {
+            auto yearVal = std::chrono::duration_cast<std::chrono::years>(year);
 
             for (auto &month: monthTimes) {
                 auto monthVal = std::chrono::duration_cast<std::chrono::months>(month);
@@ -86,7 +99,7 @@ namespace CronInterpreter {
                                 timeStruct.tm_hour = hourVal.count();
                                 timeStruct.tm_mday = dayVal.count();
                                 timeStruct.tm_mon = monthVal.count();
-                                timeStruct.tm_year = year.count();
+                                timeStruct.tm_year = yearVal.count();
 
                                 resultTime.push_back(timeStruct);
                             }
@@ -99,17 +112,19 @@ namespace CronInterpreter {
         return resultTime;
     }
 
+
+
     static auto filterOfReachedTimes(const std::vector<std::tm> &cartesianProduct) {
         std::vector<std::tm> result;
 
         auto now = std::chrono::system_clock::now();
-
+        auto nowSeconds = std::chrono::duration_cast<std::chrono::seconds>(now.time_since_epoch());
 
         for (auto time: cartesianProduct) {
+            time.tm_year -= 1900;
             auto currentTime = std::mktime(&time);
             auto currentTime_ = std::chrono::system_clock::from_time_t(currentTime);
-
-            const auto timeDifferance = std::chrono::duration_cast<std::chrono::seconds>(currentTime_ - now).count();
+            const auto timeDifferance = currentTime - nowSeconds.count();
 
             if (timeDifferance > 0) {
                 result.push_back(time);
@@ -120,15 +135,16 @@ namespace CronInterpreter {
     }
 
     static auto filteredOfWeekdayPart(const std::vector<std::tm> &times,
-                                      const std::forward_list<std::chrono::seconds> &weekDayTimes) {
+                                      const std::vector<std::string> &weekdays) {
 
         std::vector<std::tm> result;
 
-        for (auto time: times) {
-            auto currentTime = std::mktime(&time);
-            auto weekday = std::localtime(&currentTime)->tm_wday;
-            if (weekday == 0 || weekday == 6) {
-                result.push_back(time);
+        for (auto const& time: times) {
+            for (auto const& weekday : weekdays) {
+                // TODO: check weekday
+//                if (time.tm_wday == weekday) {
+//                    result.push_back(time);
+//                }
             }
         }
 
@@ -138,21 +154,21 @@ namespace CronInterpreter {
     static auto get_time_points(Cron const &cronObject) -> std::string {
         auto cartesianProduct = cartesian_product(cronObject);
         auto filteredOfReachedTimes = filterOfReachedTimes(cartesianProduct);
-        auto totalTimes = filteredOfWeekdayPart(filteredOfReachedTimes, cronObject.getWeekDayTimes());
+// auto totalTimes = filteredOfWeekdayPart(filteredOfReachedTimes, cronObject.getWeekDayTimes());
 
 
-        std::cout << "Size: " << filteredOfReachedTimes.size() << std::endl;
+        std::cout << "Valid entries: " << filteredOfReachedTimes.size() << std::endl;
 
         auto ss = std::stringstream();
 
         ss << "\n\nHour Minute Second DayOfMonth Month Year" << std::endl;
-        for (auto &timeStruct: filteredOfReachedTimes) {
+        for (auto const &timeStruct: filteredOfReachedTimes) {
             ss << std::setfill(' ') << std::setw(4) << timeStruct.tm_hour << " "
                << std::setfill(' ') << std::setw(6) << timeStruct.tm_min << " "
                << std::setfill(' ') << std::setw(6) << timeStruct.tm_sec << " "
                << std::setfill(' ') << std::setw(10) << timeStruct.tm_mday << " "
                << std::setfill(' ') << std::setw(5) << timeStruct.tm_mon << " "
-               << std::setfill(' ') << std::setw(4) << timeStruct.tm_year
+               << std::setfill(' ') << std::setw(4) << timeStruct.tm_year + 1900
                << std::endl;
         }
 
