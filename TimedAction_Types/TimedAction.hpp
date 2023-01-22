@@ -8,6 +8,7 @@
 #include <thread>
 #include <iostream>
 #include "I_TimedAction.hpp"
+#include "../Cron/CronInterpreter.hpp"
 
 
 template<typename T, typename A, typename I, typename E>
@@ -25,6 +26,8 @@ private:
     std::chrono::milliseconds timeSinceLastAction{};
     bool isRunning{};
     std::thread thread;
+
+    std::vector<std::tm> executionTimes;
 
     /** Callbacks */
     A actionValue;
@@ -47,8 +50,6 @@ public:
                 value(value),
                 interval(interval),
                 isRunning(false) {
-
-
     }
 
     ~TimedAction() override = default;
@@ -134,6 +135,12 @@ public:
     [[nodiscard]]
     auto is_running() const -> bool override {
         return isRunning;
+    }
+
+    [[nodiscard]]
+    auto get_execution_times() const -> std::vector<std::tm> override {
+        executionTimes = CronInterpreter::get_time_points(this->cron);
+        return CronInterpreter::get_time_points(this->cron);
     }
 
 };

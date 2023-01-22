@@ -5,6 +5,7 @@
 #pragma once
 
 #include <iostream>
+#include "../Cron/Cron.hpp"
 
 class I_TimedAction {
 
@@ -23,5 +24,9 @@ public:
 
     [[nodiscard]]
     virtual auto getName() const -> std::string_view = 0;
+
+    [[nodiscard]]
+    virtual auto get_execution_times() const -> std::vector<std::tm> = 0;
+
 
 };
