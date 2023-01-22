@@ -8,6 +8,8 @@
 #include <string>
 #include <vector>
 #include "../TimedAction_Types/I_TimedAction.hpp"
+#include "../Cron/CronInterpreter.hpp"
+#include <map>
 
 class Scheduler {
 
@@ -59,6 +61,20 @@ public:
             }
         }
         return false;
+    }
+
+    /////////////////////////
+
+    auto start_scheduler() -> void {
+        auto job_list = std::map<std::string, std::tm>{};
+
+        for(auto &action : actions) {
+            const auto time_points = action->get_execution_times();
+            for(auto &time_point : time_points) {
+                job_list.emplace(action->getName(), time_point);
+            }
+        }
+
     }
 
 };
