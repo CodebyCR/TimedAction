@@ -42,7 +42,16 @@ private:
                 // Current year to str
                 std::cout << "Current year: " << current_year << std::endl;
                 this->times.emplace_front(current_year);
-            } else {
+            }
+//            else if (this->name == "hour") {
+//                // TODO: Stunden haben eine stunde versatz
+//                for (int index = 0; index < this->partRange; index++) {
+//                    this->times.emplace_front(index  * this->partMultiplier);
+//                }
+//
+//            }
+            else
+            {
                 /// Range works
                 for (int index = 0; index < this->partRange; index++) {
                     this->times.emplace_front((index + 1) * this->partMultiplier);
