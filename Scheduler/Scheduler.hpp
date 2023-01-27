@@ -74,7 +74,6 @@ public:
                 job_list.emplace(action->getName(), time_point);
             }
         }
-
     }
 
 };

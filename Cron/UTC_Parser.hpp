@@ -7,7 +7,7 @@
 #include <chrono>
 #include <iomanip>
 #include <sstream>
-#include <../StringUtils.hpp>
+#include "../StringUtils.hpp"
 
 auto cron_to_utc(const std::string &cron_string) -> std::string {
     // Split the Cron string into its component parts

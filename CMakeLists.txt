@@ -59,6 +59,8 @@ add_executable(${PROJECT_NAME} main.cpp )
 set_target_properties(${TIMED_ACTION_LIBS} PROPERTIES LINKER_LANGUAGE CXX)
 include_directories(${TIMED_ACTION_LIBS})
 
+set(CMAKE_MODULE_PATH "/usr/local/share/CMake/Modules")
+message(STATUS "CMAKE_MODULE_PATH: ${CMAKE_MODULE_PATH}")
 
 # Create a library for find_package
 install(TARGETS ${PROJECT_NAME}

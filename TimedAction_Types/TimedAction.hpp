@@ -8,7 +8,6 @@
 #include <thread>
 #include <iostream>
 #include "I_TimedAction.hpp"
-#include "../Cron/CronInterpreter.hpp"
 
 
 template<typename T, typename A, typename I, typename E>
@@ -139,8 +138,7 @@ public:
 
     [[nodiscard]]
     auto get_execution_times() const -> std::vector<std::tm> override {
-        executionTimes = CronInterpreter::get_time_points(this->cron);
-        return CronInterpreter::get_time_points(this->cron);
+        return this->cron.get_execution_times();
     }
 
 };
