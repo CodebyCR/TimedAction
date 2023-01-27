@@ -12,7 +12,6 @@
 #include "WeekdayPart.hpp"
 #include "CronRegex.hpp"
 
-
 /**
  * A class to create a cron format in a more readable way.
  * Using a builder pattern.
@@ -44,8 +43,6 @@ private:
 //        return os;
 //    }
 
-
-
     auto processCronParts(std::vector<std::string> &cronParts) -> void {
         if (!CronRegex::isValidCron(cronParts)) {
             throw std::invalid_argument("Invalid cron string");
@@ -59,11 +56,132 @@ private:
         this->minutes = CronPart("minute", cronParts[1]);
         this->hours = CronPart("hour", cronParts[2]);
         this->daysOfMonth = CronPart("day", cronParts[3]);
-
         this->months = CronPart("month", cronParts[4]);
         this->daysOfWeek = WeekdayPart( cronParts[5]);
         this->years = CronPart("year", cronParts[6]);
     }
+
+    /**
+     * Create time points from the cron parts of the cron object.
+     * @param cronObject
+     * @return a vector of unfiltered time points
+     */
+    [[nodiscard]]
+    auto cartesian_product() const {
+        std::vector<std::tm> resultTime; // to list from time points
+
+        for (auto const &year: years.getTimes()) {
+            auto yearVal = std::chrono::duration_cast<std::chrono::years>(year);
+
+            for (auto const &month: months.getTimes()) {
+                auto monthVal = std::chrono::duration_cast<std::chrono::months>(month);
+
+                for (auto const &dayOfMonth: daysOfMonth.getTimes()) {
+                    auto dayVal = std::chrono::duration_cast<std::chrono::days>(dayOfMonth);
+
+                    for (auto const &hour: hours.getTimes()) {
+                        auto hourVal = std::chrono::duration_cast<std::chrono::hours>(hour);
+
+                        for (auto const &minute: minutes.getTimes()) {
+                            auto minuteVal = std::chrono::duration_cast<std::chrono::minutes>(minute);
+
+                            for (auto const &second: seconds.getTimes()) {
+
+                                auto timeStruct = std::tm();
+                                timeStruct.tm_sec = second.count();
+                                timeStruct.tm_min = minuteVal.count();
+                                timeStruct.tm_hour = hourVal.count();
+                                timeStruct.tm_mday = dayVal.count();
+                                timeStruct.tm_mon = monthVal.count();
+                                timeStruct.tm_year = yearVal.count();
+
+                                resultTime.push_back(timeStruct);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return resultTime;
+    }
+
+    /**
+     * Filtered unreachable time points out of the cartesian product.
+     * @param cartesianProduct
+     * @return A filtered vector of time points.
+     */
+    [[nodiscard]]
+    auto filterOfReachedTimes(const std::vector<std::tm> &cartesianProduct) const {
+        std::vector<std::tm> result;
+
+        auto now = std::chrono::system_clock::now();
+        auto nowSeconds = std::chrono::duration_cast<std::chrono::seconds>(now.time_since_epoch());
+
+        for (auto time: cartesianProduct) {
+            time.tm_year -= 1900;
+            auto currentTime = std::mktime(&time);
+            auto currentTime_ = std::chrono::system_clock::from_time_t(currentTime);
+            const auto timeDifferance = currentTime - nowSeconds.count();
+
+            if (timeDifferance > 0) {
+                result.push_back(time);
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Sort the time points by valid Weekdays.
+     * @param times
+     */
+     [[nodiscard]]
+     auto filteredOfWeekdayPart(const std::vector<std::tm> &times,
+                                      const std::vector<int> &weekdays) const {
+
+        std::vector<std::tm> result;
+
+        for (auto const& time: times) {
+            for (auto const& weekday : weekdays) {
+
+                if (time.tm_wday == weekday) {
+                    result.push_back(time);
+                }
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Sort the time points by the next reached time.
+     * @param times
+     */
+     auto sortByNextReachedTime(std::vector<std::tm> &times) const {
+        std::sort(times.begin(), times.end(), []( std::tm &a,  std::tm &b) {
+            time_t timeA = std::mktime(&a);
+            time_t timeB = std::mktime(&b);
+            return difftime(timeA, timeB) < 0;
+        });
+    }
+
+    /**
+     * Filter the cartesian product of the cron object.
+     * @param cartesianProduct
+     * @return A filtered vector of time points that are sorted by the next reached time.
+     */
+     [[nodiscard]]
+     auto get_time_points() const -> std::vector<std::tm> {
+        auto cartesianProduct = cartesian_product();
+        auto filteredOfReachedTimes = filterOfReachedTimes(cartesianProduct);
+        auto totalTimes = filteredOfWeekdayPart(filteredOfReachedTimes, daysOfWeek.getContainedWeekdays());
+
+        sortByNextReachedTime(totalTimes);
+
+        return totalTimes;
+    }
+
 
 
 public:
@@ -82,10 +200,6 @@ public:
         auto cronParts = StringUtils::split_by(cronString, ' ');
         processCronParts(cronParts);
     }
-
-
-
-
 
 //    auto operator<<(std::ostream &os) const -> std::ostream & {
 //        os << this->seconds
@@ -140,6 +254,11 @@ public:
     }
 
 
+    [[nodiscard]]
+    auto get_execution_times() -> std::vector<std::tm>
+    {
+        return get_time_points();
+    }
 
 };
 
@@ -162,7 +281,3 @@ namespace std {
 //        return Cron(cron_expression);
 //    }
 }
-
-
-
-
