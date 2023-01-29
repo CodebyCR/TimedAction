@@ -10,7 +10,6 @@
 
 
 void sayHallo(std::uint32_t &count) {
-
     std::cout << "Hallo " << count << std::endl;
     ++count;
     std::cout << "Hallo nr." << std::to_string(count) << std::endl;
@@ -50,27 +49,54 @@ int main() {
 
 //    auto someCron = Cron("0 30 */2 1 3 * 2021-2023");
 
-    auto someCron = std::to_cron("0 30 */2 1 3 * 2021-2023");
+//    auto someCron = std::to_cron("0 30 */2 1 3 * 2021-2023");
 
-//    auto someCron = Cron({.second = "0",
-//                         .minute = "30",
-//                         .hour = "*/2",
-//                         .dayOfMonth = "15",
-//                         .month = "*/2",
-//                         .weekday = "*",
-//                         .year = "2023-2024"});
+    auto someCron = Cron({.second = "0",
+                         .minute = "30",
+                         .hour = "*/2",
+                         .dayOfMonth = "15",
+                         .month = "*/2",
+                         .weekday = "mon,fri,sat",
+                         .year = "2021-2024"});
 
 
-    //TODO: Year is already translated?
+    const auto every_minute = CronExpression::everyMinute();
+    const auto every_five_minutes = CronExpression::everyFiveMinutes();
+    const auto every_ten_minutes = CronExpression::everyTenMinutes();
+    const auto every_fifteen_minutes = CronExpression::everyFifteenMinutes();
+    const auto every_thirty_minutes = CronExpression::everyThirtyMinutes();
+    const auto every_hour = CronExpression::everyHour();
+    const auto every_second_hour = CronExpression::everyTwoHours();
+    const auto every_day = CronExpression::everyDay();
+    const auto every_second_day = CronExpression::everyTwoDays();
+    const auto every_week = CronExpression::everyWeek();
+    const auto every_month = CronExpression::everyMonth();
 
-    std::cout << CronInterpreter::get_time_points(someCron);
+
+
+//    auto daily = "0 0 0 * * * 2024"_cron;
+
+    std::cout << "will executed earlier: " << *every_day << std::endl;
+
+//    auto timePoints = every_five_minutes.get_execution_times();
+//    std::cout << CronInterpreter::get_info(timePoints);
+
+//    std::cout << "SomeCron: " << someCron << std::endl;
+
+//    auto interpreter = CronInterpreter(someCron);
+//
+//    auto nextTriggerTime = interpreter.NextTriggerTime();
+//
+//    std::cout << "Next trigger time: " << nextTriggerTime << std::endl;
+//
+//    return 0;
+//}
 
 //    CronInterpreter interpreter("0 */5 12 15,16 0-6");
 //    std::cout << "test" << std::endl;
 //    auto next_trigger_time = interpreter.NextTriggerTime();
 
-
-    // next_trigger_time to string
+//    next_trigger_time to string
 //    std::time_t t = std::chrono::system_clock::to_time_t(next_trigger_time);
 //    std::cout << std::ctime(&t) << std::endl;
 
@@ -83,8 +109,8 @@ int main() {
 //        std::cout << component << std::endl;
 //    }
 
-//    auto cron = Cron();
-//    cron.seconds(1)
+//    auto cron = Cron()
+//            .seconds(1)
 //        .minutes(1)
 //        .hours(1)
 //        .daysOfMonth(1)
@@ -123,18 +149,22 @@ int main() {
 //
 //    std::cout << "Every day at 12:00 " << everyDay.toString() << std::endl;
 
-
+//    std::vector<std::tm> times = {
+//            {.tm_sec = 0, .tm_min = 0, .tm_hour = 0, .tm_mday = 1, .tm_mon = 0, .tm_year = 2020},
+//            {.tm_sec = 0, .tm_min = 0, .tm_hour = 0, .tm_mday = 15, .tm_mon = 11, .tm_year = 2019},
+//            {.tm_sec = 0, .tm_min = 0, .tm_hour = 0, .tm_mday = 31, .tm_mon = 5, .tm_year = 2021},
+//            {.tm_sec = 0, .tm_min = 0, .tm_hour = 0, .tm_mday = 22, .tm_mon = 7, .tm_year = 2022}
+//    };
 
 
 //    auto scheduler = Scheduler::get_instance();
 //
 //    scheduler.add(&job);
 //    scheduler.add(&newJob);
-//
+
 ////    scheduler.start();
 //
 //    std::this_thread::sleep_for(std::chrono::seconds(10));
-//
 //    std::vector<I_TimedAction> jobs;
 
     return 0;

@@ -18,49 +18,41 @@
     // auto someCron = Cron("0 30 */2 1 3 * 2021-2023");
 ```
 
-
-### Use a builder pattern
-```C++
-    auto cron = Cron()
-                .seconds(1)
-                .minutes(1)
-                .hours(1)
-                .daysOfMonth(1)
-                .months(1)
-                .daysOfWeek("mon-fri")
-                .years("2021");
-```
-
 ### Or choose between this nice one-liners
 ```C++
     // Initialize a cron with a string
     auto cron = Cron("1 1 1 1 1 mon-fri 2021");
 
-    // Parse a cron string
-    auto cron = Cron.parse("1 1 1 1 1 mon-fri 2021");
-
+    /** Currently in process*/
     // String literals are also supported
     auto cron = "1 1 1 1 1 mon-fri 2021"_cron;
 ```
 
 ### Or few pre-built formats
 ```C++
-    auto cron = Cron::everyMinute();
-    auto cron = Cron::everyHour();
-    auto cron = Cron::everyDay();
-    auto cron = Cron::everyWeek();
-    auto cron = Cron::everyMonth();
-    auto cron = Cron::everyYear();
+    const auto every_minute = CronExpression::everyMinute();
+    const auto every_five_minutes = CronExpression::everyFiveMinutes();
+    const auto every_ten_minutes = CronExpression::everyTenMinutes();
+    
+    const auto every_fifteen_minutes = CronExpression::everyFifteenMinutes();
+    const auto every_thirty_minutes = CronExpression::everyThirtyMinutes();
+    const auto every_hour = CronExpression::everyHour();
+    
+    const auto every_second_hour = CronExpression::everyTwoHours();
+    const auto every_day = CronExpression::everyDay();
+    const auto every_second_day = CronExpression::everyTwoDays();
+    
+    const auto every_week = CronExpression::everyWeek();
+    const auto every_month = CronExpression::everyMonth();
+    
+    // These are sheared pointers, for less memory usage.
 ```
 
 ## Operators overloading
-```C++
-    auto cron = Cron::everyMinute();
 
-    // Use Chrono literals
-    cron *= 2_hours; // Multiply by 2
-```
-> Note:<br/>The `>>` operator is overloaded to parse a cron string into a Cron object.<br/>The `<<` operator is overloaded to convert a Cron object into a cron string.
+> Note:
+> <br/>The `>>` operator is overloaded to parse a cron string into a Cron object.
+> <br/>The `<<` operator is overloaded to convert a Cron object into a cron string.
 
 ```C++
     // Basic cron format string
@@ -74,7 +66,11 @@
     std::cout << cron << std::endl;
     result: 1 1 1 1 1 mon-fri 2021
 ```
-> Note: The `==` operator is overloaded to compare two Cron objects.
+
+> ! Will be implemented in the future !
+> <br/>
+> Note: 
+> <br/>The `==` operator is overloaded to compare the next execution times of two Cron objects.
 
 ```C++
     auto cron1 = Cron("1 1 1 1 1 mon-fri 2021");
@@ -89,7 +85,9 @@
     // result: 0
 ```
 
-> Note: The `>`  and `<` operators are overloaded to compare the __next__ execution time.<br/> (smaller means next execution time is sooner)
+> Note: 
+> <br/>The `>`  and `<` operators are overloaded to compare the __next__ execution time.
+> <br/>(smaller means next execution time is sooner)
 
 ```C++
     auto cron1 = Cron("1 1 1 1 1 mon-fri 2021");

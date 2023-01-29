@@ -47,6 +47,7 @@
 - The seconds part is optional.
 - If you don't specify the seconds part, the default value is `0`.
 - The seconds part is a number between `0` and `59`.
+- ATTENTION: If you use this part, you must accept more expensive costs.
 
 
 ## Minutes
@@ -69,7 +70,8 @@
 - The day of the week part is a number between `0` and `6`.
 - from `0` (is Sunday) to `6` (is Saturday).
 - `7` will be also interpreted as Sunday.
-- you can also use `MON`, `TUE`, `WED`, `THU`, `FRI`, `SAT`, `SUN` as values.
+- you can also use `MON`, `TUE`, `WED`, `THU`, `FRI`, `SAT`, `SUN` as values.(case insensitive.)
 
 ## Year
 - The year part is a number between `1970` and `2099`.
+- If you don't specify the year part, the default value is the current year at the **instantiation** time.

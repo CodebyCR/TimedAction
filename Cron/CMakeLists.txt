@@ -1,13 +1,13 @@
 set(CRON_SOURCES
         "CronRegex.hpp"
-        "UTC_Parser.hpp"
         "LeapYearUtils.hpp"
         "CronPart.hpp"
         "Cron.hpp"
         "CronInterpreter.hpp"
         "CronCapsule.hpp"
         "WeekdayPart.hpp"
-        "CronProcessor.hpp" YearPart.hpp Sort.hpp)
+        "YearPart.hpp"
+        "Sort.hpp")
 
 add_library(${LIBRARY_CRON} INTERFACE ${CRON_SOURCES} )
 

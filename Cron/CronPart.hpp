@@ -47,10 +47,17 @@ private:
 //            else
 //            {
             /// Range works
-            for (int index = 0; index < this->partRange; index++) {
-                this->times.emplace_front((index + 1) * this->partMultiplier);
+            if(name == "month") {
+                for (int index = 0; index < this->partRange; index++) {
+                    this->times.emplace_front((index) * this->partMultiplier);
+                }
             }
-//            }
+            else {
+                for (int index = 0; index < this->partRange; index++) {
+                    this->times.emplace_front((index + 1) * this->partMultiplier);
+                }
+            }
+
         }
 
         if (StringUtils::contains(basicString, "*") && basicString.length() > 1) {
@@ -95,7 +102,7 @@ private:
         }
         if (this->name == "month") {
             auto monthMultiplier = LeapYearUtils::getDaysInCurrentMonth();
-            std::cout << "monthMultiplier: " << monthMultiplier << std::endl;
+//            std::cout << "monthMultiplier: " << monthMultiplier << std::endl;
 
             // seconds for the specific month in the current year, multiplied by
             return std::make_pair(86'400 * monthMultiplier, 12);

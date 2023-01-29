@@ -118,7 +118,7 @@ namespace LeapYearUtils {
     auto seconds_since_1970() -> int {
         std::chrono::system_clock::time_point current_time = std::chrono::system_clock::now();
         std::time_t time = std::chrono::system_clock::to_time_t(current_time);
-        tm *time_info = localtime(&time);
+        tm const *time_info = localtime(&time);
         int year = getCurrentYear();
 
         int days_since_1970 = (year - 1970) * 365;

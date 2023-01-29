@@ -6,6 +6,7 @@
 
 #include <iostream>
 #include <sstream>
+#include <ctime>
 
 #include "CronCapsule.hpp"
 #include "CronPart.hpp"
@@ -13,6 +14,8 @@
 #include "CronRegex.hpp"
 #include "YearPart.hpp"
 #include "Sort.hpp"
+
+
 
 /**
  * A class to create a cron format in a more readable way.
@@ -172,8 +175,6 @@ private:
         return totalTimes;
     }
 
-
-
 public:
 
     explicit Cron(CronCapsule capsule) {
@@ -191,22 +192,37 @@ public:
         processCronParts(cronParts);
     }
 
-//    auto operator<<(std::ostream &os) const -> std::ostream & {
-//        os << this->seconds
-//           << " " << this->minute.value_or(0)
-//           << " " << this->hour.value_or(0)
-//           << " " << this->dayOfMonth.value_or(1)
-//           << " " << this->month.value_or(0)
-//           << " " << this->dayOfWeek
-//           << " " << this->year;
-//        return os;
-//    }
+     friend std::ostream& operator<<(std::ostream &os, const Cron &cron)   {
+         auto first_execution = cron.get_time_points().at(0);
+         std::time_t time = std::mktime(&first_execution);
+         auto pretty_time = std::ctime(&time);
+        os << pretty_time;
+        return os;
+    }
 
+    friend std::istream& operator>>(std::istream &is, Cron &cron) {
+        std::string cronString;
+        is >> cronString;
+        cron = Cron(cronString);
+        return is;
+    }
 
-//    // overload >> operator from_string
-//    friend std::istream& operator>>(std::istream& is, Cron& cron);
+    friend bool operator < (const Cron &lhs, const Cron &rhs) {
+        auto lhs_first_execution = lhs.get_time_points().at(0);
+        auto rhs_first_execution = rhs.get_time_points().at(0);
+        return std::mktime(&lhs_first_execution) < std::mktime(&rhs_first_execution);
+    }
 
-//    auto operator<=>(const Cron &other) const = default;
+    friend bool operator > (const Cron &lhs, const Cron &rhs) {
+        auto lhs_first_execution = lhs.get_time_points().at(0);
+        auto rhs_first_execution = rhs.get_time_points().at(0);
+        return std::mktime(&lhs_first_execution) > std::mktime(&rhs_first_execution);
+    }
+
+    friend Cron operator "" _cron(const char* str, std::size_t size) {
+         auto cron_expression = Cron(std::string(str, size));
+        return Cron(cron_expression);
+    }
 
     [[nodiscard]]
     auto getSecondTimes() const {
@@ -245,7 +261,7 @@ public:
 
 
     [[nodiscard]]
-    auto get_execution_times() -> std::vector<std::tm>
+    auto get_execution_times() const -> std::vector<std::tm>
     {
         return get_time_points();
     }
@@ -270,4 +286,64 @@ namespace std {
 //    {
 //        return Cron(cron_expression);
 //    }
+}
+
+namespace CronExpression{
+
+//    std::shared_ptr<Cron> cron;
+    static auto everyMinute() -> std::shared_ptr<Cron>
+    {
+        return std::make_shared<Cron>("*/1 * * * * * *");
+    }
+
+    static auto everyFiveMinutes() -> std::shared_ptr<Cron>
+    {
+        return std::make_shared<Cron>("*/5 * * * * * *");
+    }
+
+    static auto everyTenMinutes() -> std::shared_ptr<Cron>
+    {
+        return std::make_shared<Cron>("*/10 * * * * * *");
+    }
+
+    static auto everyFifteenMinutes() -> std::shared_ptr<Cron>
+    {
+        return std::make_shared<Cron>("*/15 * * * * * *");
+    }
+
+    static auto everyThirtyMinutes() -> std::shared_ptr<Cron>
+    {
+        return std::make_shared<Cron>("*/30 * * * * * *");
+    }
+
+    static auto everyHour() -> std::shared_ptr<Cron>
+    {
+        return std::make_shared<Cron>("0 */1 * * * * *");
+    }
+
+    static auto everyTwoHours() -> std::shared_ptr<Cron>
+    {
+        return std::make_shared<Cron>("0 */2 * * * * *");
+    }
+
+    static auto everyDay() -> std::shared_ptr<Cron>
+    {
+        return std::make_shared<Cron>("0 0 12 * * * *");
+    }
+
+    static auto everyTwoDays() -> std::shared_ptr<Cron>
+    {
+        return std::make_shared<Cron>("0 0 12 */2 * * *");
+    }
+
+    static auto everyWeek() -> std::shared_ptr<Cron>
+    {
+        return std::make_shared<Cron>("0 0 12 * * Mon *");
+    }
+
+    static auto everyMonth() -> std::shared_ptr<Cron>
+    {
+        return std::make_shared<Cron>("0 0 12 1 * * *");
+    }
+
 }
