@@ -11,6 +11,7 @@
 #include "CronPart.hpp"
 #include "WeekdayPart.hpp"
 #include "CronRegex.hpp"
+#include "YearPart.hpp"
 
 /**
  * A class to create a cron format in a more readable way.
@@ -34,7 +35,7 @@ private:
     CronPart daysOfMonth;
     CronPart months;
     WeekdayPart daysOfWeek; // 0-6 || MON || TUE || WED-THU || FRI || SAT || SUN || * || */2 || 1,2,3 || 1-5 || 1-5/2 || 1-5,7,9  String
-    CronPart years;
+    YearPart years;
 
     // 0-6 or sun-sat or sunday-saturday or mon-fri
 
@@ -57,8 +58,8 @@ private:
         this->hours = CronPart("hour", cronParts[2]);
         this->daysOfMonth = CronPart("day", cronParts[3]);
         this->months = CronPart("month", cronParts[4]);
-        this->daysOfWeek = WeekdayPart( cronParts[5]);
-        this->years = CronPart("year", cronParts[6]);
+        this->daysOfWeek = WeekdayPart(cronParts[5]);
+        this->years = YearPart( cronParts[6]);
     }
 
     /**
@@ -158,7 +159,7 @@ private:
      * Sort the time points by the next reached time.
      * @param times
      */
-     auto sortByNextReachedTime(std::vector<std::tm> &times) const {
+     static auto sortByNextReachedTime(std::vector<std::tm> &times) {
         std::sort(times.begin(), times.end(), []( std::tm &a,  std::tm &b) {
             time_t timeA = std::mktime(&a);
             time_t timeB = std::mktime(&b);

@@ -7,7 +7,7 @@ set(CRON_SOURCES
         "CronInterpreter.hpp"
         "CronCapsule.hpp"
         "WeekdayPart.hpp"
-        "CronProcessor.hpp")
+        "CronProcessor.hpp" YearPart.hpp)
 
 add_library(${LIBRARY_CRON} INTERFACE ${CRON_SOURCES} )
 

@@ -1,5 +1,5 @@
 //
-// Created by Christoph Rohde on 24.12.22.
+// Created by Christoph Rohde on 29.01.23.
 //
 
 #pragma once
@@ -10,11 +10,10 @@
 #include <forward_list>
 #include "LeapYearUtils.hpp"
 
-
-class CronPart {
+class YearPart {
 
 private:
-    std::string name;
+    std::string name = "year";
     std::forward_list<std::chrono::seconds> times;
     std::string rawValue;
 
@@ -37,20 +36,10 @@ private:
 
         if (this->isWildcard) {
             // *
-////            else if (this->name == "hour") {
-////                // TODO: Stunden haben eine stunde versatz
-////                for (int index = 0; index < this->partRange; index++) {
-////                    this->times.emplace_front(index  * this->partMultiplier);
-////                }
-////
-////            }
-//            else
-//            {
-            /// Range works
-            for (int index = 0; index < this->partRange; index++) {
-                this->times.emplace_front((index + 1) * this->partMultiplier);
-            }
-//            }
+            auto current_year = LeapYearUtils::getCurrentYear();
+            // Current year to str
+            std::cout << "Current year: " << current_year << std::endl;
+            this->times.emplace_front(current_year);
         }
 
         if (StringUtils::contains(basicString, "*") && basicString.length() > 1) {
@@ -79,31 +68,12 @@ private:
      * @return partMultiplier (value of section in seconds) & partRange (max value of section)
      */
     [[nodiscard]]
-    auto getPartRangeSize() const -> std::pair<u_long, uint8_t> {
+    static auto getPartRangeSize() -> std::pair<u_long, uint8_t> {
+        const auto currentYear = LeapYearUtils::getCurrentYear();
+        const auto currentYearInSeconds = LeapYearUtils::seconds_since_1970();
 
-        if (this->name == "second") {
-            return std::make_pair(1, 60);
-        }
-        if (this->name == "minute") {
-            return std::make_pair(60, 60);
-        }
-        if (this->name == "hour") {
-            return std::make_pair(3'600, 24);
-        }
-        if (this->name == "day") {
-            return std::make_pair(86'400, 31);
-        }
-        if (this->name == "month") {
-            auto monthMultiplier = LeapYearUtils::getDaysInCurrentMonth();
-            std::cout << "monthMultiplier: " << monthMultiplier << std::endl;
-
-            // seconds for the specific month in the current year, multiplied by
-            return std::make_pair(86'400 * monthMultiplier, 12);
-        }
-
-
-        std::cout << "CronPart::getPartRangeSize: unknown part name: " << this->name << std::endl;
-        return std::make_pair(1, 0);
+        const auto daysInCurrentYear = LeapYearUtils::getDaysInYear(currentYear);
+        return std::make_pair(currentYearInSeconds, daysInCurrentYear);
     }
 
 
@@ -122,12 +92,12 @@ private:
     /** processing of list values */
     auto rangeValue(const std::string &basicString) -> void {
         std::vector<std::string> range = StringUtils::split_by(basicString, '-');
-        auto min = std::stoi(range.at(0));
+        auto min= std::stoi(range.at(0));
         auto max = std::stoi(range.at(1));
 
-        for (auto i = min; i <= max; ++i) {
-            std::chrono::seconds currentTime(i );
-            this->times.push_front(currentTime);
+        for (auto index = min; index <= max; ++index) {
+            const auto year_in_seconds = std::chrono::years(index);
+            this->times.emplace_front(year_in_seconds);
         }
 
     }
@@ -143,11 +113,9 @@ private:
 
     /** processing of number values */
     auto numberValue(const std::string &basicString) -> void {
-        // 1
-        int value = std::stoi(basicString);
-
-        std::chrono::seconds currentTime(value * this->partMultiplier);
-        this->times.emplace_front(currentTime);
+        const auto year_count = std::stoi(basicString);
+        const auto year_in_seconds = std::chrono::years(year_count);
+        this->times.emplace_front(year_in_seconds);
     }
 
     /** processing of period values */
@@ -157,24 +125,23 @@ private:
         std::vector<std::string> periodic = StringUtils::split_by(basicString, '/');
         std::vector<std::string> range = StringUtils::split_by(periodic.at(0), '-');
 
-        auto min = std::stoi(range.at(0));
-        auto max = std::stoi(range.at(1));
-        auto step = std::stoi(periodic.at(1));
+        const auto min = std::stoi(range.at(0));
+        const auto max = std::stoi(range.at(1));
+        const auto step = std::stoi(periodic.at(1));
 
         for (int i = min; i <= max; i += step) {
             std::chrono::seconds currentTime(i * this->partMultiplier);
             this->times.emplace_front(currentTime);
         }
-
     }
 
 
 public:
 
-    CronPart() = default;
+    YearPart() = default;
 
-    CronPart(std::string name, const std::string &rawValue):
-            name(std::move(name)), rawValue(rawValue) {
+    YearPart(const std::string &rawValue):
+            rawValue(rawValue) {
 
         this->isNumber = StringUtils::is_number(rawValue);
         this->isWildcard = rawValue == "*";
@@ -189,7 +156,8 @@ public:
         processValue(rawValue);
     }
 
-    ~CronPart() = default;
+    ~YearPart() = default;
+
 
     [[nodiscard]]
     auto getName() const -> std::string {
