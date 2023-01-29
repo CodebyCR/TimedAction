@@ -11,6 +11,7 @@
 class WeekdayPart {
 
 private:
+    std::string name = "weekday";
     std::string rawValue;
     std::vector<int> containedWeekdays;
 
@@ -35,6 +36,8 @@ private:
                 return index;
             }
         }
+
+        return -1;
     }
 
     auto add_raw_values(std::vector<std::string> & raw_values) -> void {
@@ -78,31 +81,17 @@ public:
 
     WeekdayPart() = default;
 
-    WeekdayPart( const std::string &weekdays):
+    WeekdayPart(std::string const& weekdays):
             rawValue(weekdays) {
         process();
     }
 
     ~WeekdayPart() = default;
 
-//    auto operator << (std::ostream & os) const -> std::ostream & {
-//        os << "Weekdays: ";
-//        for (auto & weekday : containedWeekdays) {
-//            os << weekday << " ";
-//        }
-//        return os;
-//    }
-
-//    [[nodiscard]]
-//    auto contains(std::string_view const& weekday) const -> bool {
-//        for (auto const& containedWeekday : containedWeekdays) {
-//            if (containedWeekday == weekday) {
-//                return true;
-//            }
-//        }
-//
-//        return false;
-//    }
+    [[nodiscard]]
+    auto getName() const -> std::string {
+        return name;
+    }
 
     [[nodiscard]]
     auto getContainedWeekdays() const -> std::vector<int> const& {
