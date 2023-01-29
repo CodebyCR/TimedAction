@@ -12,6 +12,7 @@
 #include "WeekdayPart.hpp"
 #include "CronRegex.hpp"
 #include "YearPart.hpp"
+#include "Sort.hpp"
 
 /**
  * A class to create a cron format in a more readable way.
@@ -59,7 +60,7 @@ private:
         this->daysOfMonth = CronPart("day", cronParts[3]);
         this->months = CronPart("month", cronParts[4]);
         this->daysOfWeek = WeekdayPart(cronParts[5]);
-        this->years = YearPart( cronParts[6]);
+        this->years = YearPart(cronParts[6]);
     }
 
     /**
@@ -156,18 +157,6 @@ private:
     }
 
     /**
-     * Sort the time points by the next reached time.
-     * @param times
-     */
-     static auto sortByNextReachedTime(std::vector<std::tm> &times) {
-        std::sort(times.begin(), times.end(), []( std::tm &a,  std::tm &b) {
-            time_t timeA = std::mktime(&a);
-            time_t timeB = std::mktime(&b);
-            return difftime(timeA, timeB) < 0;
-        });
-    }
-
-    /**
      * Filter the cartesian product of the cron object.
      * @param cartesianProduct
      * @return A filtered vector of time points that are sorted by the next reached time.
@@ -178,7 +167,7 @@ private:
         auto filteredOfReachedTimes = filterOfReachedTimes(cartesianProduct);
         auto totalTimes = filteredOfWeekdayPart(filteredOfReachedTimes, daysOfWeek.getContainedWeekdays());
 
-        sortByNextReachedTime(totalTimes);
+        Sort::by_next_reached_time(totalTimes);
 
         return totalTimes;
     }
