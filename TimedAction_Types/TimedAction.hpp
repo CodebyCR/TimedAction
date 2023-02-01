@@ -7,6 +7,7 @@
 #include <chrono>
 #include <thread>
 #include <iostream>
+#include <variant>
 #include "I_TimedAction.hpp"
 
 
@@ -21,12 +22,13 @@ private:
     std::string name;
     T value;
     std::function<void(T &value)> action;
-    std::chrono::milliseconds interval{};
     std::chrono::milliseconds timeSinceLastAction{};
     bool isRunning{};
     std::thread thread;
 
-    std::vector<std::tm> executionTimes;
+    /** Execution times */
+    std::vector<std::tm> execution_times;
+    std::chrono::milliseconds interval;
 
     /** Callbacks */
     A actionValue;
@@ -42,7 +44,7 @@ public:
     TimedAction(std::string_view const& name,
                 std::function<void(T &value)> const& action,
                 T &value,
-                std::chrono::milliseconds const& interval):
+                std::chrono::milliseconds interval):
 
                 name(name),
                 action(action),
@@ -51,9 +53,76 @@ public:
                 isRunning(false) {
     }
 
+    TimedAction(std::string_view const& name,
+                std::function<void(T &value)> const& action,
+                T &value,
+                std::vector<std::tm>& execution_times):
+
+            name(name),
+            action(action),
+            value(value),
+            execution_times(execution_times),
+            isRunning(false) {
+    }
+
+    TimedAction(std::string_view const& name,
+                std::function<void(T &value)> const& action,
+                T &value,
+                Cron& corn ):
+
+            name(name),
+            action(action),
+            value(value),
+            execution_times(corn.get_execution_times()),
+            isRunning(false) {
+    }
+
+
     ~TimedAction() override = default;
 
+
+
     auto run() -> void {
+
+        if (interval != std::chrono::milliseconds(0)) {
+            run_as_interval(interval);
+        }
+
+        if (!execution_times.empty()) {
+            run_as_times(execution_times);
+        }
+
+    }
+
+    auto run_as_times(const std::vector<std::tm> &vector) {
+
+        for(auto time : vector) {
+            auto now = std::chrono::system_clock::now();
+            auto time_point = std::chrono::system_clock::from_time_t(std::mktime( &time));
+
+            while (isRunning) {
+                if (now == time_point) {
+                    timeSinceLastAction = std::chrono::milliseconds(0);
+
+                    if (onAction) {
+                        onAction(actionValue);
+                    }
+
+                    action(value);
+                } else {
+                    if (onInterval) {
+                        onInterval(intervalValue);
+                    }
+                    timeSinceLastAction += std::chrono::milliseconds(1);
+                }
+            }
+            if (onEnd) {
+                onEnd(endValue);
+            }
+        }
+    }
+
+    auto run_as_interval(const std::chrono::milliseconds &interval) {
         while (isRunning) {
             if (timeSinceLastAction >= interval) {
                 timeSinceLastAction = std::chrono::milliseconds(0);
@@ -122,9 +191,9 @@ public:
         return value;
     }
 
-    [[nodiscard]] auto getInterval() const -> std::chrono::milliseconds {
-        return interval;
-    }
+//    [[nodiscard]] auto getInterval() const -> std::chrono::milliseconds {
+//        return interval;
+//    }
 
     [[nodiscard]]
     auto getTimeSinceLastAction() const -> std::chrono::milliseconds {
@@ -138,7 +207,7 @@ public:
 
     [[nodiscard]]
     auto get_execution_times() const -> std::vector<std::tm> override {
-        return this->cron.get_execution_times();
+        return execution_times;
     }
 
 };

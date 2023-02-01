@@ -1,12 +1,14 @@
 #include <iostream>
 //#include <queue>
-//#include "TimedAction_Types/I_TimedAction.hpp"
+#include "TimedAction_Types/I_TimedAction.hpp"
 //#include "TimedAction_Types/TimedAction.hpp"
+#include "TimedAction_Types/TimedAction.hpp"
 #include "Cron/Cron.hpp"
 #include <thread>
 //#include "Scheduler.hpp"
 
 #include "Cron/CronInterpreter.hpp"
+#include "Scheduler/Scheduler.hpp"
 
 
 void sayHallo(std::uint32_t &count) {
@@ -51,32 +53,32 @@ int main() {
 
 //    auto someCron = std::to_cron("0 30 */2 1 3 * 2021-2023");
 
-    auto someCron = Cron({.second = "0",
-                         .minute = "30",
-                         .hour = "*/2",
-                         .dayOfMonth = "15",
-                         .month = "*/2",
-                         .weekday = "mon,fri,sat",
-                         .year = "2021-2024"});
+//    auto someCron = Cron({.second = "0",
+//                         .minute = "30",
+//                         .hour = "*/2",
+//                         .dayOfMonth = "15",
+//                         .month = "*/2",
+//                         .weekday = "mon,fri,sat",
+//                         .year = "2021-2024"});
 
 
     const auto every_minute = CronExpression::everyMinute();
-    const auto every_five_minutes = CronExpression::everyFiveMinutes();
-    const auto every_ten_minutes = CronExpression::everyTenMinutes();
-    const auto every_fifteen_minutes = CronExpression::everyFifteenMinutes();
-    const auto every_thirty_minutes = CronExpression::everyThirtyMinutes();
-    const auto every_hour = CronExpression::everyHour();
-    const auto every_second_hour = CronExpression::everyTwoHours();
-    const auto every_day = CronExpression::everyDay();
-    const auto every_second_day = CronExpression::everyTwoDays();
-    const auto every_week = CronExpression::everyWeek();
-    const auto every_month = CronExpression::everyMonth();
+//    const auto every_five_minutes = CronExpression::everyFiveMinutes();
+//    const auto every_ten_minutes = CronExpression::everyTenMinutes();
+//    const auto every_fifteen_minutes = CronExpression::everyFifteenMinutes();
+//    const auto every_thirty_minutes = CronExpression::everyThirtyMinutes();
+//    const auto every_hour = CronExpression::everyHour();
+//    const auto every_second_hour = CronExpression::everyTwoHours();
+//    const auto every_day = CronExpression::everyDay();
+//    const auto every_second_day = CronExpression::everyTwoDays();
+//    const auto every_week = CronExpression::everyWeek();
+//    const auto every_month = CronExpression::everyMonth();
 
 
 
 //    auto daily = "0 0 0 * * * 2024"_cron;
 
-    std::cout << "will executed earlier: " << *every_day << std::endl;
+//    std::cout << "will executed earlier: " << *every_day << std::endl;
 
 //    auto timePoints = every_five_minutes.get_execution_times();
 //    std::cout << CronInterpreter::get_info(timePoints);
@@ -118,23 +120,25 @@ int main() {
 //        .daysOfWeek("mon-fri")
 //        .years("2021");
 
-//    std::uint32_t count = 0;
-//    auto job = TimedAction<std::uint32_t, std::string, std::string, std::string>(
-//             "Hallo",
-//             sayHallo,
-//                count,
-//            std::chrono::seconds(1)
-//    );
-//
-//    std::string actionValue = "actionValue";
-//    std::string intervalValue = "intervalValue";
-//    std::string endValue = "endValue";
-//
-//    job.setOnAction(onAction, (std::string &) actionValue);
+    std::uint32_t count = 0;
+    auto job = TimedAction<std::uint32_t, std::string, std::string, std::string>(
+             "Hallo",
+             sayHallo,
+             count,
+             std::chrono::seconds(1) //*every_minute
+    );
+
+    std::string actionValue = "actionValue";
+    std::string intervalValue = "intervalValue";
+    std::string endValue = "endValue";
+
+    job.setOnAction(onAction, (std::string &) actionValue);
 ////    job.setOnInterval(onInterval, (std::string &) intervalValue);
-//    job.setOnEnd(onEnd, (std::string &) endValue);
-//
-//
+    job.setOnEnd(onEnd, (std::string &) endValue);
+
+
+    job.start();
+
 //    std::string value = "Hallo_from_test";
 //
 //    auto newJob = SmartTimedAction(
@@ -157,12 +161,12 @@ int main() {
 //    };
 
 
-//    auto scheduler = Scheduler::get_instance();
-//
-//    scheduler.add(&job);
+    auto scheduler = Scheduler::get_instance();
+
+    scheduler.add(&job);
 //    scheduler.add(&newJob);
 
-////    scheduler.start();
+    scheduler.start();
 //
 //    std::this_thread::sleep_for(std::chrono::seconds(10));
 //    std::vector<I_TimedAction> jobs;
