@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.24)
 
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 23)
 
 set(PROJECT_VERSION_MAJOR 0)
 set(PROJECT_VERSION_MINOR 1)
@@ -11,7 +11,7 @@ project("TimedAction" VERSION ${PROJECT_VERSION} LANGUAGES CXX)
 
 message(NOTICE "${PROJECT_NAME}: ${PROJECT_VERSION}")
 
-set(SUB_LIB_COUNT 3)
+set(SUB_LIB_COUNT 4)
 
 # Add Cron library
 set(LIBRARY_CRON "Cron")
@@ -31,13 +31,23 @@ else()
     message(FATAL_ERROR " - [2/${SUB_LIB_COUNT}] ${LIBRARY_TIMED_ACTION} not found")
 endif()
 
+
+# Add Container library
+set(LIBRARY_CONTAINER "Container")
+add_subdirectory(${LIBRARY_CONTAINER})
+if (LIBRARY_CONTAINER)
+    message(NOTICE " - [3/${SUB_LIB_COUNT}] ${LIBRARY_CONTAINER} found")
+else()
+    message(FATAL_ERROR " - [3/${SUB_LIB_COUNT}] ${LIBRARY_CONTAINER} not found")
+endif()
+
 # Add Scheduler library
 set(LIBRARY_SCHEDULER "Scheduler")
 add_subdirectory(${LIBRARY_SCHEDULER})
 if (LIBRARY_SCHEDULER)
-    message(NOTICE " - [3/${SUB_LIB_COUNT}] ${LIBRARY_SCHEDULER} found")
+    message(NOTICE " - [4/${SUB_LIB_COUNT}] ${LIBRARY_SCHEDULER} found")
 else()
-    message(FATAL_ERROR " - [3/${SUB_LIB_COUNT}] ${LIBRARY_SCHEDULER} not found")
+    message(FATAL_ERROR " - [4/${SUB_LIB_COUNT}] ${LIBRARY_SCHEDULER} not found")
 endif()
 
 
