@@ -1,6 +1,7 @@
 
 set(SCHEDULER_SOURCES
-        "Scheduler.hpp")
+        "Scheduler.hpp"
+        "EventQueue.hpp")
 
 add_library(${LIBRARY_SCHEDULER} INTERFACE ${SCHEDULER_SOURCES} )
 
