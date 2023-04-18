@@ -180,15 +180,32 @@ public:
     explicit Cron(CronCapsule capsule) {
         
         const auto& [second, minute, hour, dayOfMonth, month, weekday, year] = capsule;
-        
+
         std::vector<std::string> cronParts = {
                 second, minute, hour, dayOfMonth, month, weekday, year};
+
+        if (!CronRegex::isValidCron(cronParts)){
+            throw std::invalid_argument("Invalid cron string");
+        }
+
+        if(cronParts.size() != 7){
+            throw std::invalid_argument("Cron string has to have 6 parts");
+        }
 
         processCronParts(cronParts);
     }
 
     explicit Cron(std::string const& cronString) {
         auto cronParts = StringUtils::split_by(cronString, ' ');
+
+        if (!CronRegex::isValidCron(cronParts)){
+            throw std::invalid_argument("Invalid cron string");
+        }
+
+        if(cronParts.size() != 7){
+            throw std::invalid_argument("Cron string has to have 6 parts");
+        }
+
         processCronParts(cronParts);
     }
 

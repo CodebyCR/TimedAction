@@ -108,7 +108,7 @@ public:
                         onAction(actionValue);
                     }
 
-                    action(value);
+//                    action(value);
                 } else {
                     if (onInterval) {
                         onInterval(intervalValue);
