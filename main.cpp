@@ -9,10 +9,10 @@
 
 #include "Cron/CronInterpreter.hpp"
 #include "Scheduler/Scheduler.hpp"
+#include "Container/AsyncQueue.hpp"
 
 
 void sayHallo(std::uint32_t &count) {
-    std::cout << "Hallo " << count << std::endl;
     ++count;
     std::cout << "Hallo nr." << std::to_string(count) << std::endl;
 }
@@ -34,7 +34,30 @@ void test(std::string_view const &value) {
 }
 
 
+void test_async_queue(){
+    AsyncQueue<int> queue;
+
+    // Registrieren einer Callback-Funktion, die aufgerufen wird, wenn ein Element in die Warteschlange eingefügt wird.
+    queue.subscribe([](int item)
+                    { std::cout << "Element " << item << " wurde in die Warteschlange eingefügt." << std::endl; });
+
+    // Fügen Sie Elemente in die Warteschlange ein.
+    queue.push(1);
+    queue.push(2);
+    queue.push(3);
+
+    queue.listen([](int item)
+                 { std::cout << "Element " << item << " wurde aus der Warteschlange entfernt." << std::endl; });
+
+    std::cout << "Elemente in der Warteschlange: " << queue.size() << std::endl;
+    // Entfernen Sie Elemente aus der Warteschlange.
+    queue.clear();
+    std::cout << "Elemente in der Warteschlange: " << queue.size() << std::endl;
+}
+
 int main() {
+
+    test_async_queue();
 
     const uint numThreads = std::thread::hardware_concurrency();
 
@@ -53,16 +76,18 @@ int main() {
 
 //    auto someCron = std::to_cron("0 30 */2 1 3 * 2021-2023");
 
-//    auto someCron = Cron({.second = "0",
-//                         .minute = "30",
-//                         .hour = "*/2",
-//                         .dayOfMonth = "15",
-//                         .month = "*/2",
-//                         .weekday = "mon,fri,sat",
-//                         .year = "2021-2024"});
+    auto someCron = Cron({.second = "0",
+                         .minute = "30",
+                         .hour = "*/2",
+                         .dayOfMonth = "15",
+                         .month = "*/2",
+                         .weekday = "mon,fri,sat",
+                         .year = "2021-2024"});
 
+        auto executions = someCron.get_execution_times();
+        CronInterpreter::pretty_print(executions);
 
-    const auto every_minute = CronExpression::everyMinute();
+//    const auto every_minute = CronExpression::everyMinute();
 //    const auto every_five_minutes = CronExpression::everyFiveMinutes();
 //    const auto every_ten_minutes = CronExpression::everyTenMinutes();
 //    const auto every_fifteen_minutes = CronExpression::everyFifteenMinutes();
@@ -94,6 +119,7 @@ int main() {
 //    return 0;
 //}
 
+
 //    CronInterpreter interpreter("0 */5 12 15,16 0-6");
 //    std::cout << "test" << std::endl;
 //    auto next_trigger_time = interpreter.NextTriggerTime();
@@ -101,6 +127,7 @@ int main() {
 //    next_trigger_time to string
 //    std::time_t t = std::chrono::system_clock::to_time_t(next_trigger_time);
 //    std::cout << std::ctime(&t) << std::endl;
+
 
 
 //    std::string cronTest = "1-12 || * || */2 ";
@@ -120,24 +147,29 @@ int main() {
 //        .daysOfWeek("mon-fri")
 //        .years("2021");
 
-    std::uint32_t count = 0;
+    std::uint32_t count = 2;
+    auto ccron = Cron("0 */2 0 1 1 * 2024");
     auto job = TimedAction<std::uint32_t, std::string, std::string, std::string>(
              "Hallo",
              sayHallo,
              count,
-             std::chrono::seconds(1) //*every_minute
+             ccron
     );
 
-    std::string actionValue = "actionValue";
-    std::string intervalValue = "intervalValue";
-    std::string endValue = "endValue";
-
-    job.setOnAction(onAction, (std::string &) actionValue);
-////    job.setOnInterval(onInterval, (std::string &) intervalValue);
-    job.setOnEnd(onEnd, (std::string &) endValue);
-
-
     job.start();
+
+    std::this_thread::sleep_for(std::chrono::minutes(10));
+
+//    std::string actionValue = "actionValue";
+//    std::string intervalValue = "intervalValue";
+//    std::string endValue = "endValue";
+//
+//    job.setOnAction(onAction, (std::string &) actionValue);
+//////    job.setOnInterval(onInterval, (std::string &) intervalValue);
+//    job.setOnEnd(onEnd, (std::string &) endValue);
+//
+//
+//    job.start();
 
 //    std::string value = "Hallo_from_test";
 //
@@ -161,12 +193,12 @@ int main() {
 //    };
 
 
-    auto scheduler = Scheduler::get_instance();
-
-    scheduler.add(&job);
-//    scheduler.add(&newJob);
-
-    scheduler.start();
+//    auto scheduler = Scheduler::get_instance();
+//
+//    scheduler.add(&job);
+////    scheduler.add(&newJob);
+//
+//    scheduler.start();
 //
 //    std::this_thread::sleep_for(std::chrono::seconds(10));
 //    std::vector<I_TimedAction> jobs;
