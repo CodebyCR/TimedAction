@@ -23,18 +23,20 @@ private:
     T value;
     std::function<void(T &value)> action;
     std::chrono::milliseconds timeSinceLastAction{};
-    bool isRunning{};
+    bool isRunning;
     std::thread thread;
 
     /** Execution times */
     std::vector<std::tm> execution_times;
     std::chrono::milliseconds interval;
 
+    [[Deprecated ("use Callback<A, I, E> instead of std::variant<A, I, E>")]]
     /** Callbacks */
     A actionValue;
     I intervalValue;
     E endValue;
 
+    [[Deprecated ("use Callback<A, I, E> instead of std::variant<A, I, E>")]]
     std::function<void(A &value)> onAction;
     std::function<void(I &value)> onInterval;
     std::function<void(E &value)> onEnd;
@@ -84,7 +86,7 @@ public:
 
     auto run() -> void {
 
-        if (interval != std::chrono::milliseconds(0)) {
+        if (interval != std::chrono::milliseconds{}) {
             run_as_interval(interval);
         }
 
@@ -147,6 +149,7 @@ public:
     auto start()  -> void override {
         isRunning = true;
         thread = std::thread(&TimedAction::run, this);
+        thread.detach(); // ? TODO: test this
     }
 
     auto stop() -> void override{
