@@ -7,23 +7,31 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <memory>
+#include <map>
 #include "../TimedAction_Types/I_TimedAction.hpp"
 #include "../Cron/CronInterpreter.hpp"
 #include "EventQueue.hpp"
-#include <map>
+#include "Watcher.hpp"
+#include "JobManager.hpp"
 
 
 class Scheduler {
 
 private:
-    EventQueue actions;
+    std::shared_ptr<EventQueue> eventQueue_ptr;
+    Watcher watcher;
+    // JobManager jobManager;
+
 
     Scheduler(){
-        actions.subscribe([](I_TimedAction* action) {
+        eventQueue_ptr = std::make_shared<EventQueue>();
+
+        eventQueue_ptr->on_subscribe([](I_TimedAction* action) {
             std::cout << "EventQueue: subscribed to " << action->getName() << std::endl;
         });
 
-        actions.listen( [](I_TimedAction* action) {
+        eventQueue_ptr->on_listen([](I_TimedAction* action) {
             std::cout << "EventQueue: listened to " << action->getName() << std::endl;
         });
     };
@@ -43,33 +51,38 @@ public:
     void operator=(Scheduler const&) = delete;
 
     auto add(I_TimedAction* action) -> void {
-        actions.push(action);
+        eventQueue_ptr->push(action);
     }
 
     /// TODO: start & close new threads from the scheduler instated of inside the action
-    // ! Refactor: This starts all actions on separate threads
+    // ! Refactor: This starts all eventQueue_ptr on separate threads
     // * What you want -> start the thread of the action if it is required
     auto start() const -> void {
-        for (auto action : actions) {
-            action->start();
-        }
+
+        /// new watcher thread & make it independent
+        auto _watcher_thread = watcher.getThread(eventQueue_ptr);
+        _watcher_thread.detach();
+
+//        for (auto action : eventQueue_ptr) {
+//            action->start();
+//        }
     }
 
     auto stop() const -> void {
-        for (auto &action : actions) {
+        for (auto &action : *eventQueue_ptr) {
             action->stop();
         }
     }
 
     auto restart() const -> void {
-        for (auto &action : actions) {
+        for (auto &action : *eventQueue_ptr) {
             action->restart();
         }
     }
 
     [[nodiscard]]
     auto is_running() const -> bool {
-        std::ranges::any_of(actions, [](auto &action) {
+        std::ranges::any_of(*eventQueue_ptr, [](auto &action) {
             return action->is_running();
         });
         return false;
@@ -80,7 +93,7 @@ public:
     auto start_scheduler() -> void {
         auto job_list = std::map<std::string, std::tm>{};
 
-        for(auto &action : actions) {
+        for(auto &action : *eventQueue_ptr) {
             const auto time_points = action->get_execution_times();
             for(auto &time_point : time_points) {
                 job_list.emplace(action->getName(), time_point);
