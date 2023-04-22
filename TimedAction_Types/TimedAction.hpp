@@ -30,13 +30,13 @@ private:
     std::vector<std::tm> execution_times;
     std::chrono::milliseconds interval;
 
-    [[Deprecated ("use Callback<A, I, E> instead of std::variant<A, I, E>")]]
+    [[Deprecated ("use Callback<A, I, E> instead <A, I, E>") ]]
     /** Callbacks */
     A actionValue;
     I intervalValue;
     E endValue;
 
-    [[Deprecated ("use Callback<A, I, E> instead of std::variant<A, I, E>")]]
+    [[Deprecated ("use Callback<A, I, E> instead of <A, I, E>") ]]
     std::function<void(A &value)> onAction;
     std::function<void(I &value)> onInterval;
     std::function<void(E &value)> onEnd;
