@@ -9,18 +9,29 @@
 #include <vector>
 #include "../TimedAction_Types/I_TimedAction.hpp"
 #include "../Cron/CronInterpreter.hpp"
+#include "EventQueue.hpp"
 #include <map>
+
 
 class Scheduler {
 
 private:
+    EventQueue actions;
 
-    Scheduler() = default;
+    Scheduler(){
+        actions.on_subscribe = [](I_TimedAction* action) {
+            std::cout << "EventQueue: subscribed to " << action->getName() << std::endl;
+        };
 
-    std::vector<I_TimedAction*> actions;
+        actions.on_listen = [](I_TimedAction* action) {
+            std::cout << "EventQueue: listened to " << action->getName() << std::endl;
+        };
+    };
 
 
 public:
+    virtual ~Scheduler() = default;
+
 
     // Singleton
     static Scheduler& get_instance() {
@@ -28,15 +39,18 @@ public:
         return instance;
     }
 
-    Scheduler(Scheduler const&) = default;
+    Scheduler(Scheduler const&) = delete;
     void operator=(Scheduler const&) = delete;
 
     auto add(I_TimedAction* action) -> void {
-        actions.push_back(action);
+        actions.push(action);
     }
 
+    /// TODO: start & close new threads from the scheduler instated of inside the action
+    // ! Refactor: This starts all actions on separate threads
+    // * What you want -> start the thread of the action if it is required
     auto start() const -> void {
-        for (auto &action : actions) {
+        for (auto action : actions) {
             action->start();
         }
     }
@@ -55,11 +69,9 @@ public:
 
     [[nodiscard]]
     auto is_running() const -> bool {
-        for (auto &action : actions) {
-            if (action->is_running()) {
-                return true;
-            }
-        }
+        std::ranges::any_of(actions, [](auto &action) {
+            return action->is_running();
+        });
         return false;
     }
 
