@@ -38,7 +38,7 @@ void test_async_queue(){
     auto queue = AsyncQueue<int>();
 
     // Registrieren einer Callback-Funktion, die aufgerufen wird, wenn ein Element in die Warteschlange eingefügt wird.
-    queue.subscribe([](int item)
+    queue.on_subscribe([](int item)
                     { std::cout << "Element " << item << " wurde in die Warteschlange eingefügt." << std::endl; });
 
     // Fügen Sie Elemente in die Warteschlange ein.
@@ -46,7 +46,7 @@ void test_async_queue(){
     queue.push(2);
     queue.push(3);
 
-    queue.listen([](int item)
+    queue.on_listen([](int item)
                  { std::cout << "Element " << item << " wurde aus der Warteschlange entfernt." << std::endl; });
 
     std::cout << "Elemente in der Warteschlange: " << queue.size() << std::endl;

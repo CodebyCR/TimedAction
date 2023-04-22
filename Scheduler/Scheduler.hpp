@@ -19,13 +19,13 @@ private:
     EventQueue actions;
 
     Scheduler(){
-        actions.on_subscribe = [](I_TimedAction* action) {
+        actions.subscribe([](I_TimedAction* action) {
             std::cout << "EventQueue: subscribed to " << action->getName() << std::endl;
-        };
+        });
 
-        actions.on_listen = [](I_TimedAction* action) {
+        actions.listen( [](I_TimedAction* action) {
             std::cout << "EventQueue: listened to " << action->getName() << std::endl;
-        };
+        });
     };
 
 
