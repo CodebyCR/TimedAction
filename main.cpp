@@ -35,7 +35,7 @@ void test(std::string_view const &value) {
 
 
 void test_async_queue(){
-    AsyncQueue<int> queue;
+    auto queue = AsyncQueue<int>();
 
     // Registrieren einer Callback-Funktion, die aufgerufen wird, wenn ein Element in die Warteschlange eingefügt wird.
     queue.subscribe([](int item)
@@ -53,13 +53,27 @@ void test_async_queue(){
     // Entfernen Sie Elemente aus der Warteschlange.
     queue.clear();
     std::cout << "Elemente in der Warteschlange: " << queue.size() << std::endl;
+
+    for(auto i = 0; i < 100; ++i){
+        queue.push(i);
+    }
+
+    std::cout << "Elemente in der Warteschlange: " << queue.size() << std::endl;
+
+    for (auto queueItem : queue) {
+        std::cout << queueItem << std::endl;
+        queue.pop();
+    }
+
 }
 
 int main() {
 
+    const uint numThreads = std::thread::hardware_concurrency();
+
     test_async_queue();
 
-    const uint numThreads = std::thread::hardware_concurrency();
+    std::cin.get();
 
     std::cout << "Number of threads: " << numThreads << std::endl;
 
