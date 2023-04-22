@@ -21,18 +21,17 @@ protected:
     std::function<void(T)> _subscribe;
     std::function<void(T)> _listen;
 
-    // private because the result of this function is not thread safe
-    bool empty() const
-    {
-        return queue_.empty();
-    }
-
 public:
 
     AsyncQueue() = default;
+
+    // copy constructor
     AsyncQueue(const AsyncQueue<T> &) = delete;
+
+    // move assignment
     AsyncQueue &operator=(const AsyncQueue<T> &) = delete;
 
+    // move constructor
     AsyncQueue(AsyncQueue<T> &&other) noexcept {
         std::lock_guard<std::mutex> lock(mutex_);
         this->queue_ = std::move(other.queue_);
@@ -98,14 +97,6 @@ public:
         {
             this->pop();
         }
-    }
-
-    /// ! not thread safe
-    /// -> result is not significant
-    auto contains(const T &item) const -> bool
-    {
-        std::lock_guard<std::mutex> lock(mutex_);
-        return std::find(queue_.begin(), queue_.end(), item) != queue_.end();
     }
 
     auto on_listen(std::function<void(T)> listen) -> void
