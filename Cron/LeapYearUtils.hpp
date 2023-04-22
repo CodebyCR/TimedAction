@@ -135,5 +135,4 @@ namespace LeapYearUtils {
         return seconds_since_1970;
     }
 
-
-};
+}

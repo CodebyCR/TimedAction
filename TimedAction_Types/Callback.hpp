@@ -32,3 +32,40 @@ public:
 //     }
 // };
 
+//
+//#include <iostream>
+//
+//class BaseBar
+//{
+//public:
+//    virtual ~BaseBar() {}
+//};
+//
+//template<typename A, typename I, typename E>
+//class Bar : public BaseBar
+//{
+//public:
+//    Bar(A a, I i, E e) : a(a), i(i), e(e) {}
+//    A a;
+//    I i;
+//    E e;
+//};
+//
+//class Foo
+//{
+//public:
+//    Foo(BaseBar* bar) : bar(bar) {}
+//    BaseBar* bar;
+//};
+//
+//int main()
+//{
+//    Bar<int, double, char> bar(42, 3.14, 'a');
+//    Foo foo(&bar);
+//    auto* derivedBar = dynamic_cast<Bar<int, double, char>*>(foo.bar);
+//    if (derivedBar != nullptr) {
+//        std::cout << derivedBar->a << " " << derivedBar->i << " " << derivedBar->e << std::endl;
+//    }
+//    return 0;
+//}
+

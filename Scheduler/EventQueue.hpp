@@ -8,7 +8,7 @@
 #include "../Container/AsyncQueue.hpp"
 #include "../TimedAction_Types/I_TimedAction.hpp"
 
-class EventQueue : public AsyncQueue<I_TimedAction> {
+class EventQueue : public AsyncQueue<I_TimedAction*> {
     private:
         std::vector<std::tm> executionTimes;
 
@@ -29,3 +29,22 @@ class EventQueue : public AsyncQueue<I_TimedAction> {
         }
 
 };
+
+/// Example implementation of the EventQueue
+// auto eventQueue = EventQueue();
+// eventQueue.on_subscribe = [](I_TimedAction action) {
+//     std::cout << "EventQueue: subscribed to " << action.getName() << std::endl;
+// };
+
+// eventQueue.on_listen = [](I_TimedAction action) {
+//     std::cout << "EventQueue: listened to " << action.getName() << std::endl;
+// };
+
+// eventQueue.push(action);
+// auto action = eventQueue.pop();
+// if (action.has_value()) {
+//     std::cout << "EventQueue: popped " << action.value().getName() << std::endl;
+// } else {
+//     std::cout << "EventQueue: nothing to pop" << std::endl;
+// }
+
