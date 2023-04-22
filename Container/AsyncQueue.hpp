@@ -18,7 +18,8 @@ class AsyncQueue {
 protected:
     std::deque<T> queue_;
     mutable std::mutex mutex_;
-
+    std::function<void(T)> _subscribe;
+    std::function<void(T)> _listen;
 
     // private because the result of this function is not thread safe
     bool empty() const
@@ -27,8 +28,6 @@ protected:
     }
 
 public:
-    std::function<void(T)> on_subscribe;
-    std::function<void(T)> on_listen;
 
     AsyncQueue() = default;
     AsyncQueue(const AsyncQueue<T> &) = delete;
@@ -68,9 +67,9 @@ public:
         std::lock_guard<std::mutex> lock(mutex_);
         queue_.push_back(item);
 
-        if (on_subscribe)
+        if (_subscribe)
         {
-            on_subscribe(item);
+            _subscribe(item);
         }
     }
 
@@ -84,9 +83,9 @@ public:
         T tmp = queue_.front();
         queue_.pop_front();
 
-        if (on_listen)
+        if (_listen)
         {
-            on_listen(tmp);
+            _listen(tmp);
         }
 
         return tmp;
@@ -109,13 +108,13 @@ public:
         return std::find(queue_.begin(), queue_.end(), item) != queue_.end();
     }
 
-    auto listen(std::function<void(T)> on_listen) -> void
+    auto on_listen(std::function<void(T)> listen) -> void
     {
-        this->on_listen = on_listen;
+        this->_listen = listen;
     }
 
-    auto subscribe(std::function<void(T)> on_subscribe) -> void
+    auto on_subscribe(std::function<void(T)> subscribe) -> void
     {
-        this->on_subscribe = on_subscribe;
+        this->_subscribe = subscribe;
     }
 };
