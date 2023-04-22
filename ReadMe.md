@@ -5,13 +5,15 @@
 ![CMake](https://img.shields.io/badge/CMake-064F8C?style=for-the-badge&logo=cmake&logoColor=white)
 ![GitHub](https://img.shields.io/github/license/CodeByCR/TimedAction?style=for-the-badge)
 
-## _A simple, state-of-the-art cron job library._
+## _A simple, state-of-the-art cron job Framework._
 
 - [ ] Thread safe
 - [ ] Simple
 - [ ] Strong, example based Documentation
 - [ ] Cross platform (Windows, Linux, Mac - per CMake)
 - [ ] Extendable
+- [x] Independent of other libraries
+- [ ] Individual job logging
 
 
 
