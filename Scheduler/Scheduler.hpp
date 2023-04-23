@@ -59,9 +59,17 @@ public:
     // * What you want -> start the thread of the action if it is required
     auto start() const -> void {
 
+        // load jobs
+
+        // ? map mit <execution time, object ptr> -> sort by execution time
+
+        // push jobs to eventQueue_ptr
+
         /// new watcher thread & make it independent
         auto _watcher_thread = watcher.getThread(eventQueue_ptr);
         _watcher_thread.detach();
+
+
 
 //        for (auto action : eventQueue_ptr) {
 //            action->start();
