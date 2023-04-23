@@ -14,12 +14,14 @@
 #include "EventQueue.hpp"
 #include "Watcher.hpp"
 #include "JobManager.hpp"
+#include "JobMap.hpp"
 
 
 class Scheduler {
 
 private:
     std::shared_ptr<EventQueue> eventQueue_ptr;
+    std::shared_ptr<JobMap> jobMap_ptr;
     Watcher watcher;
     // JobManager jobManager;
 
@@ -66,10 +68,8 @@ public:
         // push jobs to eventQueue_ptr
 
         /// new watcher thread & make it independent
-        auto _watcher_thread = watcher.getThread(eventQueue_ptr);
+        auto _watcher_thread = watcher.getThread(jobMap_ptr);
         _watcher_thread.detach();
-
-
 
 //        for (auto action : eventQueue_ptr) {
 //            action->start();
