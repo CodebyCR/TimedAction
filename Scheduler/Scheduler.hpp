@@ -22,7 +22,11 @@ class Scheduler {
 private:
     std::shared_ptr<EventQueue> eventQueue_ptr;
     std::shared_ptr<JobMap> jobMap_ptr;
-    Watcher watcher;
+    Watcher watcher = Watcher();
+
+    static Scheduler instance;
+
+
     // JobManager jobManager;
 
 
@@ -45,11 +49,11 @@ public:
 
     // Singleton
     static Scheduler& get_instance() {
-        static Scheduler instance;
+//        static Scheduler instance;
         return instance;
     }
 
-    Scheduler(Scheduler const&) = delete;
+    Scheduler(Scheduler const&) = default;
     void operator=(Scheduler const&) = delete;
 
     auto add(I_TimedAction* action) -> void {
@@ -59,21 +63,13 @@ public:
     /// TODO: start & close new threads from the scheduler instated of inside the action
     // ! Refactor: This starts all eventQueue_ptr on separate threads
     // * What you want -> start the thread of the action if it is required
-    auto start() const -> void {
-
-        // load jobs
-
-        // ? map mit <execution time, object ptr> -> sort by execution time
-
-        // push jobs to eventQueue_ptr
+    auto start() -> void {
 
         /// new watcher thread & make it independent
-        auto _watcher_thread = watcher.getThread(jobMap_ptr);
-        _watcher_thread.detach();
+        auto watcher_thread = watcher.getThread(jobMap_ptr);
+        watcher.isRunning = true;
+        watcher_thread.detach();
 
-//        for (auto action : eventQueue_ptr) {
-//            action->start();
-//        }
     }
 
     auto stop() const -> void {
@@ -109,4 +105,19 @@ public:
         }
     }
 
+
 };
+
+
+/// example Scheduler implementation
+
+// auto main() -> int {
+//     auto scheduler = Scheduler::get_instance();
+//     auto action = std::make_unique<TimedAction>("action", CronInterpreter::parse("*/5 * * * * *"));
+//     scheduler.add(action.get());
+//     scheduler.start();
+//     std::this_thread::sleep_for(std::chrono::seconds(10));
+//     scheduler.stop();
+//     return 0;
+// }
+

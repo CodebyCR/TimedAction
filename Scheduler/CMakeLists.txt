@@ -1,7 +1,9 @@
 
 set(SCHEDULER_SOURCES
-        "Scheduler.hpp"
-        "EventQueue.hpp")
+        "EventQueue.hpp"
+        "Watcher.hpp"
+        "JobMap.hpp"
+        "Scheduler.hpp")
 
 add_library(${LIBRARY_SCHEDULER} INTERFACE ${SCHEDULER_SOURCES} )
 
