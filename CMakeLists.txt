@@ -11,7 +11,7 @@ project("TimedAction" VERSION ${PROJECT_VERSION} LANGUAGES CXX)
 
 message(NOTICE "${PROJECT_NAME}: ${PROJECT_VERSION}")
 
-set(SUB_LIB_COUNT 4)
+set(SUB_LIB_COUNT 5)
 
 # Add Cron library
 set(LIBRARY_CRON "Cron")
@@ -48,6 +48,14 @@ if (LIBRARY_SCHEDULER)
     message(NOTICE " - [4/${SUB_LIB_COUNT}] ${LIBRARY_SCHEDULER} found")
 else()
     message(FATAL_ERROR " - [4/${SUB_LIB_COUNT}] ${LIBRARY_SCHEDULER} not found")
+endif()
+
+set(LIBRARY_NOTIFICATION "Notification")
+add_subdirectory(${LIBRARY_NOTIFICATION})
+if (LIBRARY_NOTIFICATION)
+    message(NOTICE " - [5/${SUB_LIB_COUNT}] ${LIBRARY_NOTIFICATION} found")
+else()
+    message(FATAL_ERROR " - [5/${SUB_LIB_COUNT}] ${LIBRARY_NOTIFICATION} not found")
 endif()
 
 
