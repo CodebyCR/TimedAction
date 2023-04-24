@@ -18,8 +18,11 @@ class AsyncQueue {
 protected:
     std::deque<T> queue_;
     mutable std::mutex mutex_;
+    int currentSize = 0;
     std::function<void(T)> _subscribe;
     std::function<void(T)> _listen;
+    std::function<void(T)> _empty;
+
 
 public:
 
@@ -66,6 +69,8 @@ public:
         std::lock_guard<std::mutex> lock(mutex_);
         queue_.push_back(item);
 
+        currentSize++;
+
         if (_subscribe)
         {
             _subscribe(item);
@@ -81,6 +86,13 @@ public:
         }
         T tmp = queue_.front();
         queue_.pop_front();
+
+        currentSize--;
+
+        if (currentSize == 0 && _empty)
+        {
+            _empty(tmp);
+        }
 
         if (_listen)
         {
@@ -107,5 +119,10 @@ public:
     auto on_subscribe(std::function<void(T)> subscribe) -> void
     {
         this->_subscribe = subscribe;
+    }
+
+    auto on_empty(std::function<void(T)> empty) -> void
+    {
+        this->_empty = empty;
     }
 };
