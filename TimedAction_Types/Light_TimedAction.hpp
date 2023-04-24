@@ -8,6 +8,7 @@
 #include <chrono>
 #include <thread>
 #include "I_TimedAction.hpp"
+#include "../Notification/JobLog.hpp"
 
 
 template<typename T >
@@ -53,6 +54,15 @@ public:
                 timeSinceLastAction += std::chrono::milliseconds(1);
             }
         }
+    }
+
+    auto finished() -> std::future<Notification> override {
+        return std::async(std::launch::async, []() -> Notification {
+            auto jobLog = JobLog("TimedAction", "DATE");
+            jobLog.SUCCESS("TimedAction finished");
+
+            return jobLog;
+        });
     }
 
     auto start()  -> void override {

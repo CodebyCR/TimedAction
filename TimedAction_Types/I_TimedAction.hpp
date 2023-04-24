@@ -5,13 +5,17 @@
 #pragma once
 
 #include <iostream>
+#include <future>
 #include "../Cron/Cron.hpp"
+#include "../Notification/Notification.hpp"
 
 class I_TimedAction {
 
 public:
 
     virtual ~ I_TimedAction() = default;
+
+    virtual auto finished() -> std::future<Notification> = 0;
 
     virtual auto start() -> void = 0;
 
