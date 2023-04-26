@@ -6,6 +6,8 @@
 
 #include <iostream>
 
+using u_long = unsigned long;
+
 
 namespace LeapYearUtils {
 

@@ -7,6 +7,7 @@
 #include <iostream>
 #include <deque>
 #include <functional>
+#include <optional>
 
 /////////////////////////////////////////////////
 /// * AsyncQueue * | Author: Christoph Rohde ///
