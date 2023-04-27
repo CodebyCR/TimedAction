@@ -15,7 +15,7 @@ public:
 
     virtual ~ I_TimedAction() = default;
 
-    virtual auto finished() -> std::future<Notification> = 0;
+    //virtual auto finished() -> std::future<Notification> = 0;
 
     virtual auto start() -> void = 0;
 

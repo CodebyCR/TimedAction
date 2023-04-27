@@ -214,11 +214,12 @@ public:
         return execution_times;
     }
 
-     auto finished() -> std::future<Notification> override {
+    auto finished() -> std::future<Notification>  {
         auto timeStamp = std::chrono::system_clock::now();
-        auto jobLog = JobLog(this->name, timeStamp);
 
-        return std::async(std::launch::async, [this, &jobLog] {
+
+        return std::async(std::launch::async, [this, &timeStamp] {
+            auto jobLog = JobLog(this->name, timeStamp);
             jobLog.INFO("Test -> INFO");
             jobLog.WARNING("Test -> WARNING");
             jobLog.FAILURE("Test -> FAILURE");

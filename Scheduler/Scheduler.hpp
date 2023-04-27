@@ -39,6 +39,8 @@ private:
         eventQueue_ptr->on_listen([](I_TimedAction* action) {
             std::cout << "EventQueue: listened to " << action->getName() << std::endl;
         });
+
+        std::cout << "-- test 3.1" << std::endl;
     };
 
 
@@ -66,8 +68,10 @@ public:
 
         /// new watcher thread & make it independent
         auto watcher_thread = watcher.getThread(jobMap_ptr);
-        watcher.isRunning = true;
+        std::cout << "-- test 3.2" << std::endl;
         watcher_thread.detach();
+        // watcher.isRunning = true;
+        std::cout << "-- test 3.3" << std::endl;
 
     }
 

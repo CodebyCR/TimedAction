@@ -75,19 +75,38 @@ void test_async_queue(){
      auto& scheduler = Scheduler::get_instance();
 
      std::uint32_t count = 2;
+     std::string str = "test";
+
+     std::cout << "-- test 1" << std::endl;
+
      auto c_cron = std::chrono::duration<long long int, std::milli>(5000);
-     auto job = Light_TimedAction<uint32_t>(
-             "First Job",
-             sayHallo,
-             count,
-             c_cron
+     auto job = SmartTimedAction("My_first_Job",
+                                 test,
+                                 str,
+                                 c_cron
+
      );
 
-     auto action_ptr = std::make_shared<Light_TimedAction>(job);
-     scheduler.add(action_ptr);
+     std::cout << "-- test 2" << std::endl;
+
+
      scheduler.start();
+     std::cout << "-- test 3" << std::endl;
+     std::this_thread::sleep_for(std::chrono::seconds(2));
+
+
+     scheduler.add(&job);
+
+
      std::this_thread::sleep_for(std::chrono::seconds(10));
+     std::cout << "-- test 4" << std::endl;
      scheduler.stop();
+
+
+    // auto action_ptr = std::make_shared<I_TimedAction>(job);
+     scheduler.add(&job);
+
+
      return 0;
  }
 

@@ -42,6 +42,42 @@ public:
 
     ~JobLog() override = default;
 
+    // copy constructor
+    JobLog(JobLog const& other) :
+            name(other.name),
+            execution_time(other.execution_time),
+            log(other.log) {
+    }
+
+    // copy assignment
+    auto operator=(JobLog const& other) -> JobLog& {
+        if (this != &other) {
+            name = other.name;
+            execution_time = other.execution_time;
+            log = other.log;
+        }
+        return *this;
+    }
+
+    // move constructor
+    JobLog(JobLog&& other) noexcept :
+            name(other.name),
+            execution_time(other.execution_time),
+            log(std::move(other.log)) {
+    }
+
+    // move assignment
+    auto operator=(JobLog&& other) noexcept -> JobLog& {
+        if (this != &other) {
+            name = other.name;
+            execution_time = other.execution_time;
+            log = std::move(other.log);
+        }
+        return *this;
+    }
+
+    [[nodiscard]]
+
 
 
     auto INFO(std::string_view message) -> void {
