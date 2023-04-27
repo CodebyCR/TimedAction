@@ -24,7 +24,6 @@ private:
     std::shared_ptr<JobMap> jobMap_ptr;
     Watcher watcher = Watcher();
 
-    static Scheduler instance;
 
 
     // JobManager jobManager;
@@ -48,8 +47,8 @@ public:
 
 
     // Singleton
-    static Scheduler& get_instance() {
-//        static Scheduler instance;
+    static auto get_instance() -> Scheduler& {
+        static Scheduler instance;
         return instance;
     }
 
