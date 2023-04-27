@@ -35,7 +35,7 @@ public:
                     std::chrono::milliseconds const& interval):
 
             name(name),
-            action(action),
+            action(static_cast<const std::function<void(bool &)>>(action)),
             value(value),
             interval(interval),
             isRunning(false) {

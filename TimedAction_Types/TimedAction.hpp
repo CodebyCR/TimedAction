@@ -9,6 +9,7 @@
 #include <iostream>
 #include <variant>
 #include "I_TimedAction.hpp"
+#include "../Notification/JobLog.hpp"
 
 
 template<typename T, typename A, typename I, typename E>
@@ -211,6 +212,20 @@ public:
     [[nodiscard]]
     auto get_execution_times() const -> std::vector<std::tm> override {
         return execution_times;
+    }
+
+     auto finished() -> std::future<Notification> override {
+        auto timeStamp = std::chrono::system_clock::now();
+        auto jobLog = JobLog(this->name, timeStamp);
+
+        return std::async(std::launch::async, [this, &jobLog] {
+            jobLog.INFO("Test -> INFO");
+            jobLog.WARNING("Test -> WARNING");
+            jobLog.FAILURE("Test -> FAILURE");
+            jobLog.SUCCESS("Test -> SUCCESS");
+
+            return jobLog;
+        });
     }
 
 };

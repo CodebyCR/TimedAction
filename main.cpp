@@ -72,18 +72,19 @@ void test_async_queue(){
  auto main() -> int {
 
     // TODO: make runnable
-     auto scheduler = Scheduler::get_instance();
-     auto action = Light_TimedAction(
-             "action",
-             [](std::uint32_t &count) {
-                 ++count;
-                 std::cout << "Hallo nr." << std::to_string(count) << std::endl;
-             },
-             "0 30 */2 1 3 * 2021-2023",
-             sayHallo);
+     auto& scheduler = Scheduler::get_instance();
 
-     auto action_ptr = std::make_unique<Light_TimedAction>(action);
-     scheduler.add(action.get());
+     std::uint32_t count = 2;
+     auto c_cron = std::chrono::duration<long long int, std::milli>(5000);
+     auto job = Light_TimedAction<uint32_t>(
+             "First Job",
+             sayHallo,
+             count,
+             c_cron
+     );
+
+     auto action_ptr = std::make_shared<Light_TimedAction>(job);
+     scheduler.add(action_ptr);
      scheduler.start();
      std::this_thread::sleep_for(std::chrono::seconds(10));
      scheduler.stop();

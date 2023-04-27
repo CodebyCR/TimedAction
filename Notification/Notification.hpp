@@ -21,12 +21,12 @@ public:
         return name;
     }
 
-    virtual auto get_execution_time() const -> std::string_view
+    auto get_execution_time() const -> std::string_view
     {
         return execution_time;
     }
 
-    virtual auto set_execution_time(std::string_view execution_time) -> void
+    auto set_execution_time(std::string_view execution_time) -> void
     {
         this->execution_time = execution_time;
     }
