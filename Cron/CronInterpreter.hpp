@@ -41,6 +41,7 @@ namespace CronInterpreter {
     }
 
 
+    /// Prints the time points in a table
     static auto get_info(std::vector<std::tm> const& timePoints) -> std::string {
         std::cout << "Valid entries: " << timePoints.size() << std::endl;
 

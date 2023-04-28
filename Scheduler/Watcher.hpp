@@ -21,6 +21,11 @@ public:
     [[nodiscard]]
     auto getThread(const std::shared_ptr<JobMap>& jobMap_ptr) const -> std::thread
     {
+
+        if(!jobMap_ptr){
+            std::cout << "Watcher: jobMap_ptr is null" << std::endl;
+        }
+
         return std::thread([&] {
             while (isRunning) {
                 std::this_thread::sleep_for(std::chrono::milliseconds(1000));
@@ -31,26 +36,23 @@ public:
 
                 // std::cout << "-- 3.4" << std::endl;
 
-                try {
-                    // ! TODO: fix this
-                    // auto time_t_vec = jobMap_ptr->get(now);
-                } catch (std::exception& e) {
-                    std::cout << "Watcher: " << e.what() << std::endl;
-                }
 
+                auto time_t_vec = jobMap_ptr->get(now);
+
+                std::cout << "Watcher: found " << time_t_vec.size() << " jobs" << std::endl;
                 // std::cout << "-- 3.5" << std::endl;
 
                 /// check if jobs for execution
-//                std::ranges::for_each(time_t_vec, [&](auto &time_t) {
-//                    const auto asc_t = std::asctime(std::localtime(&now));
-//                    std::cout << "Watcher: found " << time_t->getName() << " for execution at " << asc_t << std::endl;
-//                    time_t->start();
-//                    jobMap_ptr->remove(now);
-//                });
+                std::ranges::for_each(time_t_vec, [&](auto &time_t) {
+                    const auto asc_t = std::asctime(std::localtime(&now));
+                    std::cout << "Watcher: found " << time_t->getName() << " for execution at " << asc_t << std::endl;
+                    time_t->start();
+                    jobMap_ptr->remove(now);
+                });
 
 
 
-//                /// check if jobs for finished execution
+                /// check if jobs for finished execution
 //                std::ranges::for_each(time_t_vec, [&](auto &time_t) {
 //                    std::future test = time_t->finished();
 //

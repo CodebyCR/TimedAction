@@ -5,6 +5,7 @@
 #pragma once
 
 #include <iostream>
+#include <utility>
 #include <vector>
 #include <algorithm>
 #include <ranges>
@@ -12,6 +13,8 @@
 
 class JobMap: public std::vector<std::pair<std::time_t, I_TimedAction*>> {
 private:
+    std::function<void()> _subscribe;
+    std::function<void()> _listen;
 
 public:
 
@@ -36,6 +39,10 @@ public:
 
             const auto time_t = std::mktime(&executionTime);
             this->push_back(std::make_pair(time_t, action.get()));
+        }
+
+        if(_subscribe) {
+            _subscribe();
         }
 
         this->sort();
@@ -64,6 +71,20 @@ public:
         if (it != this->end()) {
             this->erase(it);
         }
+
+        if(_listen) {
+            _listen();
+        }
+    }
+
+    auto on_listen(std::function<void()> listen) -> void
+    {
+        this->_listen = std::move(listen);
+    }
+
+    auto on_subscribe(std::function<void()> subscribe) -> void
+    {
+        this->_subscribe = std::move(subscribe);
     }
 
 };

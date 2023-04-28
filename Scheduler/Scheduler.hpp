@@ -32,6 +32,10 @@ private:
     Scheduler(){
         eventQueue_ptr = std::make_shared<EventQueue>();
 
+        if(!jobMap_ptr) {
+            jobMap_ptr = std::make_shared<JobMap>();
+        }
+
         eventQueue_ptr->on_subscribe([](I_TimedAction* action) {
             std::cout << "EventQueue: subscribed to " << action->getName() << std::endl;
         });
@@ -66,16 +70,18 @@ public:
     // * What you want -> start the thread of the action if it is required
     auto start() -> void {
 
+
         /// new watcher thread & make it independent
         auto watcher_thread = watcher.getThread(jobMap_ptr);
         std::cout << "-- test 3.2" << std::endl;
         watcher_thread.detach();
-        // watcher.isRunning = true;
         std::cout << "-- test 3.3" << std::endl;
 
     }
 
-    auto stop() const -> void {
+    auto stop() -> void {
+        watcher.isRunning = false;
+
         for (auto &action : *eventQueue_ptr) {
             action->stop();
         }
