@@ -107,8 +107,8 @@ void test_async_queue(){
      std::cout << "-- test 3" << std::endl;
      std::this_thread::sleep_for(std::chrono::seconds(2));
 
-    auto test = std::make_shared<I_TimedAction>(job);
-     scheduler.add();
+
+     scheduler.add(&job);
 
 
      // waiting for enter 'q'
@@ -124,7 +124,7 @@ void test_async_queue(){
 
 
      std::cout << "-- test 4" << std::endl;
-     //scheduler.stop();
+     scheduler.stop();
 
 
     // auto action_ptr = std::make_shared<I_TimedAction>(job);
