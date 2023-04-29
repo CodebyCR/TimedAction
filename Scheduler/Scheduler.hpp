@@ -15,13 +15,15 @@
 #include "Watcher.hpp"
 #include "JobManager.hpp"
 #include "JobMap.hpp"
+#include "TimeTable.hpp"
 
 
 class Scheduler {
 
 private:
-    std::shared_ptr<EventQueue> eventQueue_ptr;
-    std::shared_ptr<JobMap> jobMap_ptr;
+//    std::shared_ptr<EventQueue> eventQueue_ptr;
+//    std::shared_ptr<JobMap> jobMap_ptr;
+    std::shared_ptr<TimeTable>  timeTable_ptr;
     Watcher watcher = Watcher();
 
 
@@ -30,21 +32,23 @@ private:
 
 
     Scheduler(){
-        eventQueue_ptr = std::make_shared<EventQueue>();
 
-        if(!jobMap_ptr) {
-            jobMap_ptr = std::make_shared<JobMap>();
-        }
+        timeTable_ptr = std::make_shared<TimeTable>();
 
-        eventQueue_ptr->on_subscribe([](I_TimedAction* action) {
-            std::cout << "EventQueue: subscribed to " << action->getName() << std::endl;
+//        eventQueue_ptr = std::make_shared<EventQueue>();
+//
+//        if(!jobMap_ptr) {
+//            jobMap_ptr = std::make_shared<JobMap>();
+//        }
+
+        timeTable_ptr->on_subscribe([](std::pair<std::time_t, I_TimedAction*> entry) {
+            std::cout << "TimeTable: subscribed to " << entry.second->getName() << std::endl;
         });
 
-        eventQueue_ptr->on_listen([](I_TimedAction* action) {
-            std::cout << "EventQueue: listened to " << action->getName() << std::endl;
+        timeTable_ptr->on_listen([](std::pair<std::time_t, I_TimedAction*> entry) {
+            std::cout << "TimeTable: listened to " << entry.second->getName() << std::endl;
         });
 
-        std::cout << "-- test 3.1" << std::endl;
     };
 
 
@@ -62,7 +66,8 @@ public:
     void operator=(Scheduler const&) = delete;
 
     auto add(I_TimedAction* action) -> void {
-        eventQueue_ptr->push(action);
+        //eventQueue_ptr->push(action);
+        timeTable_ptr->add(action);
     }
 
     /// TODO: start & close new threads from the scheduler instated of inside the action
@@ -72,31 +77,30 @@ public:
 
 
         /// new watcher thread & make it independent
-        auto watcher_thread = watcher.getThread(jobMap_ptr);
-        std::cout << "-- test 3.2" << std::endl;
+        auto watcher_thread = watcher.getThread(timeTable_ptr);
         watcher_thread.detach();
-        std::cout << "-- test 3.3" << std::endl;
 
     }
 
     auto stop() -> void {
         watcher.isRunning = false;
 
-        for (auto &action : *eventQueue_ptr) {
-            action->stop();
+        for (auto &entry : *timeTable_ptr) {
+            entry.second->stop();
         }
     }
 
     auto restart() const -> void {
-        for (auto &action : *eventQueue_ptr) {
-            action->restart();
-        }
+//        for (auto &entry : *timeTable_ptr) {
+//            entry.second->restart();
+//        }
+        std::cout << "Scheduler::restart() not implemented" << std::endl;
     }
 
     [[nodiscard]]
     auto is_running() const -> bool {
-        std::ranges::any_of(*eventQueue_ptr, [](auto &action) {
-            return action->is_running();
+        std::ranges::any_of(*timeTable_ptr, [](auto &entry) {
+            return entry.second->is_running();
         });
         return false;
     }
@@ -104,14 +108,15 @@ public:
     /////////////////////////
 
     auto start_scheduler() -> void {
-        auto job_list = std::map<std::string, std::tm>{};
-
-        for(auto &action : *eventQueue_ptr) {
-            const auto time_points = action->get_execution_times();
-            for(auto &time_point : time_points) {
-                job_list.emplace(action->getName(), time_point);
-            }
-        }
+//        auto job_list = std::map<std::string, std::tm>{};
+//
+//        for(auto &action : *eventQueue_ptr) {
+//            const auto time_points = action->get_execution_times();
+//            for(auto &time_point : time_points) {
+//                job_list.emplace(action->getName(), time_point);
+//            }
+//        }
+    std::cout << "Scheduler::start_scheduler() not implemented" << std::endl;
     }
 
 

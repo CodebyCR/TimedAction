@@ -9,6 +9,7 @@
 #include <future>
 #include "JobMap.hpp"
 #include "../Notification/Notification.hpp"
+#include "TimeTable.hpp"
 
 
 class Watcher {
@@ -19,35 +20,29 @@ public:
     std::future<Notification> task; // maybe log instead of void later
 
     [[nodiscard]]
-    auto getThread(const std::shared_ptr<JobMap>& jobMap_ptr) const -> std::thread
+    auto getThread(const std::shared_ptr<TimeTable>& timeTable_ptr) const -> std::thread
     {
 
-        if(!jobMap_ptr){
-            std::cout << "Watcher: jobMap_ptr is null" << std::endl;
+        if(!timeTable_ptr){
+            std::cout << "Watcher: timeTable_ptr is null" << std::endl;
         }
 
         return std::thread([&] {
             while (isRunning) {
                 std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 
-                std::cout << "Watcher: checking for jobs" << std::endl;
+                const auto now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+                const auto time_t_vec = timeTable_ptr->get(now);
 
-                auto now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+                std::cout << "Watcher: checking for jobs (" << time_t_vec.size() << " found)" << std::endl;
 
-                // std::cout << "-- 3.4" << std::endl;
-
-
-                auto time_t_vec = jobMap_ptr->get(now);
-
-                std::cout << "Watcher: found " << time_t_vec.size() << " jobs" << std::endl;
-                // std::cout << "-- 3.5" << std::endl;
 
                 /// check if jobs for execution
                 std::ranges::for_each(time_t_vec, [&](auto &time_t) {
                     const auto asc_t = std::asctime(std::localtime(&now));
                     std::cout << "Watcher: found " << time_t->getName() << " for execution at " << asc_t << std::endl;
-                    time_t->start();
-                    jobMap_ptr->remove(now);
+//                    time_t->start();
+//                    timeTable_ptr->remove(now);
                 });
 
 

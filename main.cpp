@@ -77,12 +77,10 @@ void test_async_queue(){
      std::uint32_t count = 2;
      std::string str = "test";
 
-     std::cout << "-- test 1" << std::endl;
-
      auto c_cron = Cron({.second="0",
                          .minute="*/2",
                          .hour="*",
-                         .dayOfMonth="28",
+                         .dayOfMonth="29",
                          .month="4",
                          .weekday="*",
                          .year="*"});
@@ -95,16 +93,11 @@ void test_async_queue(){
      );
 
 
-     auto execution_times = job.get_execution_times();
-
-      std::cout << CronInterpreter::get_info(execution_times);
-
-
-     std::cout << "-- test 2" << std::endl;
-
+//     auto execution_times = job.get_execution_times();
+//
+//     std::cout << CronInterpreter::get_info(execution_times);
 
      scheduler.start();
-     std::cout << "-- test 3" << std::endl;
      std::this_thread::sleep_for(std::chrono::seconds(2));
 
 
@@ -119,11 +112,6 @@ void test_async_queue(){
          std::cin >> c;
      }
 
-
-
-
-
-     std::cout << "-- test 4" << std::endl;
      scheduler.stop();
 
 
