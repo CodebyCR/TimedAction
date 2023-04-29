@@ -11,6 +11,8 @@
 #include <ranges>
 #include "../TimedAction_Types/I_TimedAction.hpp"
 
+
+[[deprecated("use Timetable instead")]];
 class JobMap: public std::vector<std::pair<std::time_t, I_TimedAction*>> {
 private:
     std::function<void()> _subscribe;
