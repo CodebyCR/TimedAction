@@ -35,7 +35,7 @@ private:
 
 public:
 
-    JobLog(std::string const& name, std::string const& execution_time) :
+    JobLog(std::string_view const& name, std::string_view const& execution_time) :
             name(name),
             execution_time(execution_time) {
     }
@@ -75,10 +75,6 @@ public:
         }
         return *this;
     }
-
-    [[nodiscard]]
-
-
 
     auto INFO(std::string_view message) -> void {
         log.emplace_back(getTime(Log::INFO), message);

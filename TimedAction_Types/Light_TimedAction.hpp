@@ -56,7 +56,7 @@ public:
         }
     }
 
-    auto finished() -> std::future<Notification> override {
+    auto finished() -> std::future<Notification> { //override {
         return std::async(std::launch::async, []() -> Notification {
             auto jobLog = JobLog("TimedAction", "DATE");
             jobLog.SUCCESS("TimedAction finished");
