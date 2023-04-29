@@ -20,7 +20,6 @@ class TimedAction : public I_TimedAction {
 private:
 
     /** Internal state */
-    std::string name;
     T value;
     std::function<void(T &value)> action;
     std::chrono::milliseconds timeSinceLastAction{};
@@ -28,7 +27,6 @@ private:
     std::thread thread;
 
     /** Execution times */
-    std::vector<std::tm> execution_times;
     std::chrono::milliseconds interval;
 
     [[Deprecated ("use Callback<A, I, E> instead <A, I, E>") ]]
@@ -49,11 +47,12 @@ public:
                 T &value,
                 std::chrono::milliseconds interval):
 
-                name(name),
                 action(action),
                 value(value),
                 interval(interval),
                 isRunning(false) {
+
+        this->name = name;
     }
 
     TimedAction(std::string_view const& name,
@@ -61,11 +60,12 @@ public:
                 T &value,
                 std::vector<std::tm>& execution_times):
 
-            name(name),
             action(action),
             value(value),
-            execution_times(execution_times),
             isRunning(false) {
+
+        this->name = name;
+        this->execution_times(execution_times);
     }
 
     TimedAction(std::string_view const& name,
@@ -73,11 +73,11 @@ public:
                 T &value,
                 Cron& corn ):
 
-            name(name),
             action(action),
             value(value),
-            execution_times(corn.get_execution_times()),
             isRunning(false) {
+        this->name = name;
+        this->execution_times = corn.get_execution_times();
     }
 
 

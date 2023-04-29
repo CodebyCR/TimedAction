@@ -10,6 +10,10 @@
 #include "../Notification/Notification.hpp"
 
 class I_TimedAction {
+protected:
+    std::string name;
+
+    std::vector<std::tm> execution_times;
 
 public:
 
@@ -31,6 +35,22 @@ public:
 
     [[nodiscard]]
     virtual auto get_execution_times() const -> std::vector<std::tm> = 0;
+
+
+    // << Abstract >>
+
+    auto execution_time_count_message() -> std::string
+    {
+        const auto execution_count = this->get_execution_times().size();
+        const bool is_single_execution = execution_count == 1;
+
+        auto ss = std::stringstream();
+        ss << "TimeTable: put '" << name << "' for execution at " << std::asctime(&this->execution_times[0]);
+        is_single_execution
+        ? ss << "." << std::flush
+        : ss << " and " << execution_count -1 << " more times." << std::flush;
+        return ss.str();
+    }
 
 
 };

@@ -17,7 +17,6 @@ class Light_TimedAction : public I_TimedAction {
 private:
 
     /** Internal state */
-    std::string name;
     bool value;
     std::function<void(bool &value)> action;
     std::chrono::milliseconds interval{};
@@ -25,7 +24,6 @@ private:
     bool isRunning{};
     std::thread thread;
 
-    std::vector<std::tm> executionTimes;
 
 public:
 
@@ -33,12 +31,12 @@ public:
                     std::function<void(T &value)> const& action,
                     T &value,
                     std::chrono::milliseconds const& interval):
-
-            name(name),
             action(static_cast<const std::function<void(bool &)>>(action)),
             value(value),
             interval(interval),
             isRunning(false) {
+
+        this->name =name;
     }
 
     ~Light_TimedAction() override = default;
@@ -90,7 +88,7 @@ public:
 
     [[nodiscard]]
     auto getName() const -> std::string_view override {
-        return name;
+        return this->name;
     }
 
     auto getValue() const -> T {
