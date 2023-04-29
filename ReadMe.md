@@ -1,4 +1,4 @@
-# Timed Action v.0.1.0 (Unofficial)
+# Timed Action v.0.3.0 (Unofficial)
 
 ![C++](https://img.shields.io/badge/C%2B%2B-00599C?style=for-the-badge&logo=c%2B%2B&logoColor=white)
 ![GitHub](https://img.shields.io/badge/SonarLint-CB2029?style=for-the-badge&logo=sonarlint&logoColor=white)
@@ -14,6 +14,11 @@
 - [ ] Extendable
 - [x] Independent of other libraries
 - [ ] Individual job logging
+- [ ] Central log notification point
+
+## NOTE
+
+> This repo will currently maintain as trunk. This will change with Version 1.0.0 to a release branch.
 
 
 
