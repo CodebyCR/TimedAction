@@ -7,7 +7,6 @@
 #include <iostream>
 #include <memory>
 #include <future>
-#include "JobMap.hpp"
 #include "../Notification/Notification.hpp"
 #include "TimeTable.hpp"
 

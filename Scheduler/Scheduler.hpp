@@ -14,7 +14,6 @@
 #include "EventQueue.hpp"
 #include "Watcher.hpp"
 #include "JobManager.hpp"
-#include "JobMap.hpp"
 #include "TimeTable.hpp"
 
 
@@ -22,7 +21,6 @@ class Scheduler {
 
 private:
 //    std::shared_ptr<EventQueue> eventQueue_ptr;
-//    std::shared_ptr<JobMap> jobMap_ptr;
     std::shared_ptr<TimeTable>  timeTable_ptr;
     Watcher watcher = Watcher();
 
@@ -36,10 +34,7 @@ private:
         timeTable_ptr = std::make_shared<TimeTable>();
 
 //        eventQueue_ptr = std::make_shared<EventQueue>();
-//
-//        if(!jobMap_ptr) {
-//            jobMap_ptr = std::make_shared<JobMap>();
-//        }
+
 
         timeTable_ptr->on_subscribe([](std::pair<std::time_t, I_TimedAction*> entry) {
             std::cout << "TimeTable: subscribed to " << entry.second->getName() << std::endl;
