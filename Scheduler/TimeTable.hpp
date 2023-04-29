@@ -6,6 +6,8 @@
 
 #include <iostream>
 #include "../TimedAction_Types/I_TimedAction.hpp"
+#include <sstream>
+#include <ranges>
 
 
 class TimeTable: public std::vector<std::pair<std::time_t, I_TimedAction*>>  {
@@ -13,15 +15,19 @@ private:
     std::function<void(std::pair<std::time_t, I_TimedAction*>)> _subscribe;
     std::function<void(std::pair<std::time_t, I_TimedAction*>)> _listen;
 
+
 public:
 
     auto add(I_TimedAction* const& action) -> void
     {
         auto executionTimes = action->get_execution_times();
 
-        for (auto & executionTime : executionTimes) {
-            std::cout << "TimeTable: put " << action->getName() << " for execution at " << std::asctime(&executionTime) << std::endl;
+        std::cout << action->execution_time_count_message() << std::endl;
 
+
+
+
+        for (auto & executionTime : executionTimes) {
             const auto time_t = std::mktime(&executionTime);
             this->push_back(std::make_pair(time_t, action));
         }
@@ -30,7 +36,7 @@ public:
             _subscribe(std::make_pair(0, action));
         }
 
-        this->sort();
+        //this->sort();
 
     }
 
