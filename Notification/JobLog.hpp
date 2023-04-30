@@ -19,7 +19,6 @@ namespace Log {
 
 class JobLog : public Notification {
 private:
-    std::string_view name;
     std::string_view execution_time;
     std::vector<std::pair<std::string_view, std::string_view>> log;
 
@@ -36,17 +35,19 @@ private:
 public:
 
     JobLog(std::string_view const& name, std::string_view const& execution_time) :
-            name(name),
             execution_time(execution_time) {
+
+        this->name = name;
     }
 
     ~JobLog() override = default;
 
     // copy constructor
     JobLog(JobLog const& other) :
-            name(other.name),
             execution_time(other.execution_time),
             log(other.log) {
+
+        this->name = other.name;
     }
 
     // copy assignment
@@ -61,9 +62,10 @@ public:
 
     // move constructor
     JobLog(JobLog&& other) noexcept :
-            name(other.name),
             execution_time(other.execution_time),
             log(std::move(other.log)) {
+
+        this->name = other.name;
     }
 
     // move assignment
