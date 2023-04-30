@@ -11,6 +11,8 @@
 
 
 class TimeTable: public std::vector<std::pair<std::time_t, I_TimedAction*>>  {
+    // * REFACTOR: use std::multimap instead of std::vector
+    // use std::map<std::time_t, std::vector<I_TimedAction*>> instead of std::vector<std::pair<std::time_t, I_TimedAction*>>
 private:
     std::function<void(std::pair<std::time_t, I_TimedAction*>)> _subscribe;
     std::function<void(std::pair<std::time_t, I_TimedAction*>)> _listen;
@@ -22,10 +24,8 @@ public:
     {
         auto executionTimes = action->get_execution_times();
 
+
         std::cout << action->execution_time_count_message() << std::endl;
-
-
-
 
         for (auto & executionTime : executionTimes) {
             const auto time_t = std::mktime(&executionTime);

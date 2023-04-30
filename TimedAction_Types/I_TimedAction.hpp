@@ -8,6 +8,7 @@
 #include <future>
 #include "../Cron/Cron.hpp"
 #include "../Notification/Notification.hpp"
+#include "../Notification/JobLog.hpp"
 
 class I_TimedAction {
 protected:
@@ -41,6 +42,12 @@ public:
 
     auto execution_time_count_message() -> std::string
     {
+        if(this->get_execution_times().empty()) {
+            return std::string("TimeTable -> WARNING: no execution times for '")
+                    .append(this->getName())
+                    .append(std::string("'."));
+        }
+
         const auto execution_count = this->get_execution_times().size();
         const bool is_single_execution = execution_count == 1;
 
@@ -50,6 +57,17 @@ public:
         ? ss << "." << std::flush
         : ss << " and " << execution_count -1 << " more times." << std::flush;
         return ss.str();
+    }
+
+    /// This methode returns a future which contains the JobLog.
+    auto finished() -> std::future<Notification> { // override {
+
+        return std::async(std::launch::async, [this]() -> Notification {
+            auto jobLog = JobLog(this->name, "DATE");
+            jobLog.SUCCESS(this->name + " finished.");
+
+            return jobLog;
+        });
     }
 
 
