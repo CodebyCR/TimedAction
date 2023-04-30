@@ -69,6 +69,43 @@ void test_async_queue(){
 
 }
 
+void test_future_task(I_TimedAction & action) {
+    std::future<Notification> task = action.finished();
+
+
+    switch(const auto result = task.wait_for(std::chrono::milliseconds(10)); result) {
+        case std::future_status::ready: {
+            std::cout << "Watcher: finished " << action.getName() << std::endl;
+
+            auto notification = task.get();
+            // cast notification to JobLog
+
+//
+//            auto jobLog = dynamic_cast<JobLog&>(notification);
+//            jobLog.print();
+        }
+            break;
+
+        case std::future_status::deferred: {
+            std::cout << "Watcher: deferred for " << action.getName() << std::endl;
+        }
+            break;
+
+        case std::future_status::timeout: {
+            std::cout << "Watcher: timeout for " << action.getName() << std::endl;
+        }
+            break;
+
+        default: {
+            std::cout << "Watcher: unknown status for " << action.getName() << std::endl;
+        }
+
+    }
+
+
+
+}
+
  auto main() -> int {
 
     // TODO: make runnable
@@ -80,7 +117,7 @@ void test_async_queue(){
      auto c_cron = Cron({.second="0",
                          .minute="*/2",
                          .hour="*",
-                         .dayOfMonth="29",
+                         .dayOfMonth="30",
                          .month="4",
                          .weekday="*",
                          .year="*"});
@@ -91,6 +128,11 @@ void test_async_queue(){
                                  str,
                                  c_cron
      );
+
+
+
+     test_future_task(job);
+
 
 
 //     auto execution_times = job.get_execution_times();
@@ -121,6 +163,8 @@ void test_async_queue(){
 
      return 0;
  }
+
+
 
 //int main() {
 //
