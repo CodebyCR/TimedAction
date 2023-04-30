@@ -42,6 +42,9 @@ private:
 
         timeTable_ptr->on_listen([](std::pair<std::time_t, I_TimedAction*> entry) {
             std::cout << "TimeTable: listened to " << entry.second->getName() << std::endl;
+            // TODO: count down the execution times for the action and remove it from the timeTable_ptr if it is 0
+            // "TimeTable: dropped " << entry.second->getName() << std::endl;
+            // remove for less entries
         });
 
     };
@@ -69,7 +72,6 @@ public:
     // ! Refactor: This starts all eventQueue_ptr on separate threads
     // * What you want -> start the thread of the action if it is required
     auto start() -> void {
-
 
         /// new watcher thread & make it independent
         auto watcher_thread = watcher.getThread(timeTable_ptr);
