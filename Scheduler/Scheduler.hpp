@@ -25,29 +25,47 @@ private:
     Watcher watcher = Watcher();
 
 
-
-    // JobManager jobManager;
-
-
     Scheduler(){
-
         timeTable_ptr = std::make_shared<TimeTable>();
-
-//        eventQueue_ptr = std::make_shared<EventQueue>();
-
-
-        timeTable_ptr->on_subscribe([](std::pair<std::time_t, I_TimedAction*> entry) {
-            std::cout << "TimeTable: subscribed to " << entry.second->getName() << std::endl;
-        });
-
-        timeTable_ptr->on_listen([](std::pair<std::time_t, I_TimedAction*> entry) {
-            std::cout << "TimeTable: listened to " << entry.second->getName() << std::endl;
-            // TODO: count down the execution times for the action and remove it from the timeTable_ptr if it is 0
-            // "TimeTable: dropped " << entry.second->getName() << std::endl;
-            // remove for less entries
-        });
-
+        // drop folder support
+        timeTable_subscribe_listener();
+        timeTable_drop_listener();
     };
+
+    auto timeTable_subscribe_listener () -> void {
+        timeTable_ptr->on_subscribe([this](I_TimedAction* job) {
+            std::cout << "[ TimeTable | SUBSCRIBE ] -> '" << job->getName() << "' " << std::endl;
+
+            if(job->get_execution_times().empty()) {
+                std::cout << "[ TimeTable | WARNING ] -> '" << job->getName()
+                          << "' has no execution times." << std::endl;
+
+                timeTable_ptr->drop(job);
+            }
+            else{
+                const auto execution_count = job->get_execution_times().size();
+                const bool is_single_execution = execution_count == 1;
+
+                if(is_single_execution) {
+                    std::cout << "[ TimeTable | INFO ] -> '" << job->getName()
+                              << "' will be executed at " << std::asctime(&job->get_execution_times()[0])<< "." << std::endl;
+                }
+                else {
+                    std::cout << "[ TimeTable | INFO ] -> '" << job->getName()
+                              << "' will be executed at " << std::asctime(&job->get_execution_times()[0])<< " and "
+                              << execution_count -1 << " more times." << std::endl;
+                }
+
+            }
+
+        });
+    }
+
+    auto timeTable_drop_listener () -> void {
+        timeTable_ptr->on_listen([](I_TimedAction* job) {
+            std::cout << "[ TimeTable | DROPPED ] -> '" << job->getName() << "'" << std::endl;
+        });
+    }
 
 
 public:
@@ -68,9 +86,6 @@ public:
         timeTable_ptr->add(action);
     }
 
-    /// TODO: start & close new threads from the scheduler instated of inside the action
-    // ! Refactor: This starts all eventQueue_ptr on separate threads
-    // * What you want -> start the thread of the action if it is required
     auto start() -> void {
 
         /// new watcher thread & make it independent
@@ -82,9 +97,7 @@ public:
     auto stop() -> void {
         watcher.isRunning = false;
 
-        for (auto &entry : *timeTable_ptr) {
-            entry.second->stop();
-        }
+
     }
 
     auto restart() const -> void {
@@ -96,10 +109,7 @@ public:
 
     [[nodiscard]]
     auto is_running() const -> bool {
-        std::ranges::any_of(*timeTable_ptr, [](auto &entry) {
-            return entry.second->is_running();
-        });
-        return false;
+        return watcher.isRunning;
     }
 
     /////////////////////////

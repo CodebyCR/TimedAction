@@ -23,7 +23,7 @@ public:
     {
 
         if(!timeTable_ptr){
-            std::cout << "Watcher: timeTable_ptr is null" << std::endl;
+            std::cout << "[ Watcher | ERROR ] -> uninitialised TimeTable." << std::endl;
         }
 
         return std::thread([&] {
@@ -33,18 +33,18 @@ public:
                 const auto now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
                 auto time_t_vec = timeTable_ptr->get(now);
 
-                std::cout << "Watcher: checking for jobs (" << time_t_vec.size() << " found)" << std::endl;
+                std::cout << "[ Watcher | CHECKING ] -> " << time_t_vec.size() << " found." << std::endl;
 
 
                 /// check if jobs for execution
                 std::ranges::for_each(time_t_vec, [&](I_TimedAction* &time_t) {
                     const auto asc_t = std::asctime(std::localtime(&now));
-                    std::cout << "Watcher: found " << time_t->getName() << " for execution at " << asc_t << std::endl;
+                    std::cout << "[ Watcher | FOUND ] -> " << time_t->getName() << " for execution at " << asc_t << std::endl;
 //                    time_t->start();
 //                    timeTable_ptr->remove(now);
                 });
 
-try{
+
 
                 /// check if jobs for finished execution
                 std::ranges::for_each(time_t_vec, [&](I_TimedAction* &time_t) {
@@ -52,31 +52,27 @@ try{
 
                     switch(const auto result = task.wait_for(std::chrono::milliseconds(10)); result) {
                         case std::future_status::ready: {
-                            std::cout << "Watcher: finished " << time_t->getName() << std::endl;
+                            std::cout << "[ Watcher ] -> finished " << time_t->getName() << std::endl;
                         }
                         break;
 
                         case std::future_status::deferred: {
-                            std::cout << "Watcher: deferred for " << time_t->getName() << std::endl;
+                            std::cout << "[ Watcher ] -> deferred for " << time_t->getName() << std::endl;
                         }
                         break;
 
                         case std::future_status::timeout: {
-                            std::cout << "Watcher: timeout for " << time_t->getName() << std::endl;
+                            std::cout << "[ Watcher ] -> timeout for " << time_t->getName() << std::endl;
                         }
                         break;
 
                         default: {
-                            std::cout << "Watcher: unknown status for " << time_t->getName() << std::endl;
+                            std::cout << "[ Watcher ] -> unknown status for " << time_t->getName() << std::endl;
                         }
 
                     }
 
                 });
-
-}catch(std::exception& e){
-    std::cout << "Watcher: exception: " << e.what() << std::endl;
-}
 
 
             }
