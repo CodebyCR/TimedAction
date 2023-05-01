@@ -5,8 +5,9 @@
 #pragma once
 
 #include <iostream>
+#include <utility>
 #include <vector>
-#include "../StringUtils.hpp"
+#include "../Utilities/StringUtils.hpp"
 
 class WeekdayPart {
 
@@ -63,12 +64,12 @@ private:
             return;
         }
 
-        if(const bool isList = StringUtils::contains(rawValue, ",")){
+        if(const bool isList = rawValue.contains(',')){
             list();
             return;
         }
 
-        if(const bool isRange = StringUtils::contains(rawValue, "-")){
+        if(const bool isRange = rawValue.contains('-')){
             range();
             return;
         }
@@ -81,8 +82,8 @@ public:
 
     WeekdayPart() = default;
 
-    WeekdayPart(std::string const& weekdays):
-            rawValue(weekdays) {
+    WeekdayPart(std::string weekdays):
+            rawValue(std::move(weekdays)) {
         process();
     }
 

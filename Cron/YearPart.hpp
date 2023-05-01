@@ -6,7 +6,7 @@
 
 #include <iostream>
 #include <string>
-#include "../StringUtils.hpp"
+#include "../Utilities/StringUtils.hpp"
 #include <forward_list>
 #include "LeapYearUtils.hpp"
 
@@ -41,7 +41,7 @@ private:
             numberValue(std::to_string(current_year + 1900));
         }
 
-        if (StringUtils::contains(basicString, "*") && basicString.length() > 1) {
+        if (basicString.contains("*") && basicString.length() > 1) {
             // */2
             stepValue(basicString);
         }
@@ -139,14 +139,14 @@ public:
 
     YearPart() = default;
 
-    YearPart(const std::string &rawValue):
+    explicit YearPart(const std::string &rawValue):
             rawValue(rawValue) {
 
         this->isNumber = StringUtils::is_number(rawValue);
         this->isWildcard = rawValue == "*";
-        this->isRange = StringUtils::contains(rawValue, "-") && !StringUtils::contains(rawValue, "/");
-        this->isList = StringUtils::contains(rawValue, ",");
-        this->isPeriodic = StringUtils::contains(rawValue, "/") && !StringUtils::contains(rawValue, "*");
+        this->isRange = rawValue.contains('-') && !rawValue.contains('/');
+        this->isList = rawValue.contains(',');
+        this->isPeriodic = rawValue.contains('/') && !rawValue.contains('*');
 
         const auto [multiplier, range] = getPartRangeSize();
         this->partMultiplier = multiplier;
