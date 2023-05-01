@@ -10,31 +10,34 @@
 #include <ranges>
 
 
-class TimeTable: public std::vector<std::pair<std::time_t, I_TimedAction*>>  {
-    // * REFACTOR: use std::multimap instead of std::vector
-    // use std::map<std::time_t, std::vector<I_TimedAction*>> instead of std::vector<std::pair<std::time_t, I_TimedAction*>>
+class TimeTable: public std::map<std::time_t, std::vector<I_TimedAction*>>  {
 private:
-    std::function<void(std::pair<std::time_t, I_TimedAction*>)> _subscribe;
-    std::function<void(std::pair<std::time_t, I_TimedAction*>)> _listen;
+    std::function<void(I_TimedAction*)> _subscribe;
+    std::function<void(I_TimedAction*)> _listen;
 
 
 public:
 
     auto add(I_TimedAction* const& action) -> void
     {
+        if(_subscribe) {
+            _subscribe(action);
+        }
+
         auto executionTimes = action->get_execution_times();
-
-
-        std::cout << action->execution_time_count_message() << std::endl;
 
         for (auto & executionTime : executionTimes) {
             const auto time_t = std::mktime(&executionTime);
-            this->push_back(std::make_pair(time_t, action));
+
+            if (this->find(time_t) == this->end()) {
+                this->insert(std::make_pair(time_t, std::vector<I_TimedAction*>()));
+            }
+
+            this->at(time_t).emplace_back(action);
+
         }
 
-        if(_subscribe) {
-            _subscribe(std::make_pair(0, action));
-        }
+
 
         //this->sort();
 
@@ -42,39 +45,46 @@ public:
 
     auto get(std::time_t const& time) -> std::vector<I_TimedAction*>
     {
-        std::vector<I_TimedAction*> result;
-
-        auto result_vec = std::ranges::filter_view(*this, [&](auto &pair) {
-            return pair.first == time;
-        });
-
-        for (auto &pair : result_vec) {
-            result.emplace_back(pair.second);
+        if (this->find(time) == this->end()) {
+            return {};
         }
 
-        return result;
+        return this->at(time);
     }
 
-    /// Sort
-
-    auto sort() -> void
+    auto drop(I_TimedAction* action) -> void
     {
-        std::sort(this->begin(), this->end(), [](auto &left, auto &right) {
-            return &left.first < &right.first;
-        });
+        // Erase all entries with action
+        for (auto & entry : *this) {
+            auto & actions = entry.second;
+
+            actions.erase(std::remove(actions.begin(), actions.end(), action), actions.end());
+
+            if (actions.empty()) {
+                this->erase(entry.first);
+            }
+        }
+
+        if(_listen) {
+            _listen(action);
+        }
     }
+
+
 
 
     /// Listener
 
-    auto on_listen(std::function<void(std::pair<std::time_t, I_TimedAction*>)> listen) -> void
+    auto on_listen(std::function<void(I_TimedAction*)> listen) -> void
     {
         this->_listen = std::move(listen);
     }
 
-    auto on_subscribe(std::function<void(std::pair<std::time_t, I_TimedAction*>)> subscribe) -> void
+    auto on_subscribe(std::function<void(I_TimedAction*)> subscribe) -> void
     {
         this->_subscribe = std::move(subscribe);
     }
+
+    // On empty  for watcher standby mode
 
 };
