@@ -40,24 +40,7 @@ public:
 
     // << Abstract >>
 
-    auto execution_time_count_message() -> std::string
-    {
-        if(this->get_execution_times().empty()) {
-            return std::string("TimeTable -> WARNING: no execution times for '")
-                    .append(this->getName())
-                    .append(std::string("'."));
-        }
 
-        const auto execution_count = this->get_execution_times().size();
-        const bool is_single_execution = execution_count == 1;
-
-        auto ss = std::stringstream();
-        ss << "TimeTable: put '" << name << "' for execution at " << std::asctime(&this->execution_times[0]);
-        is_single_execution
-        ? ss << "." << std::flush
-        : ss << " and " << execution_count -1 << " more times." << std::flush;
-        return ss.str();
-    }
 
     /// This methode returns a future which contains the JobLog.
     auto finished() -> std::future<Notification> { // override {
