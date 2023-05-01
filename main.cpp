@@ -123,7 +123,7 @@ auto logger_test(){
 
  auto main() -> int {
 
-     logger_test();
+     logger_test(); // ! Failed
 
 
 

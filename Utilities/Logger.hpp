@@ -78,3 +78,7 @@ public:
     }
 
 };
+
+// a methode to toggle the output also to cout
+// a methode to set a logfile path
+
