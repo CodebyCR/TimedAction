@@ -1,17 +1,17 @@
 #include <iostream>
-//#include <queue>
+
 #include "TimedAction_Types/I_TimedAction.hpp"
-//#include "TimedAction_Types/TimedAction.hpp"
 #include "TimedAction_Types/TimedAction.hpp"
+#include "TimedAction_Types/Light_TimedAction.hpp"
 #include "Cron/Cron.hpp"
 #include <thread>
 #include <memory>
-//#include "Scheduler.hpp"
+
 
 #include "Cron/CronInterpreter.hpp"
 #include "Scheduler/Scheduler.hpp"
 #include "Container/AsyncQueue.hpp"
-#include "TimedAction_Types/Light_TimedAction.hpp"
+
 
 
 void sayHallo(std::uint32_t &count) {
@@ -117,8 +117,8 @@ void test_future_task(I_TimedAction & action) {
      auto c_cron = Cron({.second="0",
                          .minute="*/2",
                          .hour="*",
-                         .dayOfMonth="30",
-                         .month="4",
+                         .dayOfMonth="1",
+                         .month="5",
                          .weekday="*",
                          .year="*"});
 
@@ -129,19 +129,8 @@ void test_future_task(I_TimedAction & action) {
                                  c_cron
      );
 
-
-
-     test_future_task(job);
-
-
-
-//     auto execution_times = job.get_execution_times();
-//
-//     std::cout << CronInterpreter::get_info(execution_times);
-
      scheduler.start();
      std::this_thread::sleep_for(std::chrono::seconds(2));
-
 
      scheduler.add(&job);
 
@@ -155,10 +144,6 @@ void test_future_task(I_TimedAction & action) {
      }
 
      scheduler.stop();
-
-
-    // auto action_ptr = std::make_shared<I_TimedAction>(job);
-     //scheduler.add(&job);
 
 
      return 0;
