@@ -38,7 +38,7 @@ private:
         if (this->isWildcard) {
             // *
 ////            else if (this->name == "hour") {
-////                // TODO: Stunden haben eine stunde versatz
+////                // TODO: Stunden haben eine stunde versatz -> wahrscheinlich wegen der Winterzeit
 ////                for (int index = 0; index < this->partRange; index++) {
 ////                    this->times.emplace_front(index  * this->partMultiplier);
 ////                }
@@ -152,6 +152,10 @@ private:
     auto numberValue(const std::string &basicString) -> void {
         // 1
         int value = std::stoi(basicString);
+
+        if(this->name == "month") {
+            value -= 1;
+        }
 
         std::chrono::seconds currentTime(value * this->partMultiplier);
         this->times.emplace_front(currentTime);
