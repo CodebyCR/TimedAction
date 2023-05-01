@@ -11,6 +11,7 @@
 #include "Cron/CronInterpreter.hpp"
 #include "Scheduler/Scheduler.hpp"
 #include "Container/AsyncQueue.hpp"
+#include "Utilities/Logger.hpp"
 
 
 
@@ -103,10 +104,29 @@ void test_future_task(I_TimedAction & action) {
     }
 
 
+}
 
+
+
+auto logger_test(){
+    Logger logger(true);
+
+    std::ostream logstream(&logger);
+    logstream << "This line will be logged and printed to cout" << std::endl;
+
+    // Schreibe einige weitere Zeilen in den Log-Stream und flushe den Logger
+    logstream << "This line will be logged and printed to cout and log file" << std::endl;
+    logger.flush();
+
+    return 0;
 }
 
  auto main() -> int {
+
+     logger_test();
+
+
+
 
     // TODO: make runnable
      auto& scheduler = Scheduler::get_instance();

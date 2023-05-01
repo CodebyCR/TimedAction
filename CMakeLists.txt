@@ -11,24 +11,33 @@ project("TimedAction" VERSION ${PROJECT_VERSION} LANGUAGES CXX)
 
 message(NOTICE "${PROJECT_NAME}: ${PROJECT_VERSION}")
 
-set(SUB_LIB_COUNT 5)
+set(SUB_LIB_COUNT 6)
+
+# Add Utility library
+set(UTILITY_LIBRARY "Utilities")
+add_subdirectory(${UTILITY_LIBRARY})
+if (UTILITY_LIBRARY)
+    message(NOTICE " - [1/${SUB_LIB_COUNT}] ${UTILITY_LIBRARY} found")
+else()
+    message(FATAL_ERROR " - [1/${SUB_LIB_COUNT}] ${UTILITY_LIBRARY} not found")
+endif()
 
 # Add Cron library
 set(LIBRARY_CRON "Cron")
 add_subdirectory(${LIBRARY_CRON})
 if (LIBRARY_CRON)
-    message(NOTICE " - [1/${SUB_LIB_COUNT}] ${LIBRARY_CRON} found")
+    message(NOTICE " - [2/${SUB_LIB_COUNT}] ${LIBRARY_CRON} found")
 else()
-    message(FATAL_ERROR " - [1/${SUB_LIB_COUNT}] ${LIBRARY_CRON} not found")
+    message(FATAL_ERROR " - [2/${SUB_LIB_COUNT}] ${LIBRARY_CRON} not found")
 endif()
 
 # Add TimedAction library
 set(LIBRARY_TIMED_ACTION "TimedAction_Types")
 add_subdirectory(${LIBRARY_TIMED_ACTION})
 if (LIBRARY_TIMED_ACTION)
-    message(NOTICE " - [2/${SUB_LIB_COUNT}] ${LIBRARY_TIMED_ACTION} found")
+    message(NOTICE " - [3/${SUB_LIB_COUNT}] ${LIBRARY_TIMED_ACTION} found")
 else()
-    message(FATAL_ERROR " - [2/${SUB_LIB_COUNT}] ${LIBRARY_TIMED_ACTION} not found")
+    message(FATAL_ERROR " - [3/${SUB_LIB_COUNT}] ${LIBRARY_TIMED_ACTION} not found")
 endif()
 
 
@@ -36,26 +45,26 @@ endif()
 set(LIBRARY_CONTAINER "Container")
 add_subdirectory(${LIBRARY_CONTAINER})
 if (LIBRARY_CONTAINER)
-    message(NOTICE " - [3/${SUB_LIB_COUNT}] ${LIBRARY_CONTAINER} found")
+    message(NOTICE " - [4/${SUB_LIB_COUNT}] ${LIBRARY_CONTAINER} found")
 else()
-    message(FATAL_ERROR " - [3/${SUB_LIB_COUNT}] ${LIBRARY_CONTAINER} not found")
+    message(FATAL_ERROR " - [4/${SUB_LIB_COUNT}] ${LIBRARY_CONTAINER} not found")
 endif()
 
 # Add Scheduler library
 set(LIBRARY_SCHEDULER "Scheduler")
 add_subdirectory(${LIBRARY_SCHEDULER})
 if (LIBRARY_SCHEDULER)
-    message(NOTICE " - [4/${SUB_LIB_COUNT}] ${LIBRARY_SCHEDULER} found")
+    message(NOTICE " - [5/${SUB_LIB_COUNT}] ${LIBRARY_SCHEDULER} found")
 else()
-    message(FATAL_ERROR " - [4/${SUB_LIB_COUNT}] ${LIBRARY_SCHEDULER} not found")
+    message(FATAL_ERROR " - [5/${SUB_LIB_COUNT}] ${LIBRARY_SCHEDULER} not found")
 endif()
 
 set(LIBRARY_NOTIFICATION "Notification")
 add_subdirectory(${LIBRARY_NOTIFICATION})
 if (LIBRARY_NOTIFICATION)
-    message(NOTICE " - [5/${SUB_LIB_COUNT}] ${LIBRARY_NOTIFICATION} found")
+    message(NOTICE " - [6/${SUB_LIB_COUNT}] ${LIBRARY_NOTIFICATION} found")
 else()
-    message(FATAL_ERROR " - [5/${SUB_LIB_COUNT}] ${LIBRARY_NOTIFICATION} not found")
+    message(FATAL_ERROR " - [6/${SUB_LIB_COUNT}] ${LIBRARY_NOTIFICATION} not found")
 endif()
 
 
@@ -65,10 +74,10 @@ set(TIMED_ACTION_LIBS "TimedAction_Libs")
 
 # Bind libraries to one Library
 add_library(${TIMED_ACTION_LIBS} SHARED
-            ${LIBRARY_CRON}
-            ${LIBRARY_TIMED_ACTION}
-            ${LIBRARY_SCHEDULER}
-            "StringUtils.hpp")
+        ${UTILITY_LIBRARY}
+        ${LIBRARY_CRON}
+        ${LIBRARY_TIMED_ACTION}
+        ${LIBRARY_SCHEDULER})
 
 
 add_executable(${PROJECT_NAME} main.cpp )
