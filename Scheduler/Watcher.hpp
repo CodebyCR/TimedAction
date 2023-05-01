@@ -52,22 +52,22 @@ public:
 
                     switch(const auto result = task.wait_for(std::chrono::milliseconds(10)); result) {
                         case std::future_status::ready: {
-                            std::cout << "[ Watcher ] -> finished " << time_t->getName() << std::endl;
+                            std::cout << "[ Watcher | FINISHED ] -> " << time_t->getName() << std::endl;
                         }
                         break;
 
                         case std::future_status::deferred: {
-                            std::cout << "[ Watcher ] -> deferred for " << time_t->getName() << std::endl;
+                            std::cout << "[ Watcher | DEFERRED ] -> " << time_t->getName() << std::endl;
                         }
                         break;
 
                         case std::future_status::timeout: {
-                            std::cout << "[ Watcher ] -> timeout for " << time_t->getName() << std::endl;
+                            std::cout << "[ Watcher | TIMEOUT ] -> " << time_t->getName() << std::endl;
                         }
                         break;
 
                         default: {
-                            std::cout << "[ Watcher ] -> unknown status for " << time_t->getName() << std::endl;
+                            std::cout << "[ Watcher | ERROR ] -> unknown status of " << time_t->getName() << std::endl;
                         }
 
                     }
