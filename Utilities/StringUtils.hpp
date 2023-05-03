@@ -61,10 +61,6 @@ namespace StringUtils {
         return result;
     }
 
-    auto contains(std::string_view const &str, std::string_view const &substring) -> bool {
-        return str.find(substring) != std::string::npos;
-    }
-
     auto is_number(std::string_view const &str) -> bool {
         return !str.empty() &&
                std::find_if(str.begin(), str.end(), [](char c) { return !std::isdigit(c); }) == str.end();
