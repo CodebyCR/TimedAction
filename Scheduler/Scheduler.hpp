@@ -4,35 +4,34 @@
 
 #pragma once
 
-#include <iostream>
-#include <string>
-#include <vector>
-#include <memory>
-#include <map>
-#include "../TimedAction_Types/I_TimedAction.hpp"
 #include "../Cron/CronInterpreter.hpp"
+#include "../TimedAction_Types/I_TimedAction.hpp"
 #include "EventQueue.hpp"
-#include "Watcher.hpp"
 #include "JobManager.hpp"
 #include "TimeTable.hpp"
+#include "Watcher.hpp"
+#include <iostream>
+#include <map>
+#include <memory>
+#include <string>
+#include <vector>
 
 
 class Scheduler {
-
 private:
-//    std::shared_ptr<EventQueue> eventQueue_ptr;
-    std::shared_ptr<TimeTable>  timeTable_ptr;
+    //    std::shared_ptr<EventQueue> eventQueue_ptr;
+    std::shared_ptr<TimeTable> timeTable_ptr;
     Watcher watcher = Watcher();
 
 
-    Scheduler(){
+    Scheduler() {
         timeTable_ptr = std::make_shared<TimeTable>();
         // drop folder support
         timeTable_subscribe_listener();
         timeTable_drop_listener();
     };
 
-    auto timeTable_subscribe_listener () -> void {
+    auto timeTable_subscribe_listener() -> void {
         timeTable_ptr->on_subscribe([this](I_TimedAction* job) {
             std::cout << "[ TimeTable | SUBSCRIBE ] -> '" << job->getName() << "' " << std::endl;
 
@@ -42,26 +41,24 @@ private:
 
                 timeTable_ptr->drop(job);
             }
-            else{
+            else {
                 const auto execution_count = job->get_execution_times().size();
                 const bool is_single_execution = execution_count == 1;
 
                 if(is_single_execution) {
                     std::cout << "[ TimeTable | INFO ] -> '" << job->getName()
-                              << "' will be executed at " << std::asctime(&job->get_execution_times()[0])<< "." << std::endl;
+                              << "' will be executed at " << std::asctime(&job->get_execution_times()[0]) << "." << std::endl;
                 }
                 else {
                     std::cout << "[ TimeTable | INFO ] -> '" << job->getName()
-                              << "' will be executed at " << std::asctime(&job->get_execution_times()[0])<< " and "
-                              << execution_count -1 << " more times." << std::endl;
+                              << "' will be executed at " << std::asctime(&job->get_execution_times()[0]) << " and "
+                              << execution_count - 1 << " more times." << std::endl;
                 }
-
             }
-
         });
     }
 
-    auto timeTable_drop_listener () -> void {
+    auto timeTable_drop_listener() -> void {
         timeTable_ptr->on_listen([](I_TimedAction* job) {
             std::cout << "[ TimeTable | DROPPED ] -> '" << job->getName() << "'" << std::endl;
         });
@@ -87,46 +84,39 @@ public:
     }
 
     auto start() -> void {
-
         /// new watcher thread & make it independent
         auto watcher_thread = watcher.getThread(timeTable_ptr);
         watcher_thread.detach();
-
     }
 
     auto stop() -> void {
         watcher.isRunning = false;
-
-
     }
 
     auto restart() const -> void {
-//        for (auto &entry : *timeTable_ptr) {
-//            entry.second->restart();
-//        }
+        //        for (auto &entry : *timeTable_ptr) {
+        //            entry.second->restart();
+        //        }
         std::cout << "Scheduler::restart() not implemented" << std::endl;
     }
 
-    [[nodiscard]]
-    auto is_running() const -> bool {
+    [[nodiscard]] auto is_running() const -> bool {
         return watcher.isRunning;
     }
 
     /////////////////////////
 
     auto start_scheduler() -> void {
-//        auto job_list = std::map<std::string, std::tm>{};
-//
-//        for(auto &action : *eventQueue_ptr) {
-//            const auto time_points = action->get_execution_times();
-//            for(auto &time_point : time_points) {
-//                job_list.emplace(action->getName(), time_point);
-//            }
-//        }
-    std::cout << "Scheduler::start_scheduler() not implemented" << std::endl;
+        //        auto job_list = std::map<std::string, std::tm>{};
+        //
+        //        for(auto &action : *eventQueue_ptr) {
+        //            const auto time_points = action->get_execution_times();
+        //            for(auto &time_point : time_points) {
+        //                job_list.emplace(action->getName(), time_point);
+        //            }
+        //        }
+        std::cout << "Scheduler::start_scheduler() not implemented" << std::endl;
     }
-
-
 };
 
 
@@ -141,4 +131,3 @@ public:
 //     scheduler.stop();
 //     return 0;
 // }
-
