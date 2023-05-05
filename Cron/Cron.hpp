@@ -36,15 +36,12 @@ private:
     CronPart hours;
     CronPart daysOfMonth;
     CronPart months;
-    WeekdayPart daysOfWeek;    // 0-6 || MON || TUE || WED-THU || FRI || SAT || SUN || * || */2 || 1,2,3 || 1-5 || 1-5/2 || 1-5,7,9  String
+    WeekdayPart daysOfWeek;
     YearPart years;
 
-    // 0-6 or sun-sat or sunday-saturday or mon-fri
+    std::vector<std::tm> execution_times;
 
-    //    std::ostream& operator<<(std::ostream& os, const Cron& cron) {
-    //        os << "Cron: " << cron.second << " " << cron.minute << " " << cron.hour << " " << cron.dayOfMonth << " " << cron.month << " " << cron.dayOfWeek << " " << cron.year;
-    //        return os;
-    //    }
+
 
     auto processCronParts(std::vector<std::string>& cronParts) -> void {
         if(!CronRegex::isValidCron(cronParts)) {
@@ -112,7 +109,7 @@ private:
      * @param cartesianProduct
      * @return A filtered vector of time points.
      */
-    [[nodiscard]] auto filterOfReachedTimes(const std::vector<std::tm>& cartesianProduct) const {
+    [[nodiscard]] static auto filterOfReachedTimes(const std::vector<std::tm>& cartesianProduct) {
         std::vector<std::tm> result;
 
         auto now = std::chrono::system_clock::now();
@@ -136,8 +133,8 @@ private:
      * Sort the time points by valid Weekdays.
      * @param times
      */
-    [[nodiscard]] auto filteredOfWeekdayPart(const std::vector<std::tm>& times,
-                                             const std::vector<int>& weekdays) const {
+    [[nodiscard]] static auto filteredOfWeekdayPart(const std::vector<std::tm>& times,
+                                                    const std::vector<int>& weekdays) {
         std::vector<std::tm> result;
 
         for(auto const& time: times) {
@@ -167,7 +164,7 @@ private:
     }
 
 public:
-    explicit Cron(CronCapsule capsule) {
+    explicit Cron(const CronCapsule& capsule) {
         const auto& [second, minute, hour, dayOfMonth, month, weekday, year] = capsule;
 
         std::vector<std::string> cronParts = {
@@ -185,21 +182,32 @@ public:
     }
 
     explicit Cron(std::string const& cronString) {
-        auto cronParts = StringUtils::split_by(cronString, ' ');
 
+        std::cout << "CronString: " << cronString << std::endl;
+        if(cronString.empty()) {
+            throw std::invalid_argument("Cron string can't be empty.");
+        }
+
+        if(!cronString.contains(' ')) {
+            throw std::invalid_argument("Wrong cron string format exception.");
+        }
+
+        auto cronParts = StringUtils::split_by(cronString, ' ');
+std::cout << "-1-" << std::endl;
         if(!CronRegex::isValidCron(cronParts)) {
             throw std::invalid_argument("Invalid cron string");
         }
-
+        std::cout << "-2-" << std::endl;
         if(cronParts.size() != 7) {
             throw std::invalid_argument("Cron string has to have 6 parts");
         }
-
+        std::cout << "-3-" << std::endl;
         processCronParts(cronParts);
+        std::cout << "-4-" << std::endl;
     }
 
-    friend std::ostream& operator<<(std::ostream& os, const Cron& cron) {
-        auto first_execution = cron.get_time_points().at(0);
+    friend std::ostream& operator<<(std::ostream& os, Cron& cron) {
+        auto first_execution = cron.get_execution_times().at(0);
         std::time_t time = std::mktime(&first_execution);
         auto pretty_time = std::ctime(&time);
         os << pretty_time;
@@ -213,21 +221,21 @@ public:
         return is;
     }
 
-    friend bool operator<(const Cron& lhs, const Cron& rhs) {
-        auto lhs_first_execution = lhs.get_time_points().at(0);
-        auto rhs_first_execution = rhs.get_time_points().at(0);
+    friend bool operator<( Cron& lhs, Cron& rhs) {
+        auto lhs_first_execution = lhs.get_execution_times().at(0);
+        auto rhs_first_execution = rhs.get_execution_times().at(0);
         return std::mktime(&lhs_first_execution) < std::mktime(&rhs_first_execution);
     }
 
-    friend bool operator>(const Cron& lhs, const Cron& rhs) {
-        auto lhs_first_execution = lhs.get_time_points().at(0);
-        auto rhs_first_execution = rhs.get_time_points().at(0);
+    friend bool operator>(Cron& lhs, Cron& rhs) {
+        auto lhs_first_execution = lhs.get_execution_times().at(0);
+        auto rhs_first_execution = rhs.get_execution_times().at(0);
         return std::mktime(&lhs_first_execution) > std::mktime(&rhs_first_execution);
     }
 
-    friend Cron operator"" _cron(const char* str, std::size_t size) {
+    friend Cron operator""_cron(const char* str, std::size_t size) {
         auto cron_expression = Cron(std::string(str, size));
-        return Cron(cron_expression);
+        return cron_expression;
     }
 
     [[nodiscard]] auto getSecondTimes() const {
@@ -259,9 +267,13 @@ public:
     }
 
 
-    [[nodiscard]] auto get_execution_times() const -> std::vector<std::tm> {
-        return get_time_points();
+    [[nodiscard]] auto get_execution_times() -> std::vector<std::tm> {
+        if(execution_times.empty()) {
+            execution_times = get_time_points();
+        }
+        return execution_times;
     }
+
 };
 
 //namespace std {
@@ -285,11 +297,10 @@ namespace std {
 }    // namespace std
 
 namespace CronExpression {
-
+    // ! TODO: dont works
     //    std::shared_ptr<Cron> cron;
-    static auto everyMinute() -> std::shared_ptr<Cron> {
-        return std::make_shared<Cron>("*/1 * * * * * *");
-    }
+
+    constexpr std::string_view every_minute = "*/1 * * * * * *";
 
     static auto everyFiveMinutes() -> std::shared_ptr<Cron> {
         return std::make_shared<Cron>("*/5 * * * * * *");

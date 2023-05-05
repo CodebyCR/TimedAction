@@ -120,19 +120,37 @@ auto main() -> int {
     std::uint32_t count = 2;
     std::string str = "test";
 
+    auto cron_try = std::to_cron("0 */1 * 5 5 *"); // every minute  cache only for the current day !
+
+    //std::cout << CronInterpreter::get_info(cron_try.get_execution_times());
+
+
+    auto job2 = SmartTimedAction("My_second_Job",
+                                test,
+                                str,
+                                cron_try);
+
+    scheduler.add(&job2);
+
+
     auto c_cron = Cron({.second = "0",
                         .minute = "*/2",
                         .hour = "*",
-                        .dayOfMonth = "1",
+                        .dayOfMonth = "5",
                         .month = "5",
                         .weekday = "*",
                         .year = "*"});
 
+//    auto c_cron = Cron("* */1 * * * * *");
+
+    std::cout << c_cron << std::endl;
 
     auto job = SmartTimedAction("My_first_Job",
                                 test,
                                 str,
                                 c_cron);
+
+    std::cout << job.getName() << std::endl;
 
     scheduler.start();
     std::this_thread::sleep_for(std::chrono::seconds(2));
