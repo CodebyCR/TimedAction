@@ -4,57 +4,52 @@
 
 #pragma once
 
-#include <iostream>
-#include <chrono>
-#include <thread>
-#include "I_TimedAction.hpp"
 #include "../Notification/JobLog.hpp"
+#include "I_TimedAction.hpp"
+#include <chrono>
+#include <iostream>
+#include <thread>
 
 
-template<typename T >
+template<typename T>
 class Light_TimedAction : public I_TimedAction {
-
 private:
-
     /** Internal state */
     bool value;
-    std::function<void(bool &value)> action;
-    std::chrono::milliseconds interval{};
-    std::chrono::milliseconds timeSinceLastAction{};
-    bool isRunning{};
+    std::function<void(bool& value)> action;
+    std::chrono::milliseconds interval {};
+    std::chrono::milliseconds timeSinceLastAction {};
+    bool isRunning {};
     std::thread thread;
 
 
 public:
-
     Light_TimedAction(std::string_view const& name,
-                    std::function<void(T &value)> const& action,
-                    T &value,
-                    std::chrono::milliseconds const& interval):
-            action(static_cast<const std::function<void(bool &)>>(action)),
-            value(value),
-            interval(interval),
-            isRunning(false) {
-
-        this->name =name;
+                      std::function<void(T& value)> const& action,
+                      T& value,
+                      std::chrono::milliseconds const& interval) : action(static_cast<const std::function<void(bool&)>>(action)),
+                                                                   value(value),
+                                                                   interval(interval),
+                                                                   isRunning(false) {
+        this->name = name;
     }
 
     ~Light_TimedAction() override = default;
 
     auto run() -> void {
-        while (isRunning) {
-            if (timeSinceLastAction >= interval) {
+        while(isRunning) {
+            if(timeSinceLastAction >= interval) {
                 timeSinceLastAction = std::chrono::milliseconds(0);
 
                 action(value);
-            } else {
-
+            }
+            else {
                 timeSinceLastAction += std::chrono::milliseconds(1);
             }
         }
     }
 
-    auto finished() -> std::future<Notification> { // override {
+    auto finished() -> std::future<Notification> {    // override {
         return std::async(std::launch::async, []() -> Notification {
             auto jobLog = JobLog("TimedAction", "DATE");
             jobLog.SUCCESS("TimedAction finished");
@@ -68,7 +63,7 @@ public:
         thread = std::thread(&Light_TimedAction::run, this);
     }
 
-    auto stop() -> void override{
+    auto stop() -> void override {
         isRunning = false;
         thread.join();
     }
@@ -78,7 +73,7 @@ public:
         start();
     }
 
-    auto setAction(std::function<void(T &value)> const& action) -> void {
+    auto setAction(std::function<void(T& value)> const& action) -> void {
         this->action = action;
     }
 
@@ -86,8 +81,7 @@ public:
         this->interval = interval;
     }
 
-    [[nodiscard]]
-    auto getName() const -> std::string_view override {
+    [[nodiscard]] auto getName() const -> std::string_view override {
         return this->name;
     }
 
@@ -95,24 +89,19 @@ public:
         return value;
     }
 
-    [[nodiscard]]
-    auto getInterval() const -> std::chrono::milliseconds {
+    [[nodiscard]] auto getInterval() const -> std::chrono::milliseconds {
         return interval;
     }
 
-    [[nodiscard]]
-    auto getTimeSinceLastAction() const -> std::chrono::milliseconds {
+    [[nodiscard]] auto getTimeSinceLastAction() const -> std::chrono::milliseconds {
         return timeSinceLastAction;
     }
 
-    [[nodiscard]]
-    auto is_running() const -> bool override {
+    [[nodiscard]] auto is_running() const -> bool override {
         return isRunning;
     }
 
-    [[nodiscard]]
-    auto get_execution_times() const -> std::vector<std::tm> override {
+    [[nodiscard]] auto get_execution_times() const -> std::vector<std::tm> override {
         return this->cron.get_execution_times();
     }
-
 };

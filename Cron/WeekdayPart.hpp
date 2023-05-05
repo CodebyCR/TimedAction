@@ -4,13 +4,12 @@
 
 #pragma once
 
+#include "../Utilities/StringUtils.hpp"
 #include <iostream>
 #include <utility>
 #include <vector>
-#include "../Utilities/StringUtils.hpp"
 
 class WeekdayPart {
-
 private:
     std::string name = "weekday";
     std::string rawValue;
@@ -24,8 +23,7 @@ private:
      * @param weekday
      * @return a int value between 0-6
      */
-    [[nodiscard]]
-    auto to_weekday(std::string & weekday) const -> int {
+    [[nodiscard]] auto to_weekday(std::string& weekday) const -> int {
         if(StringUtils::is_number(weekday)) {
             return std::stoi(weekday);
         }
@@ -41,8 +39,8 @@ private:
         return -1;
     }
 
-    auto add_raw_values(std::vector<std::string> & raw_values) -> void {
-        for( auto & currentWeekday : raw_values) {
+    auto add_raw_values(std::vector<std::string>& raw_values) -> void {
+        for(auto& currentWeekday: raw_values) {
             const auto weekday = to_weekday(currentWeekday);
             containedWeekdays.push_back(weekday);
         }
@@ -59,17 +57,17 @@ private:
     }
 
     void process() {
-        if (rawValue == "*") {
+        if(rawValue == "*") {
             containedWeekdays = {0, 1, 2, 3, 4, 5, 6};
             return;
         }
 
-        if(const bool isList = rawValue.contains(',')){
+        if(const bool isList = rawValue.contains(',')) {
             list();
             return;
         }
 
-        if(const bool isRange = rawValue.contains('-')){
+        if(const bool isRange = rawValue.contains('-')) {
             range();
             return;
         }
@@ -79,24 +77,19 @@ private:
     }
 
 public:
-
     WeekdayPart() = default;
 
-    WeekdayPart(std::string weekdays):
-            rawValue(std::move(weekdays)) {
+    WeekdayPart(std::string weekdays) : rawValue(std::move(weekdays)) {
         process();
     }
 
     ~WeekdayPart() = default;
 
-    [[nodiscard]]
-    auto getName() const -> std::string {
+    [[nodiscard]] auto getName() const -> std::string {
         return name;
     }
 
-    [[nodiscard]]
-    auto getContainedWeekdays() const -> std::vector<int> const& {
+    [[nodiscard]] auto getContainedWeekdays() const -> std::vector<int> const& {
         return containedWeekdays;
     }
-
 };

@@ -4,30 +4,29 @@
 
 #pragma once
 
-#include <iostream>
 #include "../Container/AsyncQueue.hpp"
 #include "../TimedAction_Types/I_TimedAction.hpp"
+#include <iostream>
 
 class EventQueue : public AsyncQueue<I_TimedAction*> {
-    private:
-        std::vector<std::tm> executionTimes;
+private:
+    std::vector<std::tm> executionTimes;
 
-    public:
-        EventQueue() = default;
-        EventQueue(const EventQueue &) = default;
-        EventQueue &operator=(const EventQueue &) = default;
+public:
+    EventQueue() = default;
+    EventQueue(const EventQueue&) = default;
+    EventQueue& operator=(const EventQueue&) = default;
 
-        EventQueue(EventQueue &&other) noexcept {
-            std::lock_guard<std::mutex> lock(mutex_);
-            this->queue_ = std::move(other.queue_);
-        }
+    EventQueue(EventQueue&& other) noexcept {
+        std::lock_guard<std::mutex> lock(mutex_);
+        this->queue_ = std::move(other.queue_);
+    }
 
-        ~EventQueue() override = default;
+    ~EventQueue() override = default;
 
-        auto get_execution_times() const -> std::vector<std::tm> {
-            return executionTimes;
-        }
-
+    auto get_execution_times() const -> std::vector<std::tm> {
+        return executionTimes;
+    }
 };
 
 /// Example implementation of the EventQueue
@@ -47,4 +46,3 @@ class EventQueue : public AsyncQueue<I_TimedAction*> {
 // } else {
 //     std::cout << "EventQueue: nothing to pop" << std::endl;
 // }
-

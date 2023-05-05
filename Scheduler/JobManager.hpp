@@ -11,14 +11,5 @@
 /// the Job Manager contains a reference to the EventQueue to be thread safe
 class JobManager {
 private:
-
-
 public:
-
-
 };
-
-
-
-
-
