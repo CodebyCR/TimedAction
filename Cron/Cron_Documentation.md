@@ -114,3 +114,12 @@
     std::cout << (cron1 < cron3) << std::endl;
     // result: 1
 ```
+
+## Execution Time Generation
+
+If the Cron expression represent a wider range of execution times, it will be generated the next 10 times.
+If the generated times are executed, the next 10 times (or less if the full range ends) will be **reloaded** if it is needed.
+The advantages of this methode are:
+ - This can handel infinity cron expressions
+ - Cron expressions with a very wide range of execution times
+ - and takes care of less memory usage
