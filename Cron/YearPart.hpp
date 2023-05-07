@@ -4,14 +4,13 @@
 
 #pragma once
 
+#include "../Utilities/StringUtils.hpp"
+#include "LeapYearUtils.hpp"
+#include <forward_list>
 #include <iostream>
 #include <string>
-#include "../Utilities/StringUtils.hpp"
-#include <forward_list>
-#include "LeapYearUtils.hpp"
 
 class YearPart {
-
 private:
     std::string name = "year";
     std::forward_list<std::chrono::seconds> times;
@@ -28,46 +27,43 @@ private:
 
 
     /** 1-31 || * || *\/2 || 1,2,3 || 1-5 || 1-5/2 || 1-5,7,9  String */
-    void processValue(const std::string &basicString) {
-
-        if (isNumber) {
+    void processValue(const std::string& basicString) {
+        if(isNumber) {
             numberValue(basicString);
         }
 
-        if (this->isWildcard) {
+        if(this->isWildcard) {
             // *
             auto current_year = LeapYearUtils::getCurrentYear();
             // Current year to str
             numberValue(std::to_string(current_year + 1900));
         }
 
-        if (basicString.contains("*") && basicString.length() > 1) {
+        if(basicString.contains("*") && basicString.length() > 1) {
             // */2
             stepValue(basicString);
         }
 
-        if (this->isRange) {
+        if(this->isRange) {
             // 1-5
             rangeValue(basicString);
         }
 
-        if (this->isList) {
+        if(this->isList) {
             // 1,2,3
             listValue(basicString);
         }
 
-        if (this->isPeriodic) {
+        if(this->isPeriodic) {
             // 1-5/2
             periodValue(basicString);
         }
-
     }
 
     /**
      * @return partMultiplier (value of section in seconds) & partRange (max value of section)
      */
-    [[nodiscard]]
-    static auto getPartRangeSize() -> std::pair<u_long, uint8_t> {
+    [[nodiscard]] static auto getPartRangeSize() -> std::pair<u_long, uint8_t> {
         const auto currentYear = LeapYearUtils::getCurrentYear();
         const auto currentYearInSeconds = LeapYearUtils::seconds_since_1970();
 
@@ -77,48 +73,46 @@ private:
 
 
     /** processing of step values */
-    auto stepValue(const std::string &basicString) -> void {
+    auto stepValue(const std::string& basicString) -> void {
         // */2
         auto components = StringUtils::split_by(basicString, '/');
         const auto step = std::stoi(components.at(1));
 
-        for (int i = 0; i < this->partRange; i += step) {
+        for(int i = 0; i < this->partRange; i += step) {
             this->times.emplace_front(i * this->partMultiplier);
         }
-
     }
 
     /** processing of list values */
-    auto rangeValue(const std::string &basicString) -> void {
+    auto rangeValue(const std::string& basicString) -> void {
         std::vector<std::string> range = StringUtils::split_by(basicString, '-');
-        auto min= std::stoi(range.at(0));
+        auto min = std::stoi(range.at(0));
         auto max = std::stoi(range.at(1));
 
-        for (auto index = min; index <= max; ++index) {
+        for(auto index = min; index <= max; ++index) {
             const auto year_in_seconds = std::chrono::years(index);
             this->times.emplace_front(year_in_seconds);
         }
-
     }
 
     /** processing of list values */
-    auto listValue(const std::string &basicString) -> void {
+    auto listValue(const std::string& basicString) -> void {
         std::vector<std::string> list = StringUtils::split_by(basicString, ',');
 
-        for (const auto &time: list) {
-                this->times.emplace_front(std::stoi(time));
+        for(const auto& time: list) {
+            this->times.emplace_front(std::stoi(time));
         }
     }
 
     /** processing of number values */
-    auto numberValue(const std::string &basicString) -> void {
+    auto numberValue(const std::string& basicString) -> void {
         const auto year_count = std::stoi(basicString);
         const auto year_in_seconds = std::chrono::years(year_count);
         this->times.emplace_front(year_in_seconds);
     }
 
     /** processing of period values */
-    auto periodValue(const std::string &basicString) -> void {
+    auto periodValue(const std::string& basicString) -> void {
         // 1-5/2
         // basicString is periodic
         std::vector<std::string> periodic = StringUtils::split_by(basicString, '/');
@@ -128,7 +122,7 @@ private:
         const auto max = std::stoi(range.at(1));
         const auto step = std::stoi(periodic.at(1));
 
-        for (int i = min; i <= max; i += step) {
+        for(int i = min; i <= max; i += step) {
             std::chrono::seconds currentTime(i * this->partMultiplier);
             this->times.emplace_front(currentTime);
         }
@@ -136,12 +130,9 @@ private:
 
 
 public:
-
     YearPart() = default;
 
-    explicit YearPart(const std::string &rawValue):
-            rawValue(rawValue) {
-
+    explicit YearPart(const std::string& rawValue) : rawValue(rawValue) {
         this->isNumber = StringUtils::is_number(rawValue);
         this->isWildcard = rawValue == "*";
         this->isRange = rawValue.contains('-') && !rawValue.contains('/');
@@ -158,14 +149,11 @@ public:
     ~YearPart() = default;
 
 
-    [[nodiscard]]
-    auto getName() const -> std::string {
+    [[nodiscard]] auto getName() const -> std::string {
         return name;
     }
 
-    [[nodiscard]]
-    auto getTimes() const -> std::forward_list<std::chrono::seconds> {
+    [[nodiscard]] auto getTimes() const -> std::forward_list<std::chrono::seconds> {
         return times;
     }
-
 };

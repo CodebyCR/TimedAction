@@ -4,18 +4,18 @@
 
 #pragma once
 
-#include <iostream>
-#include <iomanip>
-#include <ctime>
 #include <chrono>
+#include <ctime>
+#include <iomanip>
+#include <iostream>
 
 namespace CronInterpreter {
 
-    auto get_year_dif_in_sec() -> long long {//Current year as seconds
+    auto get_year_dif_in_sec() -> long long {    //Current year as seconds
         auto currentTime = std::chrono::duration_cast<std::chrono::seconds>(
                 std::chrono::system_clock::now().time_since_epoch());
         auto yearVal = std::chrono::duration_cast<std::chrono::years>(currentTime);
-        auto currentYear = yearVal.count() ;
+        auto currentYear = yearVal.count();
 
         // 53 as seconds
         auto weekDaySeconds = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::years(53));
@@ -23,19 +23,19 @@ namespace CronInterpreter {
         return count;
     }
 
-    auto get_month_from_index(const int index){
-        auto months = std::vector{"January",
-                                  "February",
-                                  "March",
-                                  "April",
-                                  "May",
-                                  "June",
-                                  "July",
-                                  "August",
-                                  "September",
-                                  "October",
-                                  "November",
-                                  "December"};
+    auto get_month_from_index(const int index) {
+        auto months = std::vector {"January",
+                                   "February",
+                                   "March",
+                                   "April",
+                                   "May",
+                                   "June",
+                                   "July",
+                                   "August",
+                                   "September",
+                                   "October",
+                                   "November",
+                                   "December"};
 
         return months[index];
     }
@@ -48,7 +48,7 @@ namespace CronInterpreter {
         auto ss = std::stringstream();
 
         ss << "\n\nHour Minute Second DayOfMonth     Month Year" << std::endl;
-        for (auto const &timeStruct: timePoints) {
+        for(auto const& timeStruct: timePoints) {
             ss << std::setfill(' ') << std::setw(4) << timeStruct.tm_hour << " "
                << std::setfill(' ') << std::setw(6) << timeStruct.tm_min << " "
                << std::setfill(' ') << std::setw(6) << timeStruct.tm_sec << " "
@@ -61,11 +61,11 @@ namespace CronInterpreter {
         return ss.str();
     }
 
-    static auto pretty_print(std::vector<std::tm> &timePoints){
-        for (auto &timeStruct: timePoints) {
+    static auto pretty_print(std::vector<std::tm>& timePoints) {
+        for(auto& timeStruct: timePoints) {
             std::time_t time = std::mktime(&timeStruct);
             std::cout << std::ctime(&time);
         }
     }
 
-}
+}    // namespace CronInterpreter

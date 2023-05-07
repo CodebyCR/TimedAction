@@ -1,76 +1,72 @@
 #include <iostream>
 
-#include "TimedAction_Types/I_TimedAction.hpp"
-#include "TimedAction_Types/TimedAction.hpp"
-#include "TimedAction_Types/Light_TimedAction.hpp"
 #include "Cron/Cron.hpp"
-#include <thread>
+#include "TimedAction_Types/I_TimedAction.hpp"
+#include "TimedAction_Types/Light_TimedAction.hpp"
+#include "TimedAction_Types/TimedAction.hpp"
 #include <memory>
+#include <thread>
 
 
+#include "Container/AsyncQueue.hpp"
 #include "Cron/CronInterpreter.hpp"
 #include "Scheduler/Scheduler.hpp"
-#include "Container/AsyncQueue.hpp"
 #include "Utilities/Logger.hpp"
 
 
-
-void sayHallo(std::uint32_t &count) {
+void sayHallo(std::uint32_t& count) {
     ++count;
     std::cout << "Hallo nr." << std::to_string(count) << std::endl;
 }
 
-void onAction(const std::string_view &value) {
+void onAction(const std::string_view& value) {
     std::cout << "onAction " << value << std::endl;
 }
 
-void onInterval(const std::string_view &value) {
+void onInterval(const std::string_view& value) {
     std::cout << "onInterval " << value << std::endl;
 }
 
-void onEnd(const std::string_view &value) {
+void onEnd(const std::string_view& value) {
     std::cout << "onEnd " << value << std::endl;
 }
 
-void test(std::string_view const &value) {
+void test(std::string_view const& value) {
     std::cout << value << std::endl;
 }
 
 
-void test_async_queue(){
+void test_async_queue() {
     auto queue = AsyncQueue<int>();
 
     // Registrieren einer Callback-Funktion, die aufgerufen wird, wenn ein Element in die Warteschlange eingefügt wird.
-    queue.on_subscribe([](int item)
-                    { std::cout << "Element " << item << " wurde in die Warteschlange eingefügt." << std::endl; });
+    queue.on_subscribe([](int item) { std::cout << "Element " << item << " wurde in die Warteschlange eingefügt." << std::endl; });
 
     // Fügen Sie Elemente in die Warteschlange ein.
     queue.push(1);
     queue.push(2);
     queue.push(3);
 
-    queue.on_listen([](int item)
-                 { std::cout << "Element " << item << " wurde aus der Warteschlange entfernt." << std::endl; });
+    queue.on_listen([](int item) { std::cout << "Element " << item << " wurde aus der Warteschlange entfernt." << std::endl; });
 
     std::cout << "Elemente in der Warteschlange: " << queue.size() << std::endl;
     // Entfernen Sie Elemente aus der Warteschlange.
     queue.clear();
     std::cout << "Elemente in der Warteschlange: " << queue.size() << std::endl;
 
-    for(auto i = 0; i < 100; ++i){
+    for(auto i = 0; i < 100; ++i) {
         queue.push(i);
     }
 
     std::cout << "Elemente in der Warteschlange: " << queue.size() << std::endl;
 
-    for (auto queueItem : queue) {
+    for(auto queueItem: queue) {
         std::cout << queueItem << std::endl;
         queue.pop();
     }
-
 }
 
-void test_future_task(I_TimedAction & action) {
+void test_future_task(I_TimedAction& action) {
     std::future<Notification> task = action.finished();
 
 
@@ -81,34 +77,27 @@ void test_future_task(I_TimedAction & action) {
             auto notification = task.get();
             // cast notification to JobLog
 
-//
-//            auto jobLog = dynamic_cast<JobLog&>(notification);
-//            jobLog.print();
-        }
-            break;
+            //
+            //            auto jobLog = dynamic_cast<JobLog&>(notification);
+            //            jobLog.print();
+        } break;
 
         case std::future_status::deferred: {
             std::cout << "Watcher: deferred for " << action.getName() << std::endl;
-        }
-            break;
+        } break;
 
         case std::future_status::timeout: {
             std::cout << "Watcher: timeout for " << action.getName() << std::endl;
-        }
-            break;
+        } break;
 
         default: {
             std::cout << "Watcher: unknown status for " << action.getName() << std::endl;
         }
-
     }
-
-
 }
 
 
-
-auto logger_test(){
+auto logger_test() {
     Logger logger(true);
 
     std::ostream logstream(&logger);
@@ -121,54 +110,67 @@ auto logger_test(){
     return 0;
 }
 
- auto main() -> int {
-
-     logger_test(); // ! Failed
-
-
+auto main() -> int {
+    logger_test();    // ! Failed
 
 
     // TODO: make runnable
-     auto& scheduler = Scheduler::get_instance();
+    auto& scheduler = Scheduler::get_instance();
 
-     std::uint32_t count = 2;
-     std::string str = "test";
+    std::uint32_t count = 2;
+    std::string str = "test";
 
-     auto c_cron = Cron({.second="0",
-                         .minute="*/2",
-                         .hour="*",
-                         .dayOfMonth="1",
-                         .month="5",
-                         .weekday="*",
-                         .year="*"});
+    auto cron_try = std::to_cron("0 */1 * 5 5 *"); // every minute  cache only for the current day !
+
+    //std::cout << CronInterpreter::get_info(cron_try.get_execution_times());
 
 
-     auto job = SmartTimedAction("My_first_Job",
-                                 test,
-                                 str,
-                                 c_cron
-     );
+    auto job2 = SmartTimedAction("My_second_Job",
+                                test,
+                                str,
+                                cron_try);
 
-     scheduler.start();
-     std::this_thread::sleep_for(std::chrono::seconds(2));
-
-     scheduler.add(&job);
+    scheduler.add(&job2);
 
 
-     // waiting for enter 'q'
+    auto c_cron = Cron({.second = "0",
+                        .minute = "*/2",
+                        .hour = "*",
+                        .dayOfMonth = "5",
+                        .month = "5",
+                        .weekday = "*",
+                        .year = "*"});
+
+//    auto c_cron = Cron("* */1 * * * * *");
+
+    std::cout << c_cron << std::endl;
+
+    auto job = SmartTimedAction("My_first_Job",
+                                test,
+                                str,
+                                c_cron);
+
+    std::cout << job.getName() << std::endl;
+
+    scheduler.start();
+    std::this_thread::sleep_for(std::chrono::seconds(2));
+
+    scheduler.add(&job);
+
+
+    // waiting for enter 'q'
     char c;
     std::cin >> c;
 
-     while(c != 'q'){
-         std::cin >> c;
-     }
+    while(c != 'q') {
+        std::cin >> c;
+    }
 
-     scheduler.stop();
+    scheduler.stop();
 
 
-     return 0;
- }
-
+    return 0;
+}
 
 
 //int main() {
