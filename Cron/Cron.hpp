@@ -63,74 +63,6 @@ private:
     }
 
     /**
-     * Create time points from the cron parts of the cron object.
-     * @param cronObject
-     * @return a vector of unfiltered time points
-     */
-    [[nodiscard]] auto cartesian_product() const {
-        std::vector<std::tm> resultTime;    // to list from time points
-
-        for(auto const& year: years.getTimes()) {
-            auto yearVal = std::chrono::duration_cast<std::chrono::years>(year);
-
-            for(auto const& month: months.getTimes()) {
-                auto monthVal = std::chrono::duration_cast<std::chrono::months>(month);
-
-                for(auto const& dayOfMonth: daysOfMonth.getTimes()) {
-                    auto dayVal = std::chrono::duration_cast<std::chrono::days>(dayOfMonth);
-
-                    for(auto const& hour: hours.getTimes()) {
-                        auto hourVal = std::chrono::duration_cast<std::chrono::hours>(hour);
-
-                        for(auto const& minute: minutes.getTimes()) {
-                            auto minuteVal = std::chrono::duration_cast<std::chrono::minutes>(minute);
-
-                            for(auto const& second: seconds.getTimes()) {
-                                auto timeStruct = std::tm();
-                                timeStruct.tm_sec = second.count();
-                                timeStruct.tm_min = minuteVal.count();
-                                timeStruct.tm_hour = hourVal.count();
-                                timeStruct.tm_mday = dayVal.count();
-                                timeStruct.tm_mon = monthVal.count();
-                                timeStruct.tm_year = yearVal.count();
-
-                                resultTime.push_back(timeStruct);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        return resultTime;
-    }
-
-    /**
-     * Filtered unreachable time points out of the cartesian product.
-     * @param cartesianProduct
-     * @return A filtered vector of time points.
-     */
-    [[nodiscard]] static auto filterOfReachedTimes(const std::vector<std::tm>& cartesianProduct) {
-        std::vector<std::tm> result;
-
-        auto now = std::chrono::system_clock::now();
-        auto nowSeconds = std::chrono::duration_cast<std::chrono::seconds>(now.time_since_epoch());
-
-        for(auto time: cartesianProduct) {
-//            time.tm_year -= 1900;
-            auto currentTime = std::mktime(&time);
-            auto currentTime_ = std::chrono::system_clock::from_time_t(currentTime);
-            const auto timeDifferance = currentTime - nowSeconds.count();
-
-            if(timeDifferance > 0) {
-                result.push_back(time);
-            }
-        }
-
-        return result;
-    }
-
-    /**
      * Sort the time points by valid Weekdays.
      * @param times
      */
@@ -155,13 +87,24 @@ private:
      * @return A filtered vector of time points that are sorted by the next reached time.
      */
     [[nodiscard]] auto get_time_points() const -> std::vector<std::tm> {
-        auto cartesianProduct = cartesian_product();
-        auto filteredOfReachedTimes = filterOfReachedTimes(cartesianProduct);
-        auto totalTimes = filteredOfWeekdayPart(filteredOfReachedTimes, daysOfWeek.getContainedWeekdays());
+//        auto cartesianProduct = cartesian_product();
+//        auto filteredOfReachedTimes = filterOfReachedTimes(cartesianProduct);
 
-        Sort::by_next_reached_time(totalTimes);
+        auto gen = ExecutionTimeGenerator::generate_from(this->seconds.getTimes(),
+                                                         this->minutes.getTimes(),
+                                                         this->hours.getTimes(),
+                                                         this->daysOfMonth.getTimes(),
+                                                         this->months.getTimes(),
+                                                         this->years.getTimes());
 
-        return totalTimes;
+        auto generated_times = gen();
+
+        std::cout << "Generated times: " << generated_times.size() << std::endl;
+        auto total_times = filteredOfWeekdayPart(generated_times, daysOfWeek.getContainedWeekdays());
+
+        Sort::by_next_reached_time(total_times);
+
+        return total_times;
     }
 
 public:

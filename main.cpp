@@ -111,7 +111,7 @@ auto logger_test() {
 }
 
 auto main() -> int {
-    logger_test();    // ! Failed
+    //logger_test();    // ! Failed
 
 
     // TODO: make runnable
@@ -120,15 +120,15 @@ auto main() -> int {
     std::uint32_t count = 2;
     std::string str = "test";
 
-    auto cron_try = std::to_cron("0 */1 * 5 5 *"); // every minute  cache only for the current day !
+    auto cron_try = std::to_cron("0 */1 * 5 5 *");    // every minute  cache only for the current day !
 
     //std::cout << CronInterpreter::get_info(cron_try.get_execution_times());
 
 
     auto job2 = SmartTimedAction("My_second_Job",
-                                test,
-                                str,
-                                cron_try);
+                                 test,
+                                 str,
+                                 cron_try);
 
     scheduler.add(&job2);
 
@@ -136,12 +136,12 @@ auto main() -> int {
     auto c_cron = Cron({.second = "0",
                         .minute = "*/2",
                         .hour = "*",
-                        .dayOfMonth = "5",
+                        .dayOfMonth = "13",
                         .month = "5",
                         .weekday = "*",
                         .year = "*"});
 
-//    auto c_cron = Cron("* */1 * * * * *");
+    //    auto c_cron = Cron("* */1 * * * * *");
 
     std::cout << c_cron << std::endl;
 

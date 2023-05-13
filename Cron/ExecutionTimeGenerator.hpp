@@ -72,12 +72,14 @@ struct ExecutionTimeGenerator {
         return coro.promise().current_result_times;
     }
 
-    static auto generate_from(std::vector<std::chrono::seconds> seconds,
-                            std::vector<std::chrono::minutes> minutes,
-                            std::vector<std::chrono::hours> hours,
-                            std::vector<std::chrono::days> daysOfMonth,
-                            std::vector<std::chrono::months> months,
-                            std::vector<std::chrono::years> years) -> ExecutionTimeGenerator {
+
+    // ! TODO: fix the input format of the parameters before they get in the function
+    static auto generate_from(std::forward_list<std::chrono::seconds> seconds,
+                              std::forward_list<std::chrono::seconds> minutes,
+                            std::forward_list<std::chrono::seconds> hours,
+                            std::forward_list<std::chrono::seconds> daysOfMonth,
+                            std::forward_list<std::chrono::seconds> months,
+                            std::forward_list<std::chrono::seconds> years) -> ExecutionTimeGenerator {
 
         std::vector<std::tm> resultTime;
 
@@ -105,7 +107,7 @@ struct ExecutionTimeGenerator {
                                 timeStruct.tm_mon = monthVal.count();
                                 timeStruct.tm_year = yearVal.count();
 
-                                if(is_reached(timeStruct)) {
+                                if(!is_reached(timeStruct)) {
                                     resultTime.push_back(timeStruct);
                                 }
 
