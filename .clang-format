@@ -3,6 +3,11 @@ BasedOnStyle: LLVM
 AccessModifierOffset: -4
 AlignAfterOpenBracket: Align
 AlignConsecutiveAssignments: None
+#AlignConsecutiveMacros: AcrossEmptyLines
+#AlignConsecutiveMacros:
+#  Enabled: true
+#  AcrossEmptyLines: true
+#  AcrossComments: false
 AlignOperands: Align
 AllowAllArgumentsOnNextLine: true
 AllowAllConstructorInitializersOnNextLine: true
