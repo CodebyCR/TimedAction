@@ -6,6 +6,7 @@
 
 #include <iostream>
 #include <vector>
+#include <ranges>
 
 namespace Sort {
 
@@ -14,7 +15,7 @@ namespace Sort {
      * @param times
      */
     static auto by_next_reached_time(std::vector<std::tm>& times) {
-        std::sort(times.begin(), times.end(), [](std::tm& a, std::tm& b) {
+        std::ranges::sort(times, [](std::tm& a, std::tm& b) {
             const time_t timeA = std::mktime(&a);
             const time_t timeB = std::mktime(&b);
             return difftime(timeA, timeB) < 0;
