@@ -36,7 +36,7 @@ private:
             // *
             auto current_year = LeapYearUtils::getCurrentYear();
             // Current year to str
-            numberValue(std::to_string(current_year + 1900));
+            numberValue(std::to_string(current_year));
         }
 
         if(basicString.contains("*") && basicString.length() > 1) {
