@@ -39,7 +39,7 @@ struct ExecutionTimeGenerator {
         }
 
         void unhandled_exception() const noexcept {
-            std::cout << "unhandled_exception" << std::endl;
+            std::cout << "unhandled_exception in 'ExecutionTimeGenerator'." << std::endl;
             std::terminate();
         }
     };    // * ExecutionTimeGenerator
@@ -72,12 +72,13 @@ struct ExecutionTimeGenerator {
         return coro.promise().current_result_times;
     }
 
-    static ExecutionTimeGenerator generate_from(std::vector<std::chrono::seconds> seconds,
-                                                std::vector<std::chrono::minutes> minutes,
-                                                std::vector<std::chrono::hours> hours,
-                                                std::vector<std::chrono::days> daysOfMonth,
-                                                std::vector<std::chrono::months> months,
-                                                std::vector<std::chrono::years> years) {
+    static auto generate_from(std::vector<std::chrono::seconds> seconds,
+                            std::vector<std::chrono::minutes> minutes,
+                            std::vector<std::chrono::hours> hours,
+                            std::vector<std::chrono::days> daysOfMonth,
+                            std::vector<std::chrono::months> months,
+                            std::vector<std::chrono::years> years) -> ExecutionTimeGenerator {
+
         std::vector<std::tm> resultTime;
 
         for(auto const& year: years) {
@@ -104,7 +105,9 @@ struct ExecutionTimeGenerator {
                                 timeStruct.tm_mon = monthVal.count();
                                 timeStruct.tm_year = yearVal.count();
 
-                                resultTime.push_back(timeStruct);
+                                if(is_reached(timeStruct)) {
+                                    resultTime.push_back(timeStruct);
+                                }
 
                                 if(resultTime.size() == 10) {
                                     co_yield resultTime;
@@ -119,4 +122,20 @@ struct ExecutionTimeGenerator {
 
         co_return resultTime;
     }
+
+private:
+
+    /// Returns true if the given time_point is reached
+    static auto is_reached(std::tm const& time_point) -> bool {
+        const auto currentTime = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+        const auto currentTimeStruct = *std::localtime(&currentTime);
+
+        return currentTimeStruct.tm_sec >= time_point.tm_sec &&
+               currentTimeStruct.tm_min >= time_point.tm_min &&
+               currentTimeStruct.tm_hour >= time_point.tm_hour &&
+               currentTimeStruct.tm_mday >= time_point.tm_mday &&
+               currentTimeStruct.tm_mon >= time_point.tm_mon &&
+               currentTimeStruct.tm_year >= time_point.tm_year;
+    }
+
 };
