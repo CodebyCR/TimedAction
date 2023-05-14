@@ -7,6 +7,7 @@
 #include <ctime>
 #include <iostream>
 #include <sstream>
+#include <chrono>
 
 #include "CronCapsule.hpp"
 #include "CronPart.hpp"
