@@ -40,9 +40,8 @@ private:
     WeekdayPart daysOfWeek;
     YearPart years;
 
+    ExecutionTimeGenerator generator;
     std::vector<std::tm> execution_times;
-
-
 
     auto processCronParts(std::vector<std::string>& cronParts) -> void {
         if(!CronRegex::isValidCron(cronParts)) {
@@ -53,59 +52,40 @@ private:
             throw std::invalid_argument("Cron string has to have 6 parts");
         }
 
-        this->seconds = CronPart("second", cronParts[0]);
-        this->minutes = CronPart("minute", cronParts[1]);
-        this->hours = CronPart("hour", cronParts[2]);
-        this->daysOfMonth = CronPart("day", cronParts[3]);
-        this->months = CronPart("month", cronParts[4]);
-        this->daysOfWeek = WeekdayPart(cronParts[5]);
-        this->years = YearPart(cronParts[6]);
+        this->seconds       = CronPart("second",    cronParts[0]);
+        this->minutes       = CronPart("minute",    cronParts[1]);
+        this->hours         = CronPart("hour",      cronParts[2]);
+        this->daysOfMonth   = CronPart("day",       cronParts[3]);
+        this->months        = CronPart("month",     cronParts[4]);
+        this->daysOfWeek    = WeekdayPart(          cronParts[5]);
+        this->years         = YearPart(             cronParts[6]);
     }
 
-    /**
-     * Sort the time points by valid Weekdays.
-     * @param times
-     */
-    [[nodiscard]] static auto filteredOfWeekdayPart(const std::vector<std::tm>& times,
-                                                    const std::vector<int>& weekdays) {
-        std::vector<std::tm> result;
-
-        for(auto const& time: times) {
-            for(auto const& weekday: weekdays) {
-                if(time.tm_wday == weekday) {
-                    result.push_back(time);
-                }
-            }
+    /// Constructor processing <br/>
+    /// For outsourcing the constructor logic of the different constructors
+    auto constructor_processing(std::vector<std::string>& cronParts) -> void {
+        std::cout << "-1-" << std::endl;
+        if(!CronRegex::isValidCron(cronParts)) {
+            throw std::invalid_argument("Invalid cron string");
         }
+        std::cout << "-2-" << std::endl;
+        if(cronParts.size() != 7) {
+            throw std::invalid_argument("Cron string has to have 6 parts");
+        }
+        std::cout << "-3-" << std::endl;
+        processCronParts(cronParts);
+        std::cout << "-4-" << std::endl;
 
-        return result;
+        generator = ExecutionTimeGenerator(seconds.getTimes(),
+                                           minutes.getTimes(),
+                                           hours.getTimes(),
+                                           daysOfMonth.getTimes(),
+                                           months.getTimes(),
+                                           years.getTimes());
+
+        generator.set_weekday_filter(daysOfWeek.getContainedWeekdays());
     }
 
-    /**
-     * Filter the cartesian product of the cron object.
-     * @param cartesianProduct
-     * @return A filtered vector of time points that are sorted by the next reached time.
-     */
-    [[nodiscard]] auto get_time_points() const -> std::vector<std::tm> {
-//        auto cartesianProduct = cartesian_product();
-//        auto filteredOfReachedTimes = filterOfReachedTimes(cartesianProduct);
-
-        auto gen = ExecutionTimeGenerator::generate_from(this->seconds.getTimes(),
-                                                         this->minutes.getTimes(),
-                                                         this->hours.getTimes(),
-                                                         this->daysOfMonth.getTimes(),
-                                                         this->months.getTimes(),
-                                                         this->years.getTimes());
-
-        auto generated_times = gen();
-
-        std::cout << "Generated times: " << generated_times.size() << std::endl;
-        auto total_times = filteredOfWeekdayPart(generated_times, daysOfWeek.getContainedWeekdays());
-
-        Sort::by_next_reached_time(total_times);
-
-        return total_times;
-    }
 
 public:
     explicit Cron(const CronCapsule& capsule) {
@@ -114,15 +94,7 @@ public:
         std::vector<std::string> cronParts = {
                 second, minute, hour, dayOfMonth, month, weekday, year};
 
-        if(!CronRegex::isValidCron(cronParts)) {
-            throw std::invalid_argument("Invalid cron string");
-        }
-
-        if(cronParts.size() != 7) {
-            throw std::invalid_argument("Cron string has to have 6 parts");
-        }
-
-        processCronParts(cronParts);
+        constructor_processing(cronParts);
     }
 
     explicit Cron(std::string const& cronString) {
@@ -137,18 +109,11 @@ public:
         }
 
         auto cronParts = StringUtils::split_by(cronString, ' ');
-std::cout << "-1-" << std::endl;
-        if(!CronRegex::isValidCron(cronParts)) {
-            throw std::invalid_argument("Invalid cron string");
-        }
-        std::cout << "-2-" << std::endl;
-        if(cronParts.size() != 7) {
-            throw std::invalid_argument("Cron string has to have 6 parts");
-        }
-        std::cout << "-3-" << std::endl;
-        processCronParts(cronParts);
-        std::cout << "-4-" << std::endl;
-    }
+
+        constructor_processing(cronParts);
+     }
+
+
 
     friend std::ostream& operator<<(std::ostream& os, Cron& cron) {
         auto first_execution = cron.get_execution_times().at(0);
@@ -212,17 +177,13 @@ std::cout << "-1-" << std::endl;
 
 
     [[nodiscard]] auto get_execution_times() -> std::vector<std::tm> {
-        if(execution_times.empty()) {
-            execution_times = get_time_points();
-        }
         return execution_times;
     }
 
     auto resume_execution_times() -> Cron {
-        // TODO:
-        // execution_times = gen();
-
-        return this;
+        execution_times = generator();
+        Sort::by_next_reached_time(execution_times);
+        return *this;
     }
 
 
