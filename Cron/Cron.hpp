@@ -218,6 +218,14 @@ std::cout << "-1-" << std::endl;
         return execution_times;
     }
 
+    auto resume_execution_times() -> Cron {
+        // TODO:
+        // execution_times = gen();
+
+        return this;
+    }
+
+
 };
 
 //namespace std {
