@@ -122,4 +122,4 @@ If the generated times are executed, the next 10 times (or less if the full rang
 The advantages of this methode are:
  - This can handel infinity cron expressions
  - Cron expressions with a very wide range of execution times
- - and takes care of less memory usage
+ - and takes care of less memory usage through smaller cache sizes
