@@ -11,7 +11,7 @@
 #include <forward_list>
 #include <vector>
 #include <ranges>
-#include "CronInterpreter.hpp"
+//#include "CronInterpreter.hpp"
 
 struct ExecutionTimeGenerator {
     struct promise_type {
@@ -91,8 +91,8 @@ struct ExecutionTimeGenerator {
         localtime_s(&current_tm, &current_time);
 
 
-        std::vector<std::tm> temp = {current_tm};
-        CronInterpreter::pretty_print(temp);
+//        std::vector<std::tm> temp = {current_tm};
+//        CronInterpreter::pretty_print(temp);
 
         std::vector<std::tm> resultTime;
 
@@ -128,7 +128,7 @@ struct ExecutionTimeGenerator {
 
 
                         if(hourVal +1 < current_tm.tm_hour) {   // TODO: Where is the +1 coming from?
-                            std::cout << "true"  << std::endl;
+//                            std::cout << "true"  << std::endl;
                             continue;
                         }
 
