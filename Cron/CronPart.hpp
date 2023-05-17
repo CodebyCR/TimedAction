@@ -195,7 +195,14 @@ public:
         return name;
     }
 
-    [[nodiscard]] auto getTimes() const -> std::forward_list<std::chrono::seconds> {
+    struct compare{
+        constexpr auto operator()(const std::chrono::seconds& lhs, const std::chrono::seconds& rhs) -> bool {
+            return lhs < rhs;
+        }
+    };
+
+    [[nodiscard]] auto getTimes() -> std::forward_list<std::chrono::seconds> {
+        this->times.sort(compare());
         return times;
     }
 };

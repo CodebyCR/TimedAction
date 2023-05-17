@@ -15,6 +15,7 @@
 #include "WeekdayPart.hpp"
 #include "YearPart.hpp"
 #include "ExecutionTimeGenerator.hpp"
+#include "CronInterpreter.hpp"
 
 
 /**
@@ -64,26 +65,36 @@ private:
     /// Constructor processing <br/>
     /// For outsourcing the constructor logic of the different constructors
     auto constructor_processing(std::vector<std::string>& cronParts) -> void {
-        std::cout << "-1-" << std::endl;
+        //std::cout << "-1-" << std::endl;
         if(!CronRegex::isValidCron(cronParts)) {
             throw std::invalid_argument("Invalid cron string");
         }
-        std::cout << "-2-" << std::endl;
+        //std::cout << "-2-" << std::endl;
         if(cronParts.size() != 7) {
             throw std::invalid_argument("Cron string has to have 6 parts");
         }
-        std::cout << "-3-" << std::endl;
+        //std::cout << "-3-" << std::endl;
         processCronParts(cronParts);
-        std::cout << "-4-" << std::endl;
+        //std::cout << "-4-" << std::endl;
 
-        generator = ExecutionTimeGenerator(seconds.getTimes(),
-                                           minutes.getTimes(),
-                                           hours.getTimes(),
-                                           daysOfMonth.getTimes(),
-                                           months.getTimes(),
-                                           years.getTimes());
+        generator = ExecutionTimeGenerator::generate_from(
+                seconds.getTimes(),
+                minutes.getTimes(),
+                hours.getTimes(),
+                daysOfMonth.getTimes(),
+                months.getTimes(),
+                years.getTimes(),
 
-        generator.set_weekday_filter(daysOfWeek.getContainedWeekdays());
+                daysOfWeek.getContainedWeekdays());
+
+//        generator();
+        execution_times = generator();
+//        this->resume_execution_times();
+        std::cout << "-5-" << execution_times.size() << std::endl;
+        Sort::by_next_reached_time(execution_times);
+        CronInterpreter::pretty_print(execution_times);
+
+        std::cout << "Constructor processing" << std::endl;
     }
 
 
@@ -95,11 +106,13 @@ public:
                 second, minute, hour, dayOfMonth, month, weekday, year};
 
         constructor_processing(cronParts);
+
+        std::cout << "Cron Capsule " << std::endl;
     }
 
     explicit Cron(std::string const& cronString) {
 
-        std::cout << "CronString: " << cronString << std::endl;
+        std::cout << "Cron String: " << cronString << std::endl;
         if(cronString.empty()) {
             throw std::invalid_argument("Cron string can't be empty.");
         }
@@ -147,23 +160,23 @@ public:
         return cron_expression;
     }
 
-    [[nodiscard]] auto getSecondTimes() const {
+    [[nodiscard]] auto getSecondTimes()  {
         return this->seconds.getTimes();
     }
 
-    [[nodiscard]] auto getMinuteTimes() const {
+    [[nodiscard]] auto getMinuteTimes()  {
         return this->minutes.getTimes();
     }
 
-    [[nodiscard]] auto getHourTimes() const {
+    [[nodiscard]] auto getHourTimes()  {
         return this->hours.getTimes();
     }
 
-    [[nodiscard]] auto getDayOfMonthTimes() const {
+    [[nodiscard]] auto getDayOfMonthTimes()  {
         return this->daysOfMonth.getTimes();
     }
 
-    [[nodiscard]] auto getMonthTimes() const {
+    [[nodiscard]] auto getMonthTimes()  {
         return this->months.getTimes();
     }
 
@@ -171,7 +184,7 @@ public:
         return this->daysOfWeek.getContainedWeekdays();
     }
 
-    [[nodiscard]] auto getYearTimes() const {
+    [[nodiscard]] auto getYearTimes() {
         return this->years.getTimes();
     }
 

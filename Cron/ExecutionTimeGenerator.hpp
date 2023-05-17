@@ -11,6 +11,7 @@
 #include <forward_list>
 #include <vector>
 #include <ranges>
+#include "CronInterpreter.hpp"
 
 struct ExecutionTimeGenerator {
     struct promise_type {
@@ -76,48 +77,98 @@ struct ExecutionTimeGenerator {
 
 
     // ! TODO: fix the input format of the parameters before they get in the function
-    auto generate_from(std::forward_list<std::chrono::seconds> seconds,
+    static auto generate_from(std::forward_list<std::chrono::seconds> seconds,
                               std::forward_list<std::chrono::seconds> minutes,
                               std::forward_list<std::chrono::seconds> hours,
                               std::forward_list<std::chrono::seconds> daysOfMonth,
                               std::forward_list<std::chrono::seconds> months,
-                              std::forward_list<std::chrono::seconds> years) -> ExecutionTimeGenerator {
+                              std::forward_list<std::chrono::seconds> years,
+                              std::vector<int> const& weekdays) ->  ExecutionTimeGenerator {
+
+
+        auto current_tm = std::tm();
+        auto current_time = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+        localtime_s(&current_tm, &current_time);
+
+
+        std::vector<std::tm> temp = {current_tm};
+        CronInterpreter::pretty_print(temp);
 
         std::vector<std::tm> resultTime;
 
+        year_loop:
         for(auto const& year: years) {
-            auto yearVal = std::chrono::duration_cast<std::chrono::years>(year);
+            const auto yearVal = std::chrono::duration_cast<std::chrono::years>(year).count();
+
+            if(yearVal < current_tm.tm_year) {
+                continue;
+            }
 
             for(auto const& month: months) {
-                auto monthVal = std::chrono::duration_cast<std::chrono::months>(month);
+                const auto monthVal = std::chrono::duration_cast<std::chrono::months>(month).count();
+
+//                std::cout << "month-test " << std::endl;
+                if(monthVal < current_tm.tm_mon) {
+                    continue;
+                }
 
                 for(auto const& dayOfMonth: daysOfMonth) {
-                    auto dayVal = std::chrono::duration_cast<std::chrono::days>(dayOfMonth);
+                    const auto dayVal = std::chrono::duration_cast<std::chrono::days>(dayOfMonth).count();
+
+//                    std::cout << "day-test " << std::endl;
+                    if(dayVal < current_tm.tm_mday) {
+                        continue;
+                    }
 
                     for(auto const& hour: hours) {
-                        auto hourVal = std::chrono::duration_cast<std::chrono::hours>(hour);
+                        const auto hourVal = std::chrono::duration_cast<std::chrono::hours>(hour).count();
+
+//                        std::cout << "hour-test: " << hourVal << std::endl;
+
+
+
+                        if(hourVal +1 < current_tm.tm_hour) {   // TODO: Where is the +1 coming from?
+                            std::cout << "true"  << std::endl;
+                            continue;
+                        }
 
                         for(auto const& minute: minutes) {
-                            auto minuteVal = std::chrono::duration_cast<std::chrono::minutes>(minute);
+                            const auto minuteVal = std::chrono::duration_cast<std::chrono::minutes>(minute).count();
+
+//                            std::cout << " -> " << current_tm.tm_min << std::endl;
+
+                            if(minuteVal < current_tm.tm_min) {
+                                continue;
+                            }
+//                            std::cout << "minute-test " << std::endl;
+
 
                             for(auto const& second: seconds) {
+                                const auto secondVal = second.count();
+
+//                                std::cout << "second-test " << std::endl;
+
+//                                if (secondVal < current_tm.tm_sec) { // ! TODO: fix this???
+//                                    continue;
+//                                }
+
+
                                 auto timeStruct = std::tm();
-                                timeStruct.tm_sec   = second.count();
-                                timeStruct.tm_min   = minuteVal.count();
-                                timeStruct.tm_hour  = hourVal.count();
-                                timeStruct.tm_mday  = dayVal.count();
-                                timeStruct.tm_mon   = monthVal.count();
-                                timeStruct.tm_year  = yearVal.count();
+                                timeStruct.tm_sec   = secondVal;
+                                timeStruct.tm_min   = minuteVal;
+                                timeStruct.tm_hour  = hourVal;
+                                timeStruct.tm_mday  = dayVal;
+                                timeStruct.tm_mon   = monthVal;
+                                timeStruct.tm_year  = yearVal;
 
-                                const int weekday = timeStruct.tm_wday;
-
-                                if(!contained_in_weekdays(weekday)) {
+//                                std::cout << "day: " << timeStruct.tm_mday << std::endl;
+                                if(!contained_in_weekdays(weekdays, timeStruct.tm_wday)) {
                                     continue;
                                 }
+                                resultTime.push_back(timeStruct);
 
-                                if(!is_reached(timeStruct)) {
-                                    resultTime.push_back(timeStruct);
-                                }
+//                                if(!is_reached(timeStruct)) {
+//                                }
 
                                 if(resultTime.size() == 10) {
                                     co_yield resultTime;
@@ -133,13 +184,13 @@ struct ExecutionTimeGenerator {
         co_return resultTime;
     }
 
-    auto set_weekday_filter(std::vector<int> weekdays) -> ExecutionTimeGenerator {
-//        coroutineHandle.promise().current_result_times = filteredOfWeekdayPart(coroutineHandle.promise().current_result_times, weekdays);
+    auto set_weekday_filter() -> ExecutionTimeGenerator {
+        this->weekdays = weekdays;
         return *this;
     }
 
 private:
-    [[maybe_unused]] std::vector<int> weekdays = {0, 1, 2, 3, 4, 5, 6, 7};
+    std::vector<int> weekdays = {0, 1, 2, 3, 4, 5, 6, 7};
 
 
     /// Returns true if the given time_point is reached
@@ -155,7 +206,7 @@ private:
                currentTimeStruct.tm_year >= time_point.tm_year;
     }
 
-    auto contained_in_weekdays(const int weekday) -> bool {
+    static auto contained_in_weekdays(const std::vector<int>& weekdays, int weekday) -> bool {
         return std::find(weekdays.begin(), weekdays.end(), weekday) != weekdays.end();
     }
 
