@@ -15,7 +15,6 @@
 #include "WeekdayPart.hpp"
 #include "YearPart.hpp"
 #include "ExecutionTimeGenerator.hpp"
-#include "CronInterpreter.hpp"
 
 
 /**
@@ -92,7 +91,6 @@ private:
 //        this->resume_execution_times();
         std::cout << "-5-" << execution_times.size() << std::endl;
         Sort::by_next_reached_time(execution_times);
-        CronInterpreter::pretty_print(execution_times);
 
         std::cout << "Constructor processing" << std::endl;
     }
