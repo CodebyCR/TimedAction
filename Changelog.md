@@ -1,7 +1,7 @@
 # Changelog
 
 > <b>TimedAction</b> &bull; _since 2022_ &bull; <br/>
-> Version: 0.3.0 <br/>
+> Version: 0.4.0 <br/>
 > All rights reserved. <br/>
 > Copyright &copy; 2022. [Christoph Rohde](https://github.com/CodebyCR) <br/>
 > Licence: MIT (see [LICENSE](./License))
@@ -17,5 +17,6 @@
 - [ ] TimedActions create & contain a log 
 - [ ] A central point for log notifications
 - [ ] Compilable with GCC, Clang, MSVC
+- [x] Efficient resuming of infinite Cron expressions
 
 ---

@@ -12,26 +12,28 @@
 #include "Cron/CronInterpreter.hpp"
 #include "Scheduler/Scheduler.hpp"
 #include "Utilities/Logger.hpp"
+#include <iomanip>
+#include <ctime>
 
 
-void sayHallo(std::uint32_t& count) {
+void sayHallo(std::uint32_t &count) {
     ++count;
     std::cout << "Hallo nr." << std::to_string(count) << std::endl;
 }
 
-void onAction(const std::string_view& value) {
+void onAction(const std::string_view &value) {
     std::cout << "onAction " << value << std::endl;
 }
 
-void onInterval(const std::string_view& value) {
+void onInterval(const std::string_view &value) {
     std::cout << "onInterval " << value << std::endl;
 }
 
-void onEnd(const std::string_view& value) {
+void onEnd(const std::string_view &value) {
     std::cout << "onEnd " << value << std::endl;
 }
 
-void test(std::string_view const& value) {
+void test(std::string_view const &value) {
     std::cout << value << std::endl;
 }
 
@@ -40,37 +42,39 @@ void test_async_queue() {
     auto queue = AsyncQueue<int>();
 
     // Registrieren einer Callback-Funktion, die aufgerufen wird, wenn ein Element in die Warteschlange eingefügt wird.
-    queue.on_subscribe([](int item) { std::cout << "Element " << item << " wurde in die Warteschlange eingefügt." << std::endl; });
+    queue.on_subscribe(
+            [](int item) { std::cout << "Element " << item << " wurde in die Warteschlange eingefügt." << std::endl; });
 
     // Fügen Sie Elemente in die Warteschlange ein.
     queue.push(1);
     queue.push(2);
     queue.push(3);
 
-    queue.on_listen([](int item) { std::cout << "Element " << item << " wurde aus der Warteschlange entfernt." << std::endl; });
+    queue.on_listen(
+            [](int item) { std::cout << "Element " << item << " wurde aus der Warteschlange entfernt." << std::endl; });
 
     std::cout << "Elemente in der Warteschlange: " << queue.size() << std::endl;
     // Entfernen Sie Elemente aus der Warteschlange.
     queue.clear();
     std::cout << "Elemente in der Warteschlange: " << queue.size() << std::endl;
 
-    for(auto i = 0; i < 100; ++i) {
+    for (auto i = 0; i < 100; ++i) {
         queue.push(i);
     }
 
     std::cout << "Elemente in der Warteschlange: " << queue.size() << std::endl;
 
-    for(auto queueItem: queue) {
+    for (auto queueItem: queue) {
         std::cout << queueItem << std::endl;
         queue.pop();
     }
 }
 
-void test_future_task(I_TimedAction& action) {
+void test_future_task(I_TimedAction &action) {
     std::future<Notification> task = action.finished();
 
 
-    switch(const auto result = task.wait_for(std::chrono::milliseconds(10)); result) {
+    switch (const auto result = task.wait_for(std::chrono::milliseconds(10)); result) {
         case std::future_status::ready: {
             std::cout << "Watcher: finished " << action.getName() << std::endl;
 
@@ -80,15 +84,18 @@ void test_future_task(I_TimedAction& action) {
             //
             //            auto jobLog = dynamic_cast<JobLog&>(notification);
             //            jobLog.print();
-        } break;
+        }
+            break;
 
         case std::future_status::deferred: {
             std::cout << "Watcher: deferred for " << action.getName() << std::endl;
-        } break;
+        }
+            break;
 
         case std::future_status::timeout: {
             std::cout << "Watcher: timeout for " << action.getName() << std::endl;
-        } break;
+        }
+            break;
 
         default: {
             std::cout << "Watcher: unknown status for " << action.getName() << std::endl;
@@ -111,37 +118,87 @@ auto logger_test() {
 }
 
 auto main() -> int {
-    logger_test();    // ! Failed
+    //logger_test();    // ! Failed
+
+
+//    auto cron_try = std::to_cron("0 */1 * * 6 * 2023");
+
+
+    // ! TODO:
+    //  Month must be - 1
+
+
+
+
+//    std::cout << "Cron-1-: "  << std::endl;
+
+//    auto cache = cron_try.get_execution_times();
+//
+//    for (auto &item : cache) {
+//        std::cout << item.tm_hour << std::endl;
+//    }
+//
+//
+////    CronInterpreter::pretty_print(cache);
+//
+//    CronInterpreter::get_info(cache);
+//
+//
+//    std::cin.get();
+////
+////    std::cout << "Cron-2-: "  << std::endl;
+//    CronInterpreter::get_info(cron_try.resume_execution_times()
+//                                      .get_execution_times());
+//
+//    std::cin.get();
+//
+//    std::cout << "Cron-3-: " << std::endl;
+//    CronInterpreter::get_info(cron_try.resume_execution_times()
+//                                      .get_execution_times());
+//
+//    std::cin.get();
+
+    auto c_cron = Cron({.second = "0",
+                       .minute = "*/2",
+                       .hour = "*",
+                       .dayOfMonth = "17",
+                       .month = "5",
+                       .weekday = "*",
+                       .year = "*"});
+
+//    CronInterpreter::each_print(c_cron);
+
+
+    std::cout << "c_cron" << std::endl;
+    std::cout << c_cron << std::endl;
+    std::cin.get();
+
+
+
 
 
     // TODO: make runnable
-    auto& scheduler = Scheduler::get_instance();
+    auto &scheduler = Scheduler::get_instance();
 
     std::uint32_t count = 2;
     std::string str = "test";
 
-    auto cron_try = std::to_cron("0 */1 * 5 5 *"); // every minute  cache only for the current day !
+    // every minute  cache only for the current day !
 
     //std::cout << CronInterpreter::get_info(cron_try.get_execution_times());
 
 
-    auto job2 = SmartTimedAction("My_second_Job",
-                                test,
-                                str,
-                                cron_try);
+//    auto job2 = SmartTimedAction("My_second_Job",
+//                                 test,
+//                                 str,
+//                                 cron_try);
+//s
+//    scheduler.add(&job2);
 
-    scheduler.add(&job2);
 
 
-    auto c_cron = Cron({.second = "0",
-                        .minute = "*/2",
-                        .hour = "*",
-                        .dayOfMonth = "5",
-                        .month = "5",
-                        .weekday = "*",
-                        .year = "*"});
 
-//    auto c_cron = Cron("* */1 * * * * *");
+    //    auto c_cron = Cron("* */1 * * * * *");
 
     std::cout << c_cron << std::endl;
 
@@ -162,7 +219,7 @@ auto main() -> int {
     char c;
     std::cin >> c;
 
-    while(c != 'q') {
+    while (c != 'q') {
         std::cin >> c;
     }
 

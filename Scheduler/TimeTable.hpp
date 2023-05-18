@@ -64,6 +64,10 @@ public:
         }
     }
 
+    auto remove(std::time_t const& time) -> void {
+        this->erase(time);
+    }
+
 
     /// Listener
 
