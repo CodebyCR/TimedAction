@@ -46,25 +46,26 @@
 ## Seconds
 - The seconds part is optional.
 - If you don't specify the seconds part, the default value is `0`.
-- The seconds part is a number between `0` and `59`.
+- The seconds part is a number between `0` and `59`, `59` is included.
 - ATTENTION: If you use this part, you must accept more expensive costs.
 
 
 ## Minutes
-- The minutes part is a number between `0` and `59`.
+- The minutes part is a number between `0` and `59`, `59` is included.
 
 ## Hours
 - The hours part is a number between `0` and `23`.
 
+
 ## Day of the Month
 - **The value `0` is invalid.**
-- The day of the month part is a number between `1` and `31`.
+- The day of the month part is a number between `1` and `31`, `31` is included.
 - Leap years are taken into account.
 - If the day of the month is greater than the number of days in the month (like February), the cron will not be executed.
 
 ## Month
 - **The value `0` is invalid.**
-- The month part is a number between `1` and `12`.
+- The month part is a number between `1` and `12`, `12` is included.
 
 ## Day of the Week
 - The day of the week part is a number between `0` and `6`.
