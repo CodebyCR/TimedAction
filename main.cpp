@@ -173,7 +173,7 @@ auto main() -> int {
     std::cout << c_cron << std::endl;
     std::cin.get();
 
-    std::cout << "after" << std::endl;
+
 
 
 

@@ -74,7 +74,7 @@ private:
         }
         //std::cout << "-3-" << std::endl;
         processCronParts(cronParts);
-        //std::cout << "-4-" << std::endl;
+        std::cout << "-4-" << std::endl;
 
         generator = ExecutionTimeGenerator::generate_from(
                 seconds.getTimes(),
@@ -86,13 +86,16 @@ private:
 
                 daysOfWeek.getContainedWeekdays());
 
-//        generator();
-        execution_times = generator();
-//        this->resume_execution_times();
-        std::cout << "-5-" << execution_times.size() << std::endl;
-        Sort::by_next_reached_time(execution_times);
 
-        std::cout << "Constructor processing" << std::endl;
+        execution_times = generator();
+
+        if(execution_times.empty()) {
+            std::cout << "WARNING -> out of date Job." << std::endl;
+        }
+        else {
+            Sort::by_next_reached_time(execution_times);
+        }
+
     }
 
 
@@ -127,10 +130,17 @@ public:
 
 
     friend std::ostream& operator<<(std::ostream& os, Cron& cron) {
-        auto first_execution = cron.get_execution_times().at(0);
-        std::time_t time = std::mktime(&first_execution);
-        auto pretty_time = std::ctime(&time);
-        os << pretty_time;
+        if(bool has_execution_time = cron.execution_times.empty();
+                has_execution_time) {
+            os << "No execution times contained. -> out-of-date expression";
+        }
+        else {
+            auto first_execution = cron.get_execution_times().at(0);
+            std::time_t time = std::mktime(&first_execution);
+            auto pretty_time = std::ctime(&time);
+            os << pretty_time;
+        }
+
         return os;
     }
 
