@@ -14,6 +14,7 @@
 #include "Utilities/Logger.hpp"
 #include <iomanip>
 #include <ctime>
+#include <codecvt>
 
 
 void sayHallo(std::uint32_t &count) {
@@ -118,6 +119,20 @@ auto logger_test() {
 }
 
 auto main() -> int {
+
+    std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> converter;
+    //std::u32string
+    constexpr auto brand = U"\x1B[31m"
+                           "===========================================================================\n"
+                           "Timed Action •\x1B[3m since 2022\x1B[0m\x1B[31m •\n"
+                           "Version: 0.4.0\n"
+                           "All rights reserved.\n"
+                           "Copyright © 2023. Christoph Rohde\n"
+                           "Licence: MIT\n"
+                           "===========================================================================\n\x1B[0m";
+    std::cout << converter.to_bytes(brand)  << std::endl;
+
+
     //logger_test();    // ! Failed
 
 
@@ -161,7 +176,7 @@ auto main() -> int {
     auto c_cron = Cron({.second = "0",
                        .minute = "*/2",
                        .hour = "*",
-                       .dayOfMonth = "17",
+                       .dayOfMonth = "21",
                        .month = "5",
                        .weekday = "*",
                        .year = "*"});
