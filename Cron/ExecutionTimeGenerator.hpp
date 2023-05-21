@@ -88,8 +88,8 @@ struct ExecutionTimeGenerator {
 
         auto current_tm = std::tm();
         auto current_time = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-        localtime_s(&current_tm, &current_time);
-
+//        localtime_s(&current_tm, &current_time);
+        current_tm = *std::localtime(&current_time);
 
 //        std::vector<std::tm> temp = {current_tm};
 //        CronInterpreter::pretty_print(temp);
