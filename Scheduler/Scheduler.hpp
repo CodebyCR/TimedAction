@@ -20,11 +20,13 @@
 class Scheduler {
 private:
     //    std::shared_ptr<EventQueue> eventQueue_ptr;
+    std::map<std::string_view, std::string_view> attributes;
     std::shared_ptr<TimeTable> timeTable_ptr;
     Watcher watcher = Watcher();
 
 
     Scheduler() {
+        attributes = {};
         timeTable_ptr = std::make_shared<TimeTable>();
         // drop folder support
         timeTable_subscribe_listener();
@@ -102,6 +104,19 @@ public:
 
     [[nodiscard]] auto is_running() const -> bool {
         return watcher.isRunning;
+    }
+
+    auto get_attribute(std::string_view const& key) -> std::string_view {
+        return this->attributes[key];
+    }
+
+    auto set_attribute(std::string_view const& key, std::string_view const& value) -> bool {
+        if(key.empty() || value.empty()) {
+            return false;
+        }
+
+        this->attributes[key] = value;
+        return true;
     }
 
     /////////////////////////

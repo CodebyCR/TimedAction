@@ -15,6 +15,7 @@
 #include <iomanip>
 #include <ctime>
 #include <codecvt>
+#include "Utilities/JSONParser.hpp"
 
 
 void sayHallo(std::uint32_t &count) {
@@ -118,7 +119,27 @@ auto logger_test() {
     return 0;
 }
 
+auto json_parser_test() -> void {
+    // Dateiname der JSON-Datei
+    std::string filename = "/Users/christoph_rohde/Example/test.json";
+
+    std::string json_input = JSONParser::readJsonFile(filename);
+    std::cout << json_input << std::endl;
+
+
+    // JSON-Datei parsen
+    std::map<std::string, std::string> parsedData = JSONParser::parse_json_string(json_input);
+
+    // Ergebnis ausgeben
+    for (auto& entry : parsedData) {
+        std::cout << entry.first << " : " << entry.second << std::endl;
+    }
+
+}
+
 auto main() -> int {
+
+    json_parser_test();
 
     std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> converter;
     //std::u32string
