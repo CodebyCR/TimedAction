@@ -16,6 +16,7 @@
 #include "WeekdayPart.hpp"
 #include "YearPart.hpp"
 #include "ExecutionTimeGenerator.hpp"
+#include "../Interfaces/I_ExecutionTimer.hpp"
 
 
 /**
@@ -31,7 +32,7 @@
  *                    .weekday = "*",
  *                    .year = "2023-2024"});
  */
-class Cron {
+class Cron : public I_ExecutionTimer{
 private:
     CronPart seconds;
     CronPart minutes;
@@ -198,7 +199,7 @@ public:
     }
 
 
-    [[nodiscard]] auto get_execution_times() -> std::vector<std::tm> {
+    [[nodiscard]] auto get_execution_times() -> std::vector<std::tm> override {
         return execution_times;
     }
 
