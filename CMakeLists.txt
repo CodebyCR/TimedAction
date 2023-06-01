@@ -22,6 +22,15 @@ else()
     message(FATAL_ERROR " - [1/${SUB_LIB_COUNT}] ${UTILITY_LIBRARY} not found")
 endif()
 
+# Add Interfaces library
+set(LIBRARY_INTERFACES "Interfaces")
+add_subdirectory(${LIBRARY_INTERFACES})
+if (LIBRARY_INTERFACES)
+    message(NOTICE " - [2/${SUB_LIB_COUNT}] ${LIBRARY_INTERFACES} found")
+else()
+    message(FATAL_ERROR " - [2/${SUB_LIB_COUNT}] ${LIBRARY_INTERFACES} not found")
+endif()
+
 # Add Cron library
 set(LIBRARY_CRON "Cron")
 add_subdirectory(${LIBRARY_CRON})
@@ -51,7 +60,7 @@ else()
 endif()
 
 # Add Scheduler library
-set(LIBRARY_SCHEDULER "Scheduler")
+set(LIBRARY_SCHEDULER "Scheduler" ExecutionTimer/ExecutionList.hpp ExecutionTimer/IntervalExecution.hpp)
 add_subdirectory(${LIBRARY_SCHEDULER})
 if (LIBRARY_SCHEDULER)
     message(NOTICE " - [5/${SUB_LIB_COUNT}] ${LIBRARY_SCHEDULER} found")
