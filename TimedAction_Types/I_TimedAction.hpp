@@ -13,7 +13,6 @@
 class I_TimedAction {
 protected:
     std::string name;
-
     std::vector<std::tm> execution_times;
 
 public:
@@ -29,7 +28,9 @@ public:
 
     [[nodiscard]] virtual auto is_running() const -> bool = 0;
 
-    [[nodiscard]] virtual auto getName() const -> std::string_view = 0;
+    [[nodiscard]] auto getName() const -> std::string_view {
+        return this->name;
+    }
 
     [[nodiscard]] virtual auto get_execution_times() const -> std::vector<std::tm> = 0;
 
@@ -37,7 +38,7 @@ public:
     // << Abstract >>
 
 
-    /// This methode returns a future which contains the JobLog.
+    virtual /// This methode returns a future which contains the JobLog.
     auto finished() -> std::future<Notification> {    // override {
 
         return std::async(std::launch::async, [this]() -> Notification {
