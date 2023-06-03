@@ -1,35 +1,42 @@
-# Timed Action v.0.4.0 (Unofficial)
+<div align="center">
+<a href="https://github.com/CodebyCR/TimedAction/wiki">Wiki</a> 
+| 
+<a href="QuickStart.md">Quick Start</a>
+|
+<a href="examples">Examples</a>
+|
+<a href="scheduler.json">Scheduler.json</a>
+</div>
 
-![C++](https://img.shields.io/badge/C%2B%2B-00599C?style=for-the-badge&logo=c%2B%2B&logoColor=white)
-![GitHub](https://img.shields.io/badge/SonarLint-CB2029?style=for-the-badge&logo=sonarlint&logoColor=white)
-![CMake](https://img.shields.io/badge/CMake-064F8C?style=for-the-badge&logo=cmake&logoColor=white)
-![GitHub](https://img.shields.io/github/license/CodeByCR/TimedAction?style=for-the-badge)
+<h1 align="center">Timed Action</h1>
 
-## _A simple, state-of-the-art cron job Framework._
+
+<div align="center">
+    <img height="28" src="https://img.shields.io/badge/C%2B%2B-00599C?style=for-the-badge&logo=c%2B%2B&logoColor=white" alt="Logo" >
+    <img height="28" src="https://img.shields.io/badge/SonarLint-CB2029?style=for-the-badge&logo=sonarlint&logoColor=white" alt="Logo">
+    <img height="28" src="https://img.shields.io/badge/CMake-064F8C?style=for-the-badge&logo=cmake&logoColor=white" alt="Logo">
+    <img height="28" src="https://img.shields.io/github/license/CodeByCR/TimedAction?style=for-the-badge" alt="Logo">
+</div>
+
+## ! IMPORTANT NOTE !
+
+> This repo will currently maintain as trunk. This will change with Version 1.0.0 to a release branch.<br/>
+> The current version is <b>0.4.0</b><br/>
+> The repo is currently in progress and will be updated frequently with some <b>breaking changes</b> until V.1.0.0.<br/>
+
+## Installation
+
+```bash
+# coming soon...
+```
+
+## _A simple, state-of-the-art job Framework._
 
 - [ ] Thread safe
 - [ ] Simple
 - [ ] Strong, example based Documentation
 - [ ] Cross platform (Windows, Linux, Mac - per CMake)
 - [ ] Extendable
-- [x] Independent of other libraries
+- [x] Independents of third-party libraries
 - [ ] Individual job logging
 - [ ] Central log notification point
-
-## ! IMPORTANT NOTE !
-
-> This repo will currently maintain as trunk. This will change with Version 1.0.0 to a release branch.
-
-
-## Documentations
-
-### Cron
-#### [Working with Cron... _can be easy_](/Cron/Cron_Documentation.md)
-#### [The Cron format](/Cron/Cron_Format.md)
-
-### Timed Action
-#### [What you can do with Timed Actions?](/TimedAction/TimedAction_Documentation.md)
-#### [Build your own Timed Action](/TimedAction/TimedAction_Build.md)
-
-### Scheduler
-#### [How to use the Scheduler](/Scheduler/Scheduler_Documentation.md)
