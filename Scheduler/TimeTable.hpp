@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "../TimedAction_Types/I_TimedAction.hpp"
+#include "../Interfaces/I_TimedAction.hpp"
 #include <iostream>
 #include <map>
 #include <ranges>

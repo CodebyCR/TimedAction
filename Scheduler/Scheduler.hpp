@@ -5,7 +5,7 @@
 #pragma once
 
 #include "../Cron/CronInterpreter.hpp"
-#include "../TimedAction_Types/I_TimedAction.hpp"
+#include "../Interfaces/I_TimedAction.hpp"
 #include "EventQueue.hpp"
 #include "JobManager.hpp"
 #include "TimeTable.hpp"
