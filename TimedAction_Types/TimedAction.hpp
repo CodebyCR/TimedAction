@@ -5,11 +5,13 @@
 #pragma once
 
 #include "../Notification/JobLog.hpp"
-#include "I_TimedAction.hpp"
+#include "../Interfaces/I_TimedAction.hpp"
 #include <chrono>
 #include <iostream>
 #include <thread>
 #include <variant>
+#include <future>
+#include "../Interfaces/I_ExecutionTimer.hpp"
 
 
 template<typename T, typename A, typename I, typename E>
@@ -19,8 +21,9 @@ class TimedAction : public I_TimedAction {
 private:
     /** Internal state */
     T value;
-    std::function<void(T& value)> action;
-    std::chrono::milliseconds timeSinceLastAction {};
+//    std::function<void(T &value)> action;
+    std::future<Notification> action;
+    std::chrono::milliseconds timeSinceLastAction{};
     bool isRunning;
     std::thread thread;
 
@@ -34,45 +37,57 @@ private:
     E endValue;
 
     //[[Deprecated("use Callback<A, I, E> instead of <A, I, E>")]]
-    std::function<void(A& value)> onAction;
-    std::function<void(I& value)> onInterval;
-    std::function<void(E& value)> onEnd;
+    std::function<void(A &value)> onAction;
+    std::function<void(I &value)> onInterval;
+    std::function<void(E &value)> onEnd;
 
 public:
-    TimedAction(std::string_view const& name,
-                std::function<void(T& value)> const& action,
-                T& value,
-                std::chrono::milliseconds interval) :
+//    TimedAction(std::string_view const &name,
+//                std::function<void(T &value)> const &action,
+//                T &value,
+//                std::chrono::milliseconds interval) :
+//
+//            action(action),
+//            value(value),
+//            interval(interval),
+//            isRunning(false) {
+//        this->name = name;
+//    }
+//
+//    TimedAction(std::string_view const &name,
+//                std::function<void(T &value)> const &action,
+//                T &value,
+//                std::vector<std::tm> &execution_times) :
+//
+//            action(action),
+//            value(value),
+//            isRunning(false) {
+//        this->name = name;
+//        this->execution_times(execution_times);
+//    }
+//
+//    TimedAction(std::string_view const &name,
+//                std::function<void(T &value)> const &action,
+//                T &value,
+//                Cron &corn) :
+//
+//            action(action),
+//            value(value),
+//            isRunning(false) {
+//        this->name = name;
+//        this->execution_times = corn.get_execution_times();
+//    }
 
-                                                      action(action),
-                                                      value(value),
-                                                      interval(interval),
-                                                      isRunning(false) {
+    TimedAction(std::string_view const &name,
+                std::function<void(T &value)> const &action,
+                T &value,
+                I_ExecutionTimer &executionTimer) :
+
+            action(action),
+            value(value),
+            isRunning(false) {
         this->name = name;
-    }
-
-    TimedAction(std::string_view const& name,
-                std::function<void(T& value)> const& action,
-                T& value,
-                std::vector<std::tm>& execution_times) :
-
-                                                         action(action),
-                                                         value(value),
-                                                         isRunning(false) {
-        this->name = name;
-        this->execution_times(execution_times);
-    }
-
-    TimedAction(std::string_view const& name,
-                std::function<void(T& value)> const& action,
-                T& value,
-                Cron& corn) :
-
-                              action(action),
-                              value(value),
-                              isRunning(false) {
-        this->name = name;
-        this->execution_times = corn.get_execution_times();
+        this->execution_times = executionTimer.get_execution_times();
     }
 
 
@@ -80,62 +95,60 @@ public:
 
 
     auto run() -> void {
-        if(interval != std::chrono::milliseconds {}) {
+        if (interval != std::chrono::milliseconds{}) {
             run_as_interval(interval);
         }
 
-        if(!execution_times.empty()) {
+        if (!execution_times.empty()) {
             run_as_times(execution_times);
         }
     }
 
-    auto run_as_times(const std::vector<std::tm>& vector) {
-        for(auto time: vector) {
+    auto run_as_times(const std::vector<std::tm> &vector) {
+        for (auto time: vector) {
             auto now = std::chrono::system_clock::now();
             auto time_point = std::chrono::system_clock::from_time_t(std::mktime(&time));
 
-            while(isRunning) {
-                if(now == time_point) {
+            while (isRunning) {
+                if (now == time_point) {
                     timeSinceLastAction = std::chrono::milliseconds(0);
 
-                    if(onAction) {
+                    if (onAction) {
                         onAction(actionValue);
                     }
 
                     //                    action(value);
-                }
-                else {
-                    if(onInterval) {
+                } else {
+                    if (onInterval) {
                         onInterval(intervalValue);
                     }
                     timeSinceLastAction += std::chrono::milliseconds(1);
                 }
             }
-            if(onEnd) {
+            if (onEnd) {
                 onEnd(endValue);
             }
         }
     }
 
-    auto run_as_interval(const std::chrono::milliseconds& interval) {
-        while(isRunning) {
-            if(timeSinceLastAction >= interval) {
+    auto run_as_interval(const std::chrono::milliseconds &interval) {
+        while (isRunning) {
+            if (timeSinceLastAction >= interval) {
                 timeSinceLastAction = std::chrono::milliseconds(0);
 
-                if(onAction) {
+                if (onAction) {
                     onAction(actionValue);
                 }
 
                 action(value);
-            }
-            else {
-                if(onInterval) {
+            } else {
+                if (onInterval) {
                     onInterval(intervalValue);
                 }
                 timeSinceLastAction += std::chrono::milliseconds(1);
             }
         }
-        if(onEnd) {
+        if (onEnd) {
             onEnd(endValue);
         }
     }
@@ -156,7 +169,7 @@ public:
         start();
     }
 
-    auto setAction(std::function<void(T& value)> const& action) -> void {
+    auto setAction(std::function<void(T &value)> const &action) -> void {
         this->action = action;
     }
 
@@ -164,23 +177,19 @@ public:
         this->interval = interval;
     }
 
-    auto setOnAction(std::function<void(A& value)> const& onAction, A& actionValue) -> void {
+    auto setOnAction(std::function<void(A &value)> const &onAction, A &actionValue) -> void {
         this->onAction = onAction;
         this->actionValue = actionValue;
     }
 
-    auto setOnInterval(std::function<void(I& value)> const& onInterval, I& intervalValue) -> void {
+    auto setOnInterval(std::function<void(I &value)> const &onInterval, I &intervalValue) -> void {
         this->onInterval = onInterval;
         this->intervalValue = intervalValue;
     }
 
-    auto setOnEnd(std::function<void(E& value)> const& onEnd, E& endValue) -> void {
+    auto setOnEnd(std::function<void(E &value)> const &onEnd, E &endValue) -> void {
         this->onEnd = onEnd;
         this->endValue = endValue;
-    }
-
-    [[nodiscard]] auto getName() const -> std::string_view override {
-        return name;
     }
 
     auto getValue() const -> T {
@@ -203,7 +212,7 @@ public:
         return execution_times;
     }
 
-    auto finished() -> std::future<Notification> {
+    auto finished() -> std::future<Notification> override {
         auto timeStamp = std::chrono::system_clock::now();
 
 
