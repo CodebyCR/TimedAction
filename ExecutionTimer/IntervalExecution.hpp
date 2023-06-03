@@ -22,6 +22,6 @@ public:
 
     [[nodiscard]] auto get_execution_times() -> std::vector<std::tm> override {
         std::cout << "NOT IMPLEMENTED YET!" << std::endl;
-        return std::vector<std::tm>();
+        return {};
     }
 };

@@ -5,7 +5,7 @@
 #pragma once
 
 #include "../Notification/JobLog.hpp"
-#include "I_TimedAction.hpp"
+#include "../Interfaces/I_TimedAction.hpp"
 #include <chrono>
 #include <iostream>
 #include <thread>
@@ -79,10 +79,6 @@ public:
 
     auto setInterval(std::chrono::milliseconds interval) -> void {
         this->interval = interval;
-    }
-
-    [[nodiscard]] auto getName() const -> std::string_view override {
-        return this->name;
     }
 
     auto getValue() const -> T {

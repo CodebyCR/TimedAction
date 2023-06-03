@@ -59,8 +59,17 @@ else()
     message(FATAL_ERROR " - [4/${SUB_LIB_COUNT}] ${LIBRARY_CONTAINER} not found")
 endif()
 
+# Add ExecutionTimer library
+set(LIBRARY_EXECUTION_TIMER "ExecutionTimer")
+add_subdirectory(${LIBRARY_EXECUTION_TIMER})
+if (LIBRARY_EXECUTION_TIMER)
+    message(NOTICE " - [5/${SUB_LIB_COUNT}] ${LIBRARY_EXECUTION_TIMER} found")
+else()
+    message(FATAL_ERROR " - [5/${SUB_LIB_COUNT}] ${LIBRARY_EXECUTION_TIMER} not found")
+endif()
+
 # Add Scheduler library
-set(LIBRARY_SCHEDULER "Scheduler" ExecutionTimer/ExecutionList.hpp ExecutionTimer/IntervalExecution.hpp)
+set(LIBRARY_SCHEDULER "Scheduler")
 add_subdirectory(${LIBRARY_SCHEDULER})
 if (LIBRARY_SCHEDULER)
     message(NOTICE " - [5/${SUB_LIB_COUNT}] ${LIBRARY_SCHEDULER} found")
@@ -84,6 +93,10 @@ set(TIMED_ACTION_LIBS "TimedAction_Libs")
 # Bind libraries to one Library
 add_library(${TIMED_ACTION_LIBS} SHARED
         ${UTILITY_LIBRARY}
+        ${LIBRARY_INTERFACES}
+        ${LIBRARY_CONTAINER}
+        ${LIBRARY_EXECUTION_TIMER}
+        ${LIBRARY_NOTIFICATION}
         ${LIBRARY_CRON}
         ${LIBRARY_TIMED_ACTION}
         ${LIBRARY_SCHEDULER})
