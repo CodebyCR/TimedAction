@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 
-namespace CronRange {
+namespace CronRanges {
 
     auto split(const std::string& str, char delimiter) -> std::vector<std::string> {
         auto result = std::vector<std::string>();
@@ -27,11 +27,11 @@ namespace CronRange {
     }
 
 
-    struct CronRange {
+    struct CronRanges {
         unsigned short start;
         unsigned short end;
 
-        CronRange(const std::string& range) {
+        explicit CronRanges(const std::string& range) {
             auto rangeValues = split(range, '-');
             this->start = std::stoi(rangeValues[0]);
             this->end = std::stoi(rangeValues[1]);
@@ -43,7 +43,7 @@ namespace CronRange {
             return false;
         }
 
-        if (CronRange rangeValues(range); rangeValues.start >= rangeValues.end) {
+        if (CronRanges rangeValues(range); rangeValues.start >= rangeValues.end) {
             return false;
         }
 
@@ -58,7 +58,7 @@ namespace CronRange {
             return false;
         }
 
-        if (CronRange rangeValues(range); rangeValues.start >= rangeValues.end) {
+        if (CronRanges rangeValues(range); rangeValues.start >= rangeValues.end) {
             return false;
         }
 
@@ -73,7 +73,7 @@ namespace CronRange {
             return false;
         }
 
-        if (CronRange rangeValues(range); rangeValues.start >= rangeValues.end) {
+        if (CronRanges rangeValues(range); rangeValues.start >= rangeValues.end) {
             return false;
         }
 
@@ -88,10 +88,46 @@ namespace CronRange {
             return false;
         }
 
-        if (CronRange rangeValues(range); rangeValues.start >= rangeValues.end) {
+        if (CronRanges rangeValues(range); rangeValues.start >= rangeValues.end) {
             return false;
         }
 
         return std::regex_match(range, day_range_regex);
+    }
+
+    auto month_range_matched(const std::string& range) -> bool {
+        const static std::string month_range = "^(0?[1-9]|1[0-2])(-?(?!0)(0?[1-9]|1[0-2]))?$";
+        std::regex month_range_regex(month_range);
+
+        if(!range.contains('-')){
+            return false;
+        }
+
+        if (CronRanges rangeValues(range); rangeValues.start >= rangeValues.end) {
+            return false;
+        }
+
+        return std::regex_match(range, month_range_regex);
+    }
+
+    auto weekday_range_matched(const std::string& range) -> bool {
+        const static std::string weekday_range = "^(0?[0-7])(-?(?!0)(0?[0-7]))?$";
+        std::regex weekday_range_regex(weekday_range);
+
+        if(!range.contains('-')){
+            return false;
+        }
+
+        const std::string weekdays[] = {"SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"};
+        bool isWeekday = std::any_of(std::begin(weekdays), std::end(weekdays), [&](const std::string& weekday) {
+            return range == weekday;
+        });
+
+
+        if (CronRanges rangeValues(range); rangeValues.start >= rangeValues.end) {
+            return false;
+        }
+
+        return std::regex_match(range, weekday_range_regex) || isWeekday;
     }
 }
