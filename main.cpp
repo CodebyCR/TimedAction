@@ -1,7 +1,7 @@
 #include <iostream>
 
 #include "Cron/Cron.hpp"
-#include "TimedAction_Types/I_TimedAction.hpp"
+#include "Interfaces/I_TimedAction.hpp"
 #include "TimedAction_Types/Light_TimedAction.hpp"
 #include "TimedAction_Types/TimedAction.hpp"
 #include <memory>
@@ -16,6 +16,7 @@
 #include <ctime>
 #include <codecvt>
 #include "Utilities/JSONParser.hpp"
+#include "Cron/CronDebugger/tests/CronRangesTests.hpp"
 
 
 void sayHallo(std::uint32_t &count) {
@@ -139,6 +140,8 @@ auto json_parser_test() -> void {
 
 auto main() -> int {
 
+    CronTest::test_all();
+
     json_parser_test();
 
     std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> converter;
@@ -238,17 +241,17 @@ auto main() -> int {
 
     std::cout << c_cron << std::endl;
 
-    auto job = SmartTimedAction("My_first_Job",
-                                test,
-                                str,
-                                c_cron);
-
-    std::cout << job.getName() << std::endl;
+//    auto job = SmartTimedAction("My_first_Job",
+//                                test,
+//                                str,
+//                                c_cron);
+//
+//    std::cout << job.getName() << std::endl;
 
     scheduler.start();
     std::this_thread::sleep_for(std::chrono::seconds(2));
 
-    scheduler.add(&job);
+//    scheduler.add(&job);
 
 
     // waiting for enter 'q'
