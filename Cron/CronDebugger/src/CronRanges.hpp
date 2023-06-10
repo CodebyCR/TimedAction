@@ -11,6 +11,18 @@
 
 namespace CronRanges {
 
+    bool is_number(const std::string& str) {
+        bool is_number = std::ranges::all_of(str, [](char c) { return std::isdigit(c); });
+
+        return is_number;
+    }
+
+    auto to_upper(const std::string& str) -> std::string {
+        std::string upperStr = str;
+        std::transform(upperStr.begin(), upperStr.end(), upperStr.begin(), ::toupper);
+        return upperStr;
+    }
+
     auto split(const std::string& str, char delimiter) -> std::vector<std::string> {
         auto result = std::vector<std::string>();
         auto current = std::string();
@@ -18,7 +30,8 @@ namespace CronRanges {
             if (c == delimiter) {
                 result.push_back(current);
                 current.clear();
-            } else {
+            }
+            else {
                 current += c;
             }
         }
@@ -31,10 +44,51 @@ namespace CronRanges {
         unsigned short start;
         unsigned short end;
 
+        auto static get_index(const std::string& value) -> int {
+            if(value == "SUN"){
+                return 0;
+            }
+            else if(value == "MON"){
+                return 1;
+            }
+            else if(value == "TUE"){
+                return 2;
+            }
+            else if(value == "WED"){
+                return 3;
+            }
+            else if(value == "THU"){
+                return 4;
+            }
+            else if(value == "FRI"){
+                return 5;
+            }
+            else if(value == "SAT"){
+                return 6;
+            }
+            else{
+                return 0;
+            }
+        }
+
+
         explicit CronRanges(const std::string& range) {
             auto rangeValues = split(range, '-');
-            this->start = std::stoi(rangeValues[0]);
-            this->end = std::stoi(rangeValues[1]);
+
+            if(is_number(rangeValues[0])){
+                this->start = std::stoi(rangeValues[0]);
+            }
+            else{
+                this->start = get_index(to_upper(rangeValues[0]));
+            }
+
+            if(is_number(rangeValues[1])){
+                this->end = std::stoi(rangeValues[1]);
+            }
+            else{
+                this->end = get_index(to_upper(rangeValues[1]));
+            }
+
         }
     };
 
@@ -118,16 +172,11 @@ namespace CronRanges {
             return false;
         }
 
-        const std::string weekdays[] = {"SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"};
-        bool isWeekday = std::any_of(std::begin(weekdays), std::end(weekdays), [&](const std::string& weekday) {
-            return range == weekday;
-        });
-
-
         if (CronRanges rangeValues(range); rangeValues.start >= rangeValues.end) {
             return false;
         }
 
-        return std::regex_match(range, weekday_range_regex) || isWeekday;
+
+        return std::regex_match(range, weekday_range_regex);
     }
 }
