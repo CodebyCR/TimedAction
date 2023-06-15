@@ -8,7 +8,23 @@
 #include <string>
 #include <vector>
 
-namespace StringUtils {
+namespace StringUtils { //TODO: full static ?
+
+    /// Remove all chars out of the given string where equals the given char.
+    [[nodiscard]]
+    static auto eraseChar(std::string const& str, char character) -> std::string {
+        std::string result;
+        for (char c : str) {
+            if (c != character) {
+                result += c;
+            }
+        }
+        return result;
+    }
+
+    static auto eraseChars(std::string const& str, char** chars) -> std::string {
+        // TODO: implement
+    }
 
     auto split_by(std::string_view const &str, char const &delimiter) -> std::vector<std::string> {
         auto result = std::vector<std::string>();
