@@ -121,28 +121,24 @@ auto logger_test() {
 }
 
 auto json_parser_test() -> void {
-    // Dateiname der JSON-Datei
-    std::string filename = "/Users/christoph_rohde/Example/test.json";
-
-    std::string json_input = JSONParser::readJsonFile(filename);
-    std::cout << json_input << std::endl;
-
+    auto filename = std::filesystem::path("/Users/christoph_rohde/Example/test.json");
 
     // JSON-Datei parsen
-    std::map<std::string, std::string> parsedData = JSONParser::parse_json_string(json_input);
+    std::map<std::string, std::string> parsedData = JSONParser::json_to_string_map(filename);
 
     // Ergebnis ausgeben
     for (auto& entry : parsedData) {
         std::cout << entry.first << " : " << entry.second << std::endl;
     }
 
+
+    auto filePath = JSONParser::string_map_to_json(parsedData);
 }
 
 auto main() -> int {
 
-    CronTest::test_all();
-
-    json_parser_test();
+//    CronTest::test_all();
+//    json_parser_test();
 
     std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> converter;
     //std::u32string

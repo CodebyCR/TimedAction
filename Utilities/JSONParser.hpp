@@ -19,9 +19,11 @@
 #include <string>
 #include <string_view>
 
+
+/// This namespace ist for the parsing of JSON config files.
 namespace JSONParser {
 
-    auto readJsonFile(const std::string& filename) -> std::string {
+    static auto readJsonFile(std::filesystem::path const& filename) -> std::string {
         std::ifstream file(filename);
         if(!file.is_open()) {
             std::cerr << "Fehler beim Öffnen der Datei: " << filename << std::endl;
@@ -35,13 +37,11 @@ namespace JSONParser {
         return buffer.str();
     }
 
-    auto parse_json_string(std::string& jsonString) -> std::map<std::string, std::string> {
+    static auto parse_json_string(std::string& jsonString) -> std::map<std::string, std::string> {
         // Remove whitespaces and newlines from the JSON string
         jsonString.erase(std::remove_if(jsonString.begin(), jsonString.end(),
                                         [](unsigned char c) { return std::isspace(c); }),
                          jsonString.end());
-
-        //        std::cout << "After trim: " << jsonString << std::endl;
 
         std::map<std::string, std::string> translationMap;
 
@@ -55,27 +55,68 @@ namespace JSONParser {
             }
         }
 
-        //        std::cout << "After remove braces: " << jsonString << std::endl;
+        jsonString = StringUtils::eraseChar(jsonString, '"');
 
-        // Split by ','
         std::vector<std::string> pairs = StringUtils::split_by(jsonString, ',');
         for(const auto& pair: pairs) {
             std::vector<std::string> keyValue = StringUtils::split_by(pair, ':');
+            const auto currentPair = std::pair<std::string, std::string>(keyValue.at(0), keyValue.at(1));
 
-            std::string_view key = keyValue.at(0);
-            key.substr(1, keyValue.at(0).length() - 2);
-
-            std::string_view value = keyValue.at(1);
-            value.substr(1, keyValue.at(0).length());
-
-
-            auto currentPair = std::pair<std::string, std::string>(key, value);
-            std::cout << "Pair: " << currentPair.first << '-' << currentPair.second << std::endl;
             translationMap.insert(currentPair);
         }
 
-
         return translationMap;
+    }
+
+    static auto json_to_string_map(std::filesystem::path const& filename) -> std::map<std::string, std::string> {
+        std::string json_input = JSONParser::readJsonFile(filename);
+        return JSONParser::parse_json_string(json_input);
+    }
+
+    static auto map_to_json_string(std::map<std::string, std::string> const& stringMap) -> std::string {
+        /// * refactor with stringstream
+        //        auto json = std::stringstream();
+        //        json << "{" << '\n';
+        //        for (auto const& [key, value] : stringMap) {
+        //            json << "\"" << key << "\":\"" << value << "\",";
+        //        }
+
+        std::string json = "{\n";
+        for(auto const& [key, value]: stringMap) {
+            json.append("\"")
+                    .append(key)
+                    .append("\":\"")
+                    .append(value)
+                    .append("\",\n");
+        }
+        json.pop_back();
+        json.pop_back();
+        json.append("\n}");
+
+        return json;
+    }
+
+    static auto string_map_to_json(std::map<std::string, std::string> & stringMap) -> std::filesystem::path {
+        auto settings_json_path = std::filesystem::path("/Users/christoph_rohde/Example/test.json");
+                // std::filesystem::path(stringMap.at("Settings_JSON")); /// Update settings.json Path
+        const auto json_string = map_to_json_string(stringMap);
+
+        if(!exists(settings_json_path) || !is_regular_file(settings_json_path)) {
+            std::cout << "File does not exist"<< std::endl;
+        }
+
+        stringMap.at("test2") = "new Value";
+
+        std::cout << json_string << std::endl;
+
+        if(std::ofstream fileStream(settings_json_path); fileStream.is_open()) {
+            fileStream << json_string;
+            fileStream.close();
+            return settings_json_path;
+        }
+
+        std::cerr << "File can't be opened. Path: " << settings_json_path << std::endl;
+        return "";
     }
 
 }    // namespace JSONParser
