@@ -200,15 +200,18 @@ public:
     //        return interval;
     //    }
 
-    [[nodiscard]] auto getTimeSinceLastAction() const -> std::chrono::milliseconds {
+    [[nodiscard]]
+    auto getTimeSinceLastAction() const -> std::chrono::milliseconds {
         return timeSinceLastAction;
     }
 
-    [[nodiscard]] auto is_running() const -> bool override {
+    [[nodiscard]]
+    auto is_running() const -> bool override {
         return isRunning;
     }
 
-    [[nodiscard]] auto get_execution_times() const -> std::vector<std::tm> override {
+    [[nodiscard]]
+    auto get_execution_times() const -> std::vector<std::tm> override {
         return execution_times;
     }
 

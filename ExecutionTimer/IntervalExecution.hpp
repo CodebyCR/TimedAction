@@ -20,7 +20,8 @@ public:
         this->operator=(interval);
     }
 
-    [[nodiscard]] auto get_execution_times() -> std::vector<std::tm> override {
+    [[nodiscard]]
+    auto get_execution_times() -> std::vector<std::tm> override {
         std::cout << "NOT IMPLEMENTED YET!" << std::endl;
         return {};
     }

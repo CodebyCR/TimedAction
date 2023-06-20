@@ -25,7 +25,8 @@ public:
         this->insert(this->begin(), execution_times.begin(), execution_times.end());
     }
 
-    [[nodiscard]] auto get_execution_times() -> std::vector<std::tm> override {
+    [[nodiscard]]
+    auto get_execution_times() -> std::vector<std::tm> override {
         return *this;
     }
 };
