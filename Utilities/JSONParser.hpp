@@ -21,6 +21,7 @@
 
 
 /// This namespace ist for the parsing of JSON config files.
+
 namespace JSONParser {
 
     static auto readJsonFile(std::filesystem::path const& filename) -> std::string {
@@ -68,6 +69,8 @@ namespace JSONParser {
         return translationMap;
     }
 
+
+    [[deprecated("use ConfigJSON instead")]]
     static auto json_to_string_map(std::filesystem::path const& filename) -> std::map<std::string, std::string> {
         std::string json_input = JSONParser::readJsonFile(filename);
         return JSONParser::parse_json_string(json_input);
@@ -96,6 +99,7 @@ namespace JSONParser {
         return json;
     }
 
+    [[deprecated("use ConfigJSON instead")]]
     static auto string_map_to_json(std::map<std::string, std::string> & stringMap) -> std::filesystem::path {
         auto settings_json_path = std::filesystem::path("/Users/christoph_rohde/Example/test.json");
                 // std::filesystem::path(stringMap.at("Settings_JSON")); /// Update settings.json Path
