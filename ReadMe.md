@@ -5,7 +5,7 @@
 |
 <a href="examples">Examples</a>
 |
-<a href="[scheduler.json](https://github.com/CodebyCR/TimedAction/wiki/Configuration#example-schedulerjson)">Scheduler.json</a>
+<a href="https://github.com/CodebyCR/TimedAction/wiki/Configuration#example-schedulerjson">Scheduler.json</a>
 </div>
 
 <h1 align="center">Timed Action</h1>
