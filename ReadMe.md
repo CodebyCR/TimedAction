@@ -40,3 +40,4 @@
 - [x] Independents of third-party libraries
 - [ ] Individual job logging
 - [ ] Central log notification point
+- [ ] Configurable
