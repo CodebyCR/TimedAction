@@ -17,6 +17,7 @@
 #include <codecvt>
 #include <filesystem>
 #include "Utilities/JSONParser.hpp"
+#include "Utilities/ConfigJSON.hpp"
 #include "Cron/CronDebugger/tests/CronRangesTests.hpp"
 
 
@@ -122,24 +123,39 @@ auto logger_test() {
 }
 
 auto json_parser_test() -> void {
-    auto filename = std::filesystem::path("/Users/christoph_rohde/Example/test.json");
 
-    // JSON-Datei parsen
-    std::map<std::string, std::string> parsedData = JSONParser::json_to_string_map(filename);
 
-    // Ergebnis ausgeben
-    for (auto& entry : parsedData) {
-        std::cout << entry.first << " : " << entry.second << std::endl;
+    auto filename = std::filesystem::path("/Users/christoph_rohde/Example/Scheduler.json");
+    auto config_json = ConfigJSON(filename);
+    std::cout << "Config JSON:\n" << config_json.to_string() << std::endl;
+
+    auto scheduler_attributes = config_json.get_optional_map("Scheduler");
+
+    if (scheduler_attributes) {
+        std::cout << "Scheduler Attributes:" << std::endl;
+        std::for_each(scheduler_attributes->begin(), scheduler_attributes->end(), [](auto &attribute) {
+            std::cout << attribute.first << " : " << attribute.second << std::endl;
+        });
     }
 
+//    JSONParser::parse_json_string2(json_input);
+//
+//    // JSON-Datei parsen
+//    std::map<std::string, std::string> parsedData = JSONParser::json_to_string_map(filename);
 
-    auto filePath = JSONParser::string_map_to_json(parsedData);
+//    // Ergebnis ausgeben
+//    for (auto& entry : parsedData) {
+//        std::cout << entry.first << " : " << entry.second << std::endl;
+//    }
+
+
+//    auto filePath = JSONParser::string_map_to_json(parsedData);
 }
 
 auto main() -> int {
 
 //    CronTest::test_all();
-//    json_parser_test();
+    json_parser_test();
 
     std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> converter;
     //std::u32string
