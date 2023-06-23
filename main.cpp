@@ -19,7 +19,7 @@
 #include "Utilities/JSONParser.hpp"
 #include "Utilities/ConfigJSON.hpp"
 #include "Cron/CronDebugger/tests/CronRangesTests.hpp"
-
+#include <cstdlib>
 
 void sayHallo(std::uint32_t &count) {
     ++count;
@@ -122,34 +122,46 @@ auto logger_test() {
     return 0;
 }
 
+/// return a environment variable or an empty string
+auto get_env_variable(std::string_view const env_variable) -> std::string {
+    auto env_value = std::getenv(env_variable.data());
+    if (!env_value) {
+        std::cout << env_variable << " not found" << std::endl;
+        return "";
+    }
+    return env_value;
+}
+
 auto json_parser_test() -> void {
+    std::cout << "json_parser_test" << std::endl;
 
-
-    auto filename = std::filesystem::path("/Users/christoph_rohde/Example/Scheduler.json");
-    auto config_json = ConfigJSON(filename);
-    std::cout << "Config JSON:\n" << config_json.to_string() << std::endl;
-
-    auto scheduler_attributes = config_json.get_optional_map("Scheduler");
-
-    if (scheduler_attributes) {
-        std::cout << "Scheduler Attributes:" << std::endl;
-        std::for_each(scheduler_attributes->begin(), scheduler_attributes->end(), [](auto &attribute) {
-            std::cout << attribute.first << " : " << attribute.second << std::endl;
-        });
+     auto scheduler_json = get_env_variable("Scheduler_json");
+    if(scheduler_json.empty()){
+        scheduler_json = "C:/Users/Chris/Scheduler.json";
     }
 
-//    JSONParser::parse_json_string2(json_input);
-//
-//    // JSON-Datei parsen
-//    std::map<std::string, std::string> parsedData = JSONParser::json_to_string_map(filename);
+    std::cout << "Scheduler.json Path: " << scheduler_json << std::endl;
 
-//    // Ergebnis ausgeben
-//    for (auto& entry : parsedData) {
-//        std::cout << entry.first << " : " << entry.second << std::endl;
-//    }
+// "/Users/christoph_rohde/Example/Scheduler.json"
+    auto filename = std::filesystem::path(scheduler_json);
+    auto config_json = ConfigJSON(filename);
 
 
-//    auto filePath = JSONParser::string_map_to_json(parsedData);
+
+    auto scheduler_attributes = config_json.get_optional_map("Scheduler");
+    if(scheduler_attributes) {
+        const auto scheduler_path = scheduler_attributes->at("Scheduler.json Path");
+        if(scheduler_path != scheduler_json){
+            std::cout << "Path: " << scheduler_path << std::endl;
+            std::cout << "Json Path: " << scheduler_json << std::endl;
+
+            std::cout << "Update Scheduler.json Path" << std::endl;
+            config_json.insert_into_sub_map("Scheduler", "Scheduler.json Path", scheduler_json);
+            std::cout << config_json.to_string() << std::endl; // ??
+
+            // ! TODO: Save ConfigJSON into file
+        }
+    }
 }
 
 auto main() -> int {
@@ -167,7 +179,7 @@ auto main() -> int {
                            "Copyright © 2023. Christoph Rohde\n"
                            "Licence: MIT\n"
                            "===========================================================================\n\x1B[0m";
-    std::cout << converter.to_bytes(brand)  << std::endl;
+    std::cout << converter.to_bytes(brand) << std::endl;
 
 
     //logger_test();    // ! Failed
@@ -211,12 +223,12 @@ auto main() -> int {
 //    std::cin.get();
 
     auto c_cron = Cron({.second = "0",
-                       .minute = "*/2",
-                       .hour = "*",
-                       .dayOfMonth = "21",
-                       .month = "5",
-                       .weekday = "*",
-                       .year = "*"});
+                               .minute = "*/2",
+                               .hour = "*",
+                               .dayOfMonth = "21",
+                               .month = "5",
+                               .weekday = "*",
+                               .year = "*"});
 
 //    CronInterpreter::each_print(c_cron);
 
