@@ -18,56 +18,62 @@
 /** BUG: map should be a linked map*/
 class ConfigJSON {
 public:
-    explicit ConfigJSON(const std::filesystem::path& path) {
+    explicit ConfigJSON(const std::filesystem::path &path) {
         this->path = path;
         this->read();
     }
 
+    explicit ConfigJSON(std::string &json) {
+        this->get_structure_out_of_string(json);
+        /// ? Path
+    }
+
     auto to_string() -> std::string {
         std::string json = "{\n";
-        for(auto const& [key, value]: this->self) {
-            if(std::holds_alternative<std::string>(value)) {
-                json += "\"" + key + "\":\"" + std::get<std::string>(value) + "\",";
-            }
-            else if(std::holds_alternative<std::map<std::string, std::string>>(value)) {
-                json += "\"" + key + "\":{";
-                for(auto const& [key2, value2]: std::get<std::map<std::string, std::string>>(value)) {
-                    json.append("\"" + key2 + "\":\"" + value2 + "\",");
+        int indentLevel = 1;
+        std::string indent = "    ";
+
+        for (auto const& [key, value] : this->self) {
+            json += indent;
+            json += "\"" + key + "\": ";
+
+            if (std::holds_alternative<std::string>(value)) {
+                json += "\"" + std::get<std::string>(value) + "\",\n";
+            } else if (std::holds_alternative<std::map<std::string, std::string>>(value)) {
+                json += "{\n";
+                for (auto const& [key2, value2] : std::get<std::map<std::string, std::string>>(value)) {
+                    json += indent + indent;
+                    json += "\"" + key2 + "\": \"" + value2 + "\",\n";
                 }
-                json.pop_back();
-                json += "},";
+                json.erase(json.length() - 2); // Entferne das Komma am Ende des inneren Objekts
+                json += indent + "},\n";
             }
         }
-        json.pop_back();
-        json += "\n}";
+
+        json.erase(json.length() - 2); // Entferne das Komma am Ende des äußeren Objekts
+        json += "\n" + indent.substr(0, indent.length() - 1) + "}";
 
         return json;
     }
 
-    auto get_optional_map(std::string const& key) -> std::optional<std::map<std::string, std::string>> {
-        if(this->self.contains(key)) {
+
+    auto get_optional_map(std::string const &key) -> std::optional<std::map<std::string, std::string>> {
+        if (this->self.contains(key)) {
             return std::get<std::map<std::string, std::string>>(this->self.at(key));
         }
         return std::nullopt;
     }
 
-    auto insert(std::string const& key, const std::string& value) -> void {
-        this->self.insert(std::pair(key, value));
-        this->write();
+    auto insert_into_sub_map(std::string const &key, std::string const &sub_key, std::string const &value) -> void {
+        if (this->self.contains(key)) {
+            std::get<std::map<std::string, std::string>>(this->self.at(key)).insert(std::pair(sub_key, value));
+        } else {
+            std::map<std::string, std::string> sub_map;
+            sub_map.insert(std::pair(sub_key, value));
+            this->self.insert(std::pair(key, sub_map));
+        }
+        if (this->path != "") { this->write(); }
     }
-
-
-    // update on set
-
-
-    // user defined literal _json
-    //    auto operator""_json(const char* jsonString) -> void {
-    //        this->parse_string_map(jsonString);
-    //    }
-    //
-    //    auto operator""_json(const std::string& jsonString) -> void {
-    //        this->parse_string_map(jsonString);
-    //    }
 
 
 private:
@@ -76,7 +82,7 @@ private:
 
     auto readJsonFile() -> std::string {
         std::ifstream file(this->path);
-        if(!file.is_open()) {
+        if (!file.is_open()) {
             std::cerr << "Fehler beim Öffnen der Datei: " << this->path << std::endl;
             return "";
         }
@@ -88,74 +94,52 @@ private:
         return buffer.str();
     }
 
+    /// parse a key value pair from a string
+    static auto split_key_value_pair(std::string &pair) -> std::pair<std::string, std::string> {
+        std::vector<std::string> keyValue = StringUtils::save_split(pair, ':', '"');
+        const auto raw_key = StringUtils::trim(keyValue[0]);
+        const auto key = StringUtils::eraseChar(raw_key, '"');
+        const auto raw_value = StringUtils::trim(keyValue[1]);
+        const auto value = StringUtils::eraseChar(raw_value, '"');
 
-    static auto parse_string_map(std::string& jsonString) -> std::map<std::string, std::string> {
+        return std::pair{key, value};
+    }
+
+
+    /// Parse a std::map<std::string, std::string> from a string.
+    static auto parse_string_map(std::string &sub_map) -> std::map<std::string, std::string> {
         std::map<std::string, std::string> translationMap;
 
         // get pair
-        auto result = StringUtils::erase_first_of(jsonString, '{');
+        auto result = StringUtils::erase_first_of(sub_map, '{');
         result = StringUtils::erase_last_of(result, '}');
 
-
-
-//        jsonString = StringUtils::eraseChar(jsonString, '"');
-
-        std::vector<std::string> keyValue = StringUtils::solid_split(result, ':', '"', '"');
-
-        for(auto& pair: keyValue) {
-            std::vector<std::string> pairs2 = StringUtils::solid_split(pair, ':', '"', '"');
-            for(auto& pair2: pairs2) {
-                std::cout << "***" << pair << "***" << std::endl;
-            }
+        /// Split in key value pair strings
+        std::vector<std::string> keyValue = StringUtils::save_split(result, ',', '"');
+        for (auto &pair: keyValue) {
+            auto [key, value] = split_key_value_pair(pair);
+//            std::cout << "Key: " << key << std::endl;
+//            std::cout << "Value: " << value << '\n' << std::endl;
+            translationMap.insert(std::pair{key, value});
         }
-//        std::cout << "--------------------Test--------------------" << std::endl;
-////        std::cout << jsonString << std::endl;
-//                        for(auto& pair: keyValue) {
-//                            std::cout << "***" << pair << "***" << std::endl;
-//                        }
-//        std::cout << "--------------------------------------------" << std::endl;
-
-//        for(auto& pairs: keyValue) {
-//            std::cout << "---" <<pairs << "---" << std::endl;
-//            //            std::vector<std::string> pair = StringUtils::split_by(pairs, ',');
-//            //            auto currentPair = std::pair<std::string, std::string>(keyValue.at(0), keyValue.at(1));
-//            //
-//            //            translationMap.insert(currentPair);
-//        }
-
-//        for(auto const& pair : translationMap) {
-//            std::cout << "--------------------------------------------" << pair.first << " - " << pair.second << std::endl;
-//        }
 
         return translationMap;
     }
 
-    auto insert_key_variant_pairs(std::vector<std::string> const& key_variant_pairs) -> void {
-        for(auto& pair: key_variant_pairs) {
+    /// Insert the key value pairs into the Object
+    auto insert_key_variant_pairs(std::vector<std::string> const &key_variant_pairs) -> void {
+        for (auto &pair: key_variant_pairs) {
             auto current_map_pair = StringUtils::solid_split(pair, ':', '{', '}');
             std::string key = StringUtils::eraseChar(
                     StringUtils::get_substring(current_map_pair.at(0), '"', '"'),
                     '"');
 
-            for(auto& c: current_map_pair) {
-                std::cout << c << std::endl;
-            }
-//--------------------------------------------
-
             std::string raw_value = current_map_pair.at(1);
             auto value = std::variant<std::string, std::map<std::string, std::string>>();
 
-            if(bool is_map = raw_value.find('{') != std::string::npos; is_map) {
-                auto map = ConfigJSON::parse_string_map(raw_value);
-
-//
-//                for(auto const& pair : map) {
-//                    std::cout << "--------------------------------------------" << pair.first << " - " << pair.second << std::endl;
-//                }
-
-                value = map;
-            }
-            else {
+            if (bool is_map = raw_value.find('{') != std::string::npos; is_map) {
+                value = ConfigJSON::parse_string_map(raw_value);
+            } else {
                 value = StringUtils::eraseChar(raw_value, '"');
             }
 
@@ -165,9 +149,9 @@ private:
         }
     }
 
-    auto get_structure_out_of_string(std::string& jsonString) -> void {
+    auto get_structure_out_of_string(std::string &jsonString) -> void {
         /// Throw error if something went wrong.
-        if(jsonString.empty()) {
+        if (jsonString.empty()) {
             std::cerr << "JSON-String is empty!" << std::endl;
             return;
         }
@@ -177,26 +161,22 @@ private:
         result = StringUtils::erase_last_of(result, '}');
 
         /// Split by ',' but ignore '{' - '}' areas
+        /// After that you got the key - sub map pairs
         auto key_variant_pairs = StringUtils::solid_split(result, ',', '{', '}');
-
-//        std::for_each(key_variant_pairs.begin(), key_variant_pairs.end(), [](std::string& str) {
-//            std::cout << "--------------------------------------------" << str << std::endl;
-//        });
-
-
-
 
         this->insert_key_variant_pairs(key_variant_pairs);
     }
 
+    /// Read the file and parse the content into the object.
     auto read() -> void {
         std::string json_input = this->readJsonFile();
         this->get_structure_out_of_string(json_input);
     }
 
+    /// Write the object into the file.
     auto write() -> void {
         std::ofstream fileStream(this->path);
-        if(!fileStream.is_open()) {
+        if (!fileStream.is_open()) {
             std::cerr << "File can't be opened. Path: " << this->path << std::endl;
             return;
         }
