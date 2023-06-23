@@ -330,6 +330,8 @@ namespace StringUtils { //TODO: full static ?
 
     }
 
+    /// For example: start_mask = '{', end_mask = '}', delimiter = ','.
+    /// Splits the given string by the given delimiter, but don't in the mask.
     std::vector<std::string> solid_split(const std::string& input, const char delimiter, const char start_mask, const char end_mask) {
         std::vector<std::string> result;
 
