@@ -2,7 +2,6 @@
 set(UTILITY_SOURCES
         "StringUtils.hpp"
         "Logger.hpp"
-        "JSONParser.hpp"
         "ConfigJSON.hpp")
 
 add_library(${UTILITY_LIBRARY} INTERFACE ${UTILITY_SOURCES} )

@@ -16,7 +16,6 @@
 #include <ctime>
 #include <codecvt>
 #include <filesystem>
-#include "Utilities/JSONParser.hpp"
 #include "Utilities/ConfigJSON.hpp"
 #include "Cron/CronDebugger/tests/CronRangesTests.hpp"
 #include <cstdlib>
@@ -137,7 +136,7 @@ auto json_parser_test() -> void {
 
      auto scheduler_json = get_env_variable("Scheduler_json");
     if(scheduler_json.empty()){
-        scheduler_json = "C:/Users/Chris/Scheduler.json";
+        scheduler_json = "C:/Users/Chris/Scheduler.json"; // TODO: Remove
     }
 
     std::cout << "Scheduler.json Path: " << scheduler_json << std::endl;
