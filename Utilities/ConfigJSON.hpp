@@ -29,32 +29,29 @@ public:
     }
 
     auto to_string() -> std::string {
-        std::string json = "{\n";
-        int indentLevel = 1;
+        std::stringstream ss;
+        ss << "{\n";
         std::string indent = "    ";
 
-        for(auto const& [key, value]: this->self) {
-            json += indent;
-            json += "\"" + key + "\": ";
+        for (auto const& [key, value] : this->self) {
+            ss << indent << "\"" << key << "\": ";
 
-            if(std::holds_alternative<std::string>(value)) {
-                json += "\"" + std::get<std::string>(value) + "\",\n";
-            }
-            else if(std::holds_alternative<std::map<std::string, std::string>>(value)) {
-                json += "{\n";
-                for(auto const& [key2, value2]: std::get<std::map<std::string, std::string>>(value)) {
-                    json += indent + indent;
-                    json += "\"" + key2 + "\": \"" + value2 + "\",\n";
+            if (std::holds_alternative<std::string>(value)) {
+                ss << "\"" << std::get<std::string>(value) << "\",\n";
+            } else if (std::holds_alternative<std::map<std::string, std::string>>(value)) {
+                ss << "{\n";
+                for (auto const& [key2, value2] : std::get<std::map<std::string, std::string>>(value)) {
+                    ss << indent << indent << "\"" << key2 << "\": \"" << value2 << "\",\n";
                 }
-                json.erase(json.length() - 2);    // Entferne das Komma am Ende des inneren Objekts
-                json += indent + "},\n";
+                ss.seekp(-2, std::ios_base::end);
+                ss << "\n" << indent << "},\n";
             }
         }
 
-        json.erase(json.length() - 2);    // Entferne das Komma am Ende des äußeren Objekts
-        json += "\n" + indent.substr(0, indent.length() - 1) + "}";
+        ss.seekp(-2, std::ios_base::end);
+        ss << "\n}";
 
-        return json;
+        return ss.str();
     }
 
 
@@ -65,16 +62,20 @@ public:
         return std::nullopt;
     }
 
-    auto insert_into_sub_map(std::string const& key, std::string const& sub_key, std::string const& value) -> void {
-        if(this->self.contains(key)) {
-            std::get<std::map<std::string, std::string>>(this->self.at(key)).insert(std::pair(sub_key, value));
+    auto insert_into_sub_map(const std::string& key, const std::string& sub_key, const std::string& value) -> void {
+        if (self.contains(key)) {
+            auto& sub_map = std::get<std::map<std::string, std::string>>(self.at(key));
+            sub_map[sub_key] = value;
         }
         else {
             std::map<std::string, std::string> sub_map;
-            sub_map.insert(std::pair(sub_key, value));
-            this->self.insert(std::pair(key, sub_map));
+            sub_map[sub_key] = value;
+            self[key] = sub_map;
         }
-        if(this->path != "") { this->write(); }
+
+        if (!path.empty()) {
+            write();
+        }
     }
 
 
