@@ -168,8 +168,19 @@ auto main() -> int {
 //    CronTest::test_all();
     json_parser_test();
 
+//    constexpr std::u8string_view brand = u8"\x1B[31m"
+//                               "===========================================================================\n"
+//                               "Timed Action •\x1B[3m since 2022\x1B[0m\x1B[31m •\n"
+//                               "Version: 0.4.0\n"
+//                               "All rights reserved.\n"
+//                               "Copyright © 2023. Christoph Rohde\n"
+//                               "Licence: MIT\n"
+//                               "===========================================================================\n\x1B[0m";
+
+    // print brand
+//    std::cout << brand << std::endl;
+
     std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> converter;
-    //std::u32string
     constexpr auto brand = U"\x1B[31m"
                            "===========================================================================\n"
                            "Timed Action •\x1B[3m since 2022\x1B[0m\x1B[31m •\n"
@@ -222,12 +233,12 @@ auto main() -> int {
 //    std::cin.get();
 
     auto c_cron = Cron({.second = "0",
-                               .minute = "*/2",
-                               .hour = "*",
-                               .dayOfMonth = "21",
-                               .month = "5",
-                               .weekday = "*",
-                               .year = "*"});
+                       .minute = "*/2",
+                       .hour = "*",
+                       .dayOfMonth = "21",
+                       .month = "5",
+                       .weekday = "*",
+                       .year = "*"});
 
 //    CronInterpreter::each_print(c_cron);
 
