@@ -93,6 +93,14 @@ public:
 
     ~TimedAction() override = default;
 
+    auto get_hash() -> size_t {
+        auto seed = size_t{};
+        seed ^= std::hash<std::thread::id>{}(this->thread.get_id()) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+        seed ^= std::hash<std::string_view>{}(this->name) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+
+        return seed;
+    }
+
 
     auto run() -> void {
         if (interval != std::chrono::milliseconds{}) {
