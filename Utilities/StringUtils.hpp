@@ -227,37 +227,6 @@ namespace StringUtils {    //TODO: full static ?
         return result;
     }
 
-    //    /// Splits the given string by the given sequence of chars.
-    //    /// Whitespaces and line breaks within the sequence in the given string are ignored by default.
-    //    static auto split_by_sequence_of(std::string const& str, std::string const& sequence, bool ignoreSpaces=true) -> std::vector<std::string> {
-    //        std::vector<std::string> result;
-    //
-    //        if (str.empty()) {
-    //            return result;
-    //        }
-    //
-    //        auto start = 0;
-    //        auto end = str.find(sequence);
-    //
-    //        while (end <= std::string::npos) {
-    //            auto current = str.substr(start, end - start);
-    //            if (ignoreSpaces) {
-    //                current = StringUtils::trim(current);
-    //            }
-    //            result.push_back(current);
-    //
-    //            if (end == std::string::npos) {
-    //                break;
-    //            }
-    //
-    //            start = end + sequence.size();
-    //            end = str.find(sequence, start);
-    //        }
-    //
-    //        return result;
-    //    }
-
-
     auto is_number(std::string_view const& str) -> bool {
         return !str.empty() &&
                std::find_if(str.begin(), str.end(), [](char c) { return !std::isdigit(c); }) == str.end();
