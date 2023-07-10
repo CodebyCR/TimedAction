@@ -34,14 +34,14 @@ public:
         std::string indent = "    ";
 
         for (auto const& [key, value] : this->self) {
-            ss << indent << "\"" << key << "\": ";
+            ss << indent << std::quoted(key) << ": ";
 
             if (std::holds_alternative<std::string>(value)) {
-                ss << "\"" << std::get<std::string>(value) << "\",\n";
+                ss << std::quoted(std::get<std::string>(value)) << ",\n";
             } else if (std::holds_alternative<std::map<std::string, std::string>>(value)) {
                 ss << "{\n";
                 for (auto const& [key2, value2] : std::get<std::map<std::string, std::string>>(value)) {
-                    ss << indent << indent << "\"" << key2 << "\": \"" << value2 << "\",\n";
+                    ss << indent << indent << std::quoted(key2) << ": " << std::quoted(value2) << ",\n";
                 }
                 ss.seekp(-2, std::ios_base::end);
                 ss << "\n" << indent << "},\n";
@@ -121,8 +121,6 @@ private:
         std::vector<std::string> keyValue = StringUtils::save_split(result, ',', '"');
         for(auto& pair: keyValue) {
             auto [key, value] = split_key_value_pair(pair);
-            //            std::cout << "Key: " << key << std::endl;
-            //            std::cout << "Value: " << value << '\n' << std::endl;
             translationMap.insert(std::pair{key, value});
         }
 
