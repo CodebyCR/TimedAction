@@ -40,7 +40,7 @@ struct ExecutionTimeGenerator {
             return {};
         }
 
-        void unhandled_exception() const noexcept {
+        static void unhandled_exception() noexcept {
             std::cout << "unhandled_exception in 'ExecutionTimeGenerator'." << std::endl;
             std::terminate();
         }
