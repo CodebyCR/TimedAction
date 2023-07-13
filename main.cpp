@@ -4,7 +4,6 @@
 #include "Interfaces/I_TimedAction.hpp"
 #include "TimedAction_Types/Light_TimedAction.hpp"
 #include "TimedAction_Types/TimedAction.hpp"
-#include <memory>
 #include <thread>
 
 
@@ -15,10 +14,8 @@
 #include <iomanip>
 #include <ctime>
 #include <codecvt>
-#include <filesystem>
-#include "Utilities/ConfigJSON.hpp"
-#include "Cron/CronDebugger/tests/CronRangesTests.hpp"
 #include <cstdlib>
+#include "Utilities/Environment.hpp"
 
 void sayHallo(std::uint32_t &count) {
     ++count;
@@ -132,35 +129,46 @@ auto get_env_variable(std::string_view const env_variable) -> std::string {
 }
 
 auto json_parser_test() -> void {
-    std::cout << "json_parser_test" << std::endl;
+    std::cout << "-- JSON PARSER TEST --" << std::endl;
 
-     auto scheduler_json = get_env_variable("Scheduler_json");
+    auto scheduler_json = get_env_variable("Scheduler_json");
+    std::string_view scheduler_json_view(scheduler_json); // ! points to scheduler_json aka scheduler_json is required
+
+    std::cout << "Scheduler.json Path: " << scheduler_json << std::endl;
     if(scheduler_json.empty()){
         scheduler_json = "C:/Users/Chris/Scheduler.json"; // TODO: Remove
     }
 
-    std::cout << "Scheduler.json Path: " << scheduler_json << std::endl;
+    std::cout << "Scheduler.json Path: " << scheduler_json_view << std::endl;
 
-// "/Users/christoph_rohde/Example/Scheduler.json"
-    auto filename = std::filesystem::path(scheduler_json);
-    auto config_json = ConfigJSON(filename);
+//      /// ! FIXME: Environment::getInstance() is not working
+//     std::shared_ptr<Environment> env = Environment::getInstance(scheduler_json_view);
+////
+//    std::cout << env << std::endl;
 
 
 
-    auto scheduler_attributes = config_json.get_optional_map("Scheduler");
-    if(scheduler_attributes) {
-        const auto scheduler_path = scheduler_attributes->at("Scheduler.json Path");
-        if(scheduler_path != scheduler_json){
-            std::cout << "Path: " << scheduler_path << std::endl;
-            std::cout << "Json Path: " << scheduler_json << std::endl;
 
-            std::cout << "Update Scheduler.json Path" << std::endl;
-            config_json.insert_into_sub_map("Scheduler", "Scheduler.json Path", scheduler_json);
-            std::cout << config_json.to_string() << std::endl; // ??
-
-            // ! TODO: Save ConfigJSON into file
-        }
-    }
+//// "/Users/christoph_rohde/Example/Scheduler.json"
+//    auto filename = std::filesystem::path(scheduler_json);
+//    auto config_json = ConfigJSON(filename);
+//
+//
+//
+//    auto scheduler_attributes = config_json.get_optional_map("Scheduler");
+//    if(scheduler_attributes) {
+//        const auto scheduler_path = scheduler_attributes->at("Scheduler.json Path");
+//        if(scheduler_path != scheduler_json){
+//            std::cout << "Path: " << scheduler_path << std::endl;
+//            std::cout << "Json Path: " << scheduler_json << std::endl;
+//
+//            std::cout << "Update Scheduler.json Path" << std::endl;
+//            config_json.insert_into_sub_map("Scheduler", "Scheduler.json Path", scheduler_json);
+//            std::cout << config_json.to_string() << std::endl; // ??
+//
+//            // ! TODO: Save ConfigJSON into file
+//        }
+//    }
 }
 
 auto main() -> int {
@@ -296,6 +304,9 @@ auto main() -> int {
     while (c != 'q') {
         std::cin >> c;
     }
+
+
+//    std::cout << scheduler.get_runtime_info() << std::endl;
 
     scheduler.stop();
 
