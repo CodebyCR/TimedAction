@@ -15,10 +15,12 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <cmath>
 
 
 class Scheduler {
 private:
+    std::chrono::system_clock::time_point up_time = {};
     //    std::shared_ptr<EventQueue> eventQueue_ptr;
     std::map<std::string_view, std::string_view> attributes;
     std::shared_ptr<TimeTable> timeTable_ptr;
@@ -26,6 +28,7 @@ private:
 
 
     Scheduler() {
+        up_time = std::chrono::system_clock::now();
         attributes = {};
         timeTable_ptr = std::make_shared<TimeTable>();
         // drop folder support
@@ -33,6 +36,9 @@ private:
         timeTable_drop_listener();
     };
 
+    /// \brief <h3>Time Table subscribe listener</h3>
+    /// \details This method is called when a new job is added to the time table.
+    /// \note This listener is <b>only</b> active when the scheduler is running.
     auto timeTable_subscribe_listener() -> void {
         timeTable_ptr->on_subscribe([this](I_TimedAction* job) {
             std::cout << "[ TimeTable | SUBSCRIBE ] -> '" << job->getName() << "' " << std::endl;
@@ -60,6 +66,9 @@ private:
         });
     }
 
+    /// \brief <h3>Time Table drop listener</h3>
+    /// \details This listener is called when a job is dropped from the timeTable.
+    /// \note This listener is <b>only</b> active when the scheduler is running.
     auto timeTable_drop_listener() -> void {
         timeTable_ptr->on_listen([](I_TimedAction* job) {
             std::cout << "[ TimeTable | DROPPED ] -> '" << job->getName() << "'" << std::endl;
@@ -131,6 +140,29 @@ public:
         //            }
         //        }
         std::cout << "Scheduler::start_scheduler() not implemented" << std::endl;
+    }
+
+    auto get_runtime_info() -> std::string_view {
+        const auto time_t = std::chrono::system_clock::to_time_t(up_time);
+        const auto now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+        // run time in days + extra hours with minutes and seconds and
+        const auto run_time = std::difftime(now, time_t);
+        const auto days = std::floor(run_time / 86'400);
+        const auto hours = std::floor((run_time - (days * 86'400)) / 3'600);
+        const auto minutes = std::floor((run_time - (days * 86'400) - (hours * 3'600)) / 60);
+        const auto seconds = std::floor((run_time - (days * 86'400) - (hours * 3'600) - (minutes * 60)));
+
+        auto ss = new std::stringstream ();
+        *ss << "[SCHEDULER RUNTIME INFO]" << std::endl;
+        *ss << "--------------------------------------------------------------------------------" << std::endl;
+        *ss << "Scheduler is running since " << std::ctime(&time_t) << std::endl;
+        *ss << "Current time is " << std::ctime(&now) << std::endl;
+        *ss << "Scheduler run time is " << days << " days, " << hours << " hours, " << minutes << " minutes and " << seconds << " seconds." << std::endl;
+        *ss << "Scheduler has " << timeTable_ptr->size() << " jobs in the time table." << std::endl;
+        *ss << "Scheduler is " << (watcher.isRunning ? "running" : "stopped") << "." << std::endl;
+        *ss << "--------------------------------------------------------------------------------" << std::endl;
+
+        return ss->str();
     }
 };
 
