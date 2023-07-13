@@ -18,8 +18,8 @@
 /** BUG: map should be a linked map*/
 class ConfigJSON {
 public:
-    explicit ConfigJSON(const std::filesystem::path& path) {
-        this->path = path;
+    explicit ConfigJSON(std::string_view path) {
+        this->path = std::filesystem::path(path);
         this->read();
     }
 
@@ -55,7 +55,15 @@ public:
     }
 
 
-    auto get_optional_map(std::string const& key) -> std::optional<std::map<std::string, std::string>> {
+    auto get_optional_map(std::string_view key) -> std::optional<std::map<std::string, std::string>> {
+        const std::string key_str = std::string(key);
+        if(this->self.contains(key_str)) {
+            return std::get<std::map<std::string, std::string>>(this->self.at(key_str));
+        }
+        return std::nullopt;
+    }
+
+    auto get_optional_map(const std::string& key) -> std::optional<std::map<std::string, std::string>> {
         if(this->self.contains(key)) {
             return std::get<std::map<std::string, std::string>>(this->self.at(key));
         }
@@ -86,7 +94,7 @@ private:
     auto readJsonFile() -> std::string {
         std::ifstream file(this->path);
         if(!file.is_open()) {
-            std::cerr << "Fehler beim Öffnen der Datei: " << this->path << std::endl;
+            std::cerr << "File can't be opened: " << this->path << std::endl;
             return "";
         }
 
