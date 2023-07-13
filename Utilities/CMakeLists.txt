@@ -2,7 +2,8 @@
 set(UTILITY_SOURCES
         "StringUtils.hpp"
         "Logger.hpp"
-        "ConfigJSON.hpp")
+        "ConfigJSON.hpp"
+        "Environment.hpp")
 
 add_library(${UTILITY_LIBRARY} INTERFACE ${UTILITY_SOURCES} )
 
