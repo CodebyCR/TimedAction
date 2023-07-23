@@ -18,8 +18,8 @@
 /** BUG: map should be a linked map*/
 class ConfigJSON {
 public:
-    explicit ConfigJSON(std::string_view path) {
-        this->path = std::filesystem::path(path);
+    explicit ConfigJSON(const std::filesystem::path& path) {
+        this->path = path;
         this->read();
     }
 
@@ -29,41 +29,37 @@ public:
     }
 
     auto to_string() -> std::string {
-        std::stringstream ss;
-        ss << "{\n";
+        std::stringstream json;
+        int indentLevel = 1;
         std::string indent = "    ";
 
-        for (auto const& [key, value] : this->self) {
-            ss << indent << std::quoted(key) << ": ";
+        json << "{\n";
 
-            if (std::holds_alternative<std::string>(value)) {
-                ss << std::quoted(std::get<std::string>(value)) << ",\n";
-            } else if (std::holds_alternative<std::map<std::string, std::string>>(value)) {
-                ss << "{\n";
-                for (auto const& [key2, value2] : std::get<std::map<std::string, std::string>>(value)) {
-                    ss << indent << indent << std::quoted(key2) << ": " << std::quoted(value2) << ",\n";
+        for(auto const& [key, value]: this->self) {
+            json << indent;
+            json << std::quoted(key) << ": ";
+
+            if(std::holds_alternative<std::string>(value)) {
+                json << std::quoted(std::get<std::string>(value)) << ',' << '\n';
+            }
+            else if(std::holds_alternative<std::map<std::string, std::string>>(value)) {
+                json << '{'<< '\n';
+                for(auto const& [key2, value2]: std::get<std::map<std::string, std::string>>(value)) {
+                    json << indent << indent;
+                    json << std::quoted(key2) << ':' << ' ' << std::quoted(value2) << ','<< '\n';
                 }
-                ss.seekp(-2, std::ios_base::end);
-                ss << "\n" << indent << "},\n";
+                json.seekp(-2, std::ios_base::end);
+                json <<  indent << '}' << ','<< '\n';
             }
         }
+        json.seekp(-2, std::ios_base::end);
+        json << '\n' << indent.substr(0, indent.length() - 1) << '}';
 
-        ss.seekp(-2, std::ios_base::end);
-        ss << "\n}";
-
-        return ss.str();
+        return json.str();
     }
 
 
-    auto get_optional_map(std::string_view key) -> std::optional<std::map<std::string, std::string>> {
-        const std::string key_str = std::string(key);
-        if(this->self.contains(key_str)) {
-            return std::get<std::map<std::string, std::string>>(this->self.at(key_str));
-        }
-        return std::nullopt;
-    }
-
-    auto get_optional_map(const std::string& key) -> std::optional<std::map<std::string, std::string>> {
+    auto get_optional_map(std::string const& key) -> std::optional<std::map<std::string, std::string>> {
         if(this->self.contains(key)) {
             return std::get<std::map<std::string, std::string>>(this->self.at(key));
         }
@@ -94,7 +90,7 @@ private:
     auto readJsonFile() -> std::string {
         std::ifstream file(this->path);
         if(!file.is_open()) {
-            std::cerr << "File can't be opened: " << this->path << std::endl;
+            std::cerr << "Fehler beim Öffnen der Datei: " << this->path << std::endl;
             return "";
         }
 
@@ -129,6 +125,8 @@ private:
         std::vector<std::string> keyValue = StringUtils::save_split(result, ',', '"');
         for(auto& pair: keyValue) {
             auto [key, value] = split_key_value_pair(pair);
+            //            std::cout << "Key: " << key << std::endl;
+            //            std::cout << "Value: " << value << '\n' << std::endl;
             translationMap.insert(std::pair{key, value});
         }
 
