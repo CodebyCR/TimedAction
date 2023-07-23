@@ -14,8 +14,8 @@ private:
 
 public:
     EventQueue() = default;
-    EventQueue(const EventQueue&) = default;
-    EventQueue& operator=(const EventQueue&) = default;
+    EventQueue(const EventQueue&) = delete;
+    EventQueue& operator=(const EventQueue&) = delete;
 
     EventQueue(EventQueue&& other) noexcept {
         std::lock_guard<std::mutex> lock(mutex_);
