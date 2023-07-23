@@ -184,11 +184,6 @@ struct ExecutionTimeGenerator {
         co_return resultTime;
     }
 
-    auto set_weekday_filter() -> ExecutionTimeGenerator {
-        this->weekdays = weekdays;
-        return *this;
-    }
-
 private:
     std::vector<int> weekdays = {0, 1, 2, 3, 4, 5, 6, 7};
 
