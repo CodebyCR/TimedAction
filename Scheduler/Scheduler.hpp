@@ -142,7 +142,7 @@ public:
         std::cout << "Scheduler::start_scheduler() not implemented" << std::endl;
     }
 
-    auto get_runtime_info() -> std::string_view {
+    auto get_runtime_info() -> std::string {
         const auto time_t = std::chrono::system_clock::to_time_t(up_time);
         const auto now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
         // run time in days + extra hours with minutes and seconds and

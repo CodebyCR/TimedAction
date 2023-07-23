@@ -196,7 +196,7 @@ namespace StringUtils {    //TODO: full static ?
     /// @param replacement
     /// @return
     [[nodiscard]]
-    auto replace_sequence(std::string_view str, std::string_view const& sequence, std::string_view const& replacement) -> std::string_view {
+    auto replace_sequence(std::string_view str, std::string_view const& sequence, std::string_view const& replacement) -> std::string {
         auto result = std::string(str);
         auto pos = result.find(sequence);
         while(pos != std::string::npos) {
