@@ -246,24 +246,16 @@ auto main() -> int {
 //    std::cout << job.getName() << std::endl;
 
     scheduler.start();
-    std::this_thread::sleep_for(std::chrono::seconds(2));
+    std::this_thread::sleep_for(std::chrono::minutes(2));
 
-//    scheduler.add(&job);
-
+    std::cout << scheduler.get_runtime_info() << std::endl;
 
     // waiting for enter 'q'
     char c;
     std::cin >> c;
 
-    while (c != 'q') {
-        std::cin >> c;
-    }
-
-
-//    std::cout << scheduler.get_runtime_info() << std::endl;
-
+    while (c != 'q') {std::cin >> c;}
     scheduler.stop();
-
 
     return 0;
 }
