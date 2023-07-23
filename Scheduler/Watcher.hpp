@@ -14,8 +14,10 @@
 
 
 class Watcher {
-public:
+private:
+    std::chrono::milliseconds watchInterval = std::chrono::milliseconds(1000);
 
+public:
     constexpr static std::string_view uninit_time_table = "[ Watcher | ERROR ] -> uninitialised TimeTable.";
     constexpr static std::string_view watch_sleep       = "[ Watcher | SLEEP ] -> No Jobs Found.";
 
@@ -38,7 +40,7 @@ public:
 
         return std::thread([&] {
             while(isRunning) {
-                std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+                std::this_thread::sleep_for(watchInterval);
 
                 if(timeTable_ptr->empty()) {
                     if(empty_table_counter++ > trigger_sleep_message) {
@@ -91,5 +93,10 @@ public:
                 });
             }
         });
+    }
+
+    auto set_attributes(std::map<std::string, std::string> attributes) -> void {
+        watchInterval = std::chrono::milliseconds(std::stoi(attributes["Watch Interval"]));
+
     }
 };
