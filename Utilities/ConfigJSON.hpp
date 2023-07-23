@@ -30,8 +30,7 @@ public:
 
     auto to_string() -> std::string {
         std::stringstream json;
-        int indentLevel = 1;
-        std::string indent = "    ";
+        const std::string indent = "    ";
 
         json << "{\n";
 
@@ -49,19 +48,19 @@ public:
                     json << std::quoted(key2) << ':' << ' ' << std::quoted(value2) << ','<< '\n';
                 }
                 json.seekp(-2, std::ios_base::end);
-                json <<  indent << '}' << ','<< '\n';
+                json <<  '\n' << indent << '}' << ','<< '\n';
             }
         }
         json.seekp(-2, std::ios_base::end);
-        json << '\n' << indent.substr(0, indent.length() - 1) << '}';
+        json << '\n' << '}';
 
         return json.str();
     }
 
-
-    auto get_optional_map(std::string const& key) -> std::optional<std::map<std::string, std::string>> {
-        if(this->self.contains(key)) {
-            return std::get<std::map<std::string, std::string>>(this->self.at(key));
+    auto get_optional_map(std::string_view key) -> std::optional<std::map<std::string, std::string>> {
+        const std::string key_str = std::string(key); /// refactor
+        if(this->self.contains(key_str)) {
+            return std::get<std::map<std::string, std::string>>(this->self.at(key_str));
         }
         return std::nullopt;
     }
