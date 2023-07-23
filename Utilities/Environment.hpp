@@ -12,6 +12,7 @@ namespace ENV {
     constexpr std::string_view SCHEDULER = "Scheduler";
     constexpr std::string_view NOTIFICATION = "Notification";
     constexpr std::string_view LOG = "Log";
+    constexpr std::string_view WATCHER = "Watcher";
 
 
     /// return a environment variable or an empty string
