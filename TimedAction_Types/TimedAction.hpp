@@ -22,7 +22,7 @@ private:
     /** Internal state */
     T value;
 //    std::function<void(T &value)> action;
-    std::future<Notification> action;
+    std::future<Message> action;
     std::chrono::milliseconds timeSinceLastAction{};
     bool isRunning;
     std::thread thread;
@@ -223,7 +223,7 @@ public:
         return execution_times;
     }
 
-    auto finished() -> std::future<Notification> override {
+    auto finished() -> std::future<Message> override {
         auto timeStamp = std::chrono::system_clock::now();
 
 

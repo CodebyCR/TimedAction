@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "../Notification/Notification.hpp"
+#include "../Notification/Message.hpp"
 #include "TimeTable.hpp"
 #include <future>
 #include <iostream>
@@ -67,7 +67,7 @@ public:
 
                 /// check if jobs for finished execution
                 std::ranges::for_each(time_t_vec, [&](I_TimedAction*& time_t) {
-                    std::future<Notification> task = time_t->finished();
+                    std::future<Message> task = time_t->finished();
 
                     switch(const auto result = task.wait_for(std::chrono::milliseconds(10)); result) {
                         case std::future_status::ready: {

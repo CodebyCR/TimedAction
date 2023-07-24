@@ -72,7 +72,7 @@ void test_async_queue() {
 }
 
 void test_future_task(I_TimedAction &action) {
-    std::future<Notification> task = action.finished();
+    std::future<Message> task = action.finished();
 
 
     switch (const auto result = task.wait_for(std::chrono::milliseconds(10)); result) {
