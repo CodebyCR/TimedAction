@@ -6,7 +6,7 @@
 
 #include "../Cron/Cron.hpp"
 #include "../Notification/JobLog.hpp"
-#include "../Notification/Message.hpp"
+#include "Message.hpp"
 #include <future>
 #include <iostream>
 

@@ -1,6 +1,5 @@
 
 set(TIMED_ACTION_SOURCES
-        "../Interfaces/I_TimedAction.hpp"
         "TimedAction.hpp"
         "Light_TimedAction.hpp")
 

@@ -4,14 +4,11 @@
 
 #pragma once
 
-#include "../Notification/Message.hpp"
+#include "../Interfaces/Message.hpp"
 #include "TimeTable.hpp"
 #include <future>
 #include <iostream>
 #include <memory>
-
-
-
 
 class Watcher {
 private:

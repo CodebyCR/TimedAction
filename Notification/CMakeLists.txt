@@ -1,5 +1,4 @@
 set(NOTIFICATION_SOURCES
-        "Message.hpp"
         "JobLog.hpp")
 
 add_library(${LIBRARY_NOTIFICATION} INTERFACE ${NOTIFICATION_SOURCES} )

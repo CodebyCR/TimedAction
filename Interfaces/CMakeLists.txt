@@ -1,5 +1,8 @@
 set(INTERFACE_SOURCES
-        "I_ExecutionTimer.hpp")
+        "Message.hpp"
+        "I_ExecutionTimer.hpp"
+        "I_TimedAction.hpp"
+        )
 
 add_library(${LIBRARY_INTERFACES} INTERFACE ${INTERFACE_SOURCES} )
 
