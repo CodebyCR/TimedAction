@@ -7,24 +7,27 @@
 #include <iostream>
 
 /// ABSTRACT CLASS
-class Notification {
+class Message {
 protected:
     std::string_view name;
     std::string_view execution_time;
 
 public:
-    virtual ~Notification() = default;
+    explicit Message(std::string_view name, std::string_view execution_time)
+        : name(name), execution_time(execution_time) {}
 
+    virtual ~Message() = default;
+
+
+
+    [[nodiscard]]
     virtual auto getName() const -> std::string_view {
         return name;
     }
 
-
+    [[nodiscard]]
     auto get_execution_time() const -> std::string_view {
         return execution_time;
     }
 
-    auto set_execution_time(std::string_view execution_time) -> void {
-        this->execution_time = execution_time;
-    }
 };
