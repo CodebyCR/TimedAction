@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "Notification.hpp"
+#include "Message.hpp"
 #include <chrono>
 #include <iostream>
 #include <sstream>
@@ -17,11 +17,10 @@ namespace Log {
     constexpr std::string_view INFO = "\x1b[34mINFO\x1b[0m";
 }    // namespace Log
 
-class JobLog : public Notification {
+class JobLog : public Message {
 private:
-    std::string_view execution_time;
-    std::vector<std::pair<std::string_view, std::string_view>> log;
 
+    std::vector<std::pair<std::string_view, std::string_view>> log;
 
     static auto getTime(std::string_view const& logType) -> std::string {
         const auto now = std::time(nullptr);
@@ -32,39 +31,29 @@ private:
     }
 
 public:
-    JobLog(std::string_view const& name, std::string_view const& execution_time) : execution_time(execution_time) {
-        this->name = name;
-    }
+    JobLog(std::string_view name, std::string_view executionTime) : Message(name, executionTime) {}
 
     ~JobLog() override = default;
 
     // copy constructor
-    JobLog(JobLog const& other) : execution_time(other.execution_time),
-                                  log(other.log) {
-        this->name = other.name;
-    }
+    JobLog(std::string_view name, std::string_view executionTime, JobLog const& other) : Message(name, executionTime), log(other.log) {}
 
     // copy assignment
     auto operator=(JobLog const& other) -> JobLog& {
-        if(this != &other) {
-            name = other.name;
-            execution_time = other.execution_time;
+        if (this != &other) {
+            Message::operator=(other);
             log = other.log;
         }
         return *this;
     }
 
     // move constructor
-    JobLog(JobLog&& other) noexcept : execution_time(other.execution_time),
-                                      log(std::move(other.log)) {
-        this->name = other.name;
-    }
+    JobLog(JobLog&& other) noexcept : Message(other), log(std::move(other.log)) {}
 
     // move assignment
     auto operator=(JobLog&& other) noexcept -> JobLog& {
-        if(this != &other) {
-            name = other.name;
-            execution_time = other.execution_time;
+        if (this != &other) {
+            Message::operator=(other);
             log = std::move(other.log);
         }
         return *this;
@@ -85,7 +74,6 @@ public:
     auto WARNING(std::string_view message) -> void {
         log.emplace_back(getTime(Log::WARNING), message);
     }
-
 
     auto print() -> void {
         std::ranges::for_each(log, [](auto& logEntry) {
