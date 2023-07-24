@@ -30,7 +30,8 @@ public:
     inline static long empty_table_counter = 300;
 
 
-    [[nodiscard]] auto getThread(const std::shared_ptr<TimeTable>& timeTable_ptr) const -> std::thread {
+    [[nodiscard]]
+    auto getThread(const std::shared_ptr<TimeTable>& timeTable_ptr) const -> std::thread {
         if(!timeTable_ptr) {
             std::cout << uninit_time_table << std::endl;
         }
@@ -48,7 +49,7 @@ public:
                 }
 
 
-                const auto now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+                const std::time_t now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
                 auto time_t_vec = timeTable_ptr->get(now);
 
                 std::cout << "[ Watcher | CHECKING ] -> " << time_t_vec.size() << " found." << std::endl;
@@ -63,37 +64,16 @@ public:
 
 
                 /// check if jobs for finished execution
-                std::ranges::for_each(time_t_vec, [&](I_TimedAction*& time_t) {
-                    std::future<Message> task = time_t->finished();
+                timeTable_ptr->check_status(time_t_vec, now);
 
-                    switch(const auto result = task.wait_for(std::chrono::milliseconds(10)); result) {
-                        case std::future_status::ready: {
-                            std::cout << "[ Watcher ] -> finished " << time_t->getName() << std::endl;
-                            // start remove execution time from job here...
-                            timeTable_ptr->remove(now);
-                        } break;
-
-                        case std::future_status::deferred: {
-                            std::cout << "[ Watcher ] -> deferred for " << time_t->getName() << std::endl;
-                        } break;
-
-                        case std::future_status::timeout: {
-                            std::cout << "[ Watcher ] -> timeout for " << time_t->getName() << std::endl;
-                            timeTable_ptr->remove(now);
-                        } break;
-
-                        default: {
-                            std::cout << "[ Watcher | ERROR ] -> unknown status of " << time_t->getName() << std::endl;
-                        }
-
-                    }
-                });
             }
         });
     }
 
+
+
     auto set_attributes(std::map<std::string, std::string> attributes) -> void {
         watchInterval = std::chrono::milliseconds(std::stoi(attributes["Watch Interval"]));
-
     }
+
 };

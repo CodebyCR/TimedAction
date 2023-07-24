@@ -68,6 +68,35 @@ public:
         this->erase(time);
     }
 
+    /// This methode checks the given list of actions for finished tasks.
+    /// <br/>If a task is finished, it will be removed from the timetable.
+    auto check_status(std::vector<I_TimedAction*>& actions, const std::time_t& now) -> void {
+        for (auto& action : actions) {
+            std::future<Message> task = action->finished();
+
+            switch(const auto result = task.wait_for(std::chrono::milliseconds(10)); result) {
+                case std::future_status::ready: {
+                    std::cout << "[ Watcher ] -> finished " << action->getName() << std::endl;
+                    // start remove execution time from job here...
+                    this->remove(now);
+                } break;
+
+                case std::future_status::deferred: {
+                    std::cout << "[ Watcher ] -> deferred for " << action->getName() << std::endl;
+                } break;
+
+                case std::future_status::timeout: {
+                    std::cout << "[ Watcher ] -> timeout for " << action->getName() << std::endl;
+                    this->remove(now);
+                } break;
+
+                default: {
+                    std::cout << "[ Watcher | ERROR ] -> unknown status of " << action->getName() << std::endl;
+                }
+            }
+        }
+    }
+
 
     /// Listener
 
