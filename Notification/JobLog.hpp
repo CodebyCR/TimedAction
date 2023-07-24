@@ -15,11 +15,10 @@ namespace Log {
     constexpr std::string_view FAILURE = "\x1b[31mFAILURE\x1b[0m";
     constexpr std::string_view WARNING = "\x1b[33mWARNING\x1b[0m";
     constexpr std::string_view INFO = "\x1b[34mINFO\x1b[0m";
-}    // namespace Log
+}
 
 class JobLog : public Message {
 private:
-
     std::vector<std::pair<std::string_view, std::string_view>> log;
 
     static auto getTime(std::string_view const& logType) -> std::string {
@@ -36,7 +35,9 @@ public:
     ~JobLog() override = default;
 
     // copy constructor
-    JobLog(std::string_view name, std::string_view executionTime, JobLog const& other) : Message(name, executionTime), log(other.log) {}
+    [[maybe_unused]]
+    JobLog(std::string_view name, std::string_view executionTime, JobLog const& other)
+        : Message(name, executionTime), log(other.log) {}
 
     // copy assignment
     auto operator=(JobLog const& other) -> JobLog& {
