@@ -48,20 +48,16 @@ public:
                     continue;
                 }
 
-
                 const std::time_t now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
                 auto time_t_vec = timeTable_ptr->get(now);
 
                 std::cout << "[ Watcher | CHECKING ] -> " << time_t_vec.size() << " found." << std::endl;
-
-
 
                 /// check if jobs for execution
                 std::ranges::for_each(time_t_vec, [&](I_TimedAction*& time_t) {
                     const auto asc_t = std::asctime(std::localtime(&now));
                     std::cout << "[ Watcher | FOUND ] -> " << time_t->getName() << " for execution at " << asc_t << std::endl;
                 });
-
 
                 /// check if jobs for finished execution
                 timeTable_ptr->check_status(time_t_vec, now);
