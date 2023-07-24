@@ -6,7 +6,7 @@
 
 #include "../Cron/Cron.hpp"
 #include "../Notification/JobLog.hpp"
-#include "../Notification/Notification.hpp"
+#include "../Notification/Message.hpp"
 #include <future>
 #include <iostream>
 
@@ -18,7 +18,7 @@ protected:
 public:
     virtual ~I_TimedAction() = default;
 
-    //virtual auto finished() -> std::future<Notification> = 0;
+    //virtual auto finished() -> std::future<Message> = 0;
 
     virtual auto start() -> void = 0;
 
@@ -26,22 +26,24 @@ public:
 
     virtual auto restart() -> void = 0;
 
-    [[nodiscard]] virtual auto is_running() const -> bool = 0;
+    [[nodiscard]]
+    virtual auto is_running() const -> bool = 0;
 
-    [[nodiscard]] auto getName() const -> std::string_view {
+    [[nodiscard]]
+    virtual auto get_execution_times() const -> std::vector<std::tm> = 0;
+
+
+    /// << ABSTRACT >>
+
+    [[nodiscard]]
+    auto getName() -> std::string_view {
         return this->name;
     }
 
-    [[nodiscard]] virtual auto get_execution_times() const -> std::vector<std::tm> = 0;
-
-
-    // << Abstract >>
-
-
-    virtual /// This methode returns a future which contains the JobLog.
-    auto finished() -> std::future<Notification> {    // override {
-
-        return std::async(std::launch::async, [this]() -> Notification {
+    /// This methode returns a future which contains the JobLog.
+    [[nodiscard]]
+    virtual auto finished() -> std::future<Message> {    // override {
+        return std::async(std::launch::async, [this]() -> Message {
             auto jobLog = JobLog(this->name, "DATE");
             jobLog.SUCCESS(this->name + " finished.");
 
