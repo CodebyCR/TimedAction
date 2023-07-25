@@ -27,7 +27,8 @@ public:
     Light_TimedAction(std::string_view const& name,
                       std::function<void(T& value)> const& action,
                       T& value,
-                      std::chrono::milliseconds const& interval) : action(static_cast<const std::function<void(bool&)>>(action)),
+                      std::chrono::milliseconds const& interval)
+        : action(static_cast<const std::function<void(bool&)>>(action)),
                                                                    value(value),
                                                                    interval(interval),
                                                                    isRunning(false) {
@@ -97,7 +98,7 @@ public:
         return isRunning;
     }
 
-    [[nodiscard]] auto get_execution_times() const -> std::vector<std::tm> override {
-        return this->cron.get_execution_times();
-    }
+//    [[nodiscard]] auto get_execution_times() const -> std::vector<std::tm> override {
+//        return this->cron.get_execution_times();
+//    }
 };
