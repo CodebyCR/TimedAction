@@ -9,13 +9,15 @@
 
 #include "Container/AsyncQueue.hpp"
 #include "Cron/CronInterpreter.hpp"
+#include "Interfaces/ActionCapsule.hpp"
 #include "Scheduler/Scheduler.hpp"
+#include "TimedAction_Types/ScheduledAction.hpp"
+#include "Utilities/Environment.hpp"
 #include "Utilities/Logger.hpp"
-#include <iomanip>
-#include <ctime>
 #include <codecvt>
 #include <cstdlib>
-#include "Utilities/Environment.hpp"
+#include <ctime>
+#include <iomanip>
 
 void sayHallo(std::uint32_t &count) {
     ++count;
@@ -125,6 +127,10 @@ auto json_parser_test() -> void {
 
 }
 
+auto test_function() -> void {
+    std::cout << "test_function" << std::endl;
+}
+
 auto main() -> int {
 
 //    CronTest::test_all();
@@ -132,7 +138,7 @@ auto main() -> int {
 
 //    constexpr std::u8string_view brand = u8"\x1B[31m"
 //                               "===========================================================================\n"
-//                               "Timed Action •\x1B[3m since 2022\x1B[0m\x1B[31m •\n"
+//                               "Timed ActionCapsule •\x1B[3m since 2022\x1B[0m\x1B[31m •\n"
 //                               "Version: 0.4.0\n"
 //                               "All rights reserved.\n"
 //                               "Copyright © 2023. Christoph Rohde\n"
@@ -145,7 +151,7 @@ auto main() -> int {
     std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> converter;
     constexpr auto brand = U"\x1B[31m"
                            "===========================================================================\n"
-                           "Timed Action •\x1B[3m since 2022\x1B[0m\x1B[31m •\n"
+                           "Timed ActionCapsule •\x1B[3m since 2022\x1B[0m\x1B[31m •\n"
                            "Version: 0.4.0\n"
                            "All rights reserved.\n"
                            "Copyright © 2023. Christoph Rohde\n"
@@ -157,7 +163,7 @@ auto main() -> int {
     //logger_test();    // ! Failed
 
 
-//    auto cron_try = std::to_cron("0 */1 * * 6 * 2023");
+    auto cron_try = std::to_cron("0 */1 * * 6 * 2023");
 
 
     // ! TODO:
@@ -197,8 +203,8 @@ auto main() -> int {
     auto c_cron = Cron({.second = "0",
                        .minute = "*/2",
                        .hour = "*",
-                       .dayOfMonth = "21",
-                       .month = "5",
+                       .dayOfMonth = "25",
+                       .month = "7",
                        .weekday = "*",
                        .year = "*"});
 
@@ -227,9 +233,29 @@ auto main() -> int {
 //    auto job2 = SmartTimedAction("My_second_Job",
 //                                 test,
 //                                 str,
-//                                 cron_try);
-//s
-//    scheduler.add(&job2);
+//                                 c_cron);
+
+    auto testCron =  std::to_cron("0 */2 * 25 7 * *");
+
+
+    auto action = ActionCapsule{
+            .name = "My_second_Job",
+            .execution_timer = &testCron,
+            .action = []() -> void {
+                std::cout << "Hallo from My_second_Job" << std::endl;
+            }
+    };
+
+    ScheduledAction job2({
+        .name = "My_second_Job",
+        .execution_timer = &testCron,
+        .action = []() -> void {
+            std::cout << "Hallo from My_second_Job" << std::endl;
+        }
+    });
+
+
+    scheduler.add(&job2);
 
 
 
@@ -241,8 +267,8 @@ auto main() -> int {
 //    auto job = SmartTimedAction("My_first_Job",
 //                                test,
 //                                str,
-//                                c_cron);
-//
+//                                cron_try);
+
 //    std::cout << job.getName() << std::endl;
 
     scheduler.start();
