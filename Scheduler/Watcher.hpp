@@ -57,6 +57,7 @@ public:
                 std::ranges::for_each(time_t_vec, [&](I_TimedAction*& time_t) {
                     const auto asc_t = std::asctime(std::localtime(&now));
                     std::cout << "[ Watcher | FOUND ] -> " << time_t->getName() << " for execution at " << asc_t << std::endl;
+                    time_t->start();
                 });
 
                 /// check if jobs for finished execution
