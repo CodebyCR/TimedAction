@@ -149,12 +149,12 @@ public:
         const auto seconds = std::floor((run_time - (days * DAY_SECONDS) - (hours * HOUR_SECONDS) - (minutes * MINUTE_SECONDS)));
 
         auto ss = new std::stringstream ();
-        *ss << "[SCHEDULER RUNTIME INFO]" << std::endl;
+        *ss << "[ SCHEDULER | RUNTIME INFO ]" << std::endl;
         *ss << "--------------------------------------------------------------------------------" << std::endl;
         *ss << "Scheduler is running since " << std::ctime(&time_t) << std::endl;
         *ss << "Current time is " << std::ctime(&now) << std::endl;
         *ss << "Scheduler run time is " << days << " days, " << hours << " hours, " << minutes << " minutes and " << seconds << " seconds." << std::endl;
-        *ss << "Scheduler has " << timeTable_ptr->size() << " jobs in the time table." << std::endl;
+        *ss << "Scheduler has " << timeTable_ptr->size() << " entries in the time table." << std::endl;
         *ss << "Scheduler is " << (watcher.isRunning ? "running" : "stopped") << "." << std::endl;
         *ss << "--------------------------------------------------------------------------------" << std::endl;
 
