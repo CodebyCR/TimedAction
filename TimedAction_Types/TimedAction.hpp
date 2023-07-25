@@ -218,25 +218,25 @@ public:
         return isRunning;
     }
 
-    [[nodiscard]]
-    auto get_execution_times() const -> std::vector<std::tm> override {
-        return execution_times;
-    }
+//    [[nodiscard]]
+//    auto get_execution_times() const -> std::vector<std::tm> override {
+//        return execution_times;
+//    }
 
-    auto finished() -> std::future<Message> override {
-        auto timeStamp = std::chrono::system_clock::now();
-
-
-        return std::async(std::launch::async, [this, &timeStamp] {
-            auto jobLog = JobLog(this->name, timeStamp);
-            jobLog.INFO("Test -> INFO");
-            jobLog.WARNING("Test -> WARNING");
-            jobLog.FAILURE("Test -> FAILURE");
-            jobLog.SUCCESS("Test -> SUCCESS");
-
-            return jobLog;
-        });
-    }
+//    auto finished() -> std::future<Message> override {
+//        auto timeStamp = std::chrono::system_clock::now();
+//
+//
+//        return std::async(std::launch::async, [this, &timeStamp] {
+//            auto jobLog = JobLog(this->name, timeStamp);
+//            jobLog.INFO("Test -> INFO");
+//            jobLog.WARNING("Test -> WARNING");
+//            jobLog.FAILURE("Test -> FAILURE");
+//            jobLog.SUCCESS("Test -> SUCCESS");
+//
+//            return jobLog;
+//        });
+//    }
 };
 
 using SmartTimedAction = TimedAction<std::string, std::string, std::string, std::string>;
