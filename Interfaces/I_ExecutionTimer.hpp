@@ -12,7 +12,8 @@
 /// Can used by the TimedAction Object to get the execution times.
 class I_ExecutionTimer {
 public:
-    [[nodiscard]] virtual auto get_execution_times() -> std::vector<std::tm> = 0;
+    [[nodiscard]]
+    virtual auto get_execution_times() -> std::vector<std::tm> = 0;
 };
 
 // * for cron, interval and time vector
