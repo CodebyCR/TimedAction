@@ -15,7 +15,6 @@ private:
     std::chrono::milliseconds watchInterval = std::chrono::milliseconds(1'000);
 
 public:
-    constexpr static std::string_view uninit_watchable = "[ Watcher | ERROR ] -> uninitialised Watchable.";
     constexpr static std::string_view watch_sleep       = "[ Watcher | SLEEP ] -> No Jobs Found.";
 
     /// ! for std::format
@@ -37,17 +36,9 @@ public:
             while(isRunning) {
                 std::this_thread::sleep_for(watchInterval);
 
-
-                for(auto& watchable : watchables) {
-                    if(!watchable) {
-                        std::cout << uninit_watchable << std::endl; // refactor to scheduler
-                    }
-                }
-
                 bool inactive_watchables = std::ranges::all_of(watchables, [](auto& watchable) {
                     return watchable->inactive();
                 });
-
 
                 if(inactive_watchables) {
                     if(empty_table_counter++ > trigger_sleep_message) {
@@ -60,14 +51,10 @@ public:
 
                 const std::time_t now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 
-
-                for(auto& watchable : watchables){
-                    if(!watchable) {
-                        std::cout << uninit_watchable << std::endl;
-                    }
-
+                for(auto const& watchable : watchables){
                     watchable->watch(now);
                 }
+
 
             }
         });
