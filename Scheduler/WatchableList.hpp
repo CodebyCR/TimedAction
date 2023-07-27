@@ -17,4 +17,11 @@ public:
 
         this->emplace_back(watchable);
     }
+
+    auto watch(std::time_t const& time) -> void {
+        for(auto const& watchable : *this) {
+            watchable->watch(time);
+        }
+    }
+
 };
