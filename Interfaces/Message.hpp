@@ -18,6 +18,9 @@ public:
 
     virtual ~Message() = default;
 
+    // TODO: Add buffer for message
+
+    // TODO: overload operator<< for std::format
 
 
     [[nodiscard]]
