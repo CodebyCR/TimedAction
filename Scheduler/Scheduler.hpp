@@ -10,20 +10,21 @@
 #include "EventQueue.hpp"
 #include "JobManager.hpp"
 #include "TimeTable.hpp"
+#include "WatchableList.hpp"
 #include "Watcher.hpp"
+#include <cmath>
 #include <iostream>
 #include <map>
 #include <memory>
 #include <string>
 #include <vector>
-#include <cmath>
 
 
 class Scheduler {
 private:
     std::chrono::system_clock::time_point up_time = {};
     std::map<std::string, std::string> attributes;
-    std::vector<std::shared_ptr<Watchable>> watchables;
+    WatchableList watchables;
     std::shared_ptr<TimeTable> timeTable_ptr;
     Watcher watcher;
 
@@ -100,7 +101,7 @@ public:
         timeTable_ptr->add(action);
     }
 
-    auto add(std::shared_ptr<Watchable> watchable) -> void {
+    auto add(std::shared_ptr<Watchable> const& watchable) -> void {
         watchables.push_back(watchable);
     }
 
