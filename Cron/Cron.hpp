@@ -113,7 +113,7 @@ public:
         std::cout << "Cron Capsule " << std::endl;
     }
 
-    explicit Cron(std::string const& cronString) {
+    explicit Cron(std::string_view cronString) {
 
         std::cout << "Cron String: " << cronString << std::endl;
         if(cronString.empty()) {
@@ -165,9 +165,8 @@ public:
         return std::mktime(&lhs_first_execution) > std::mktime(&rhs_first_execution);
     }
 
-    friend Cron operator""_cron(const char* str, std::size_t size) {
-        auto cron_expression = Cron(std::string(str, size));
-        return cron_expression;
+    friend auto operator""_cron(const char* str, std::size_t size) -> Cron {
+        return Cron(std::string(str, size));
     }
 
     [[nodiscard]] auto getSecondTimes()  {
@@ -178,28 +177,34 @@ public:
         return this->minutes.getTimes();
     }
 
-    [[nodiscard]] auto getHourTimes()  {
+    [[nodiscard]]
+    auto getHourTimes()  {
         return this->hours.getTimes();
     }
 
-    [[nodiscard]] auto getDayOfMonthTimes()  {
+    [[nodiscard]]
+    auto getDayOfMonthTimes()  {
         return this->daysOfMonth.getTimes();
     }
 
-    [[nodiscard]] auto getMonthTimes()  {
+    [[nodiscard]]
+    auto getMonthTimes()  {
         return this->months.getTimes();
     }
 
-    [[nodiscard]] auto getWeekDayTimes() const {
+    [[nodiscard]]
+    auto getWeekDayTimes() const {
         return this->daysOfWeek.getContainedWeekdays();
     }
 
-    [[nodiscard]] auto getYearTimes() {
+    [[nodiscard]]
+    auto getYearTimes() {
         return this->years.getTimes();
     }
 
 
-    [[nodiscard]] auto get_execution_times() -> std::vector<std::tm> override {
+    [[nodiscard]]
+    auto get_execution_times() -> std::vector<std::tm> override {
         return execution_times;
     }
 
@@ -209,28 +214,7 @@ public:
         return *this;
     }
 
-
 };
-
-//namespace std {
-//    template<>
-//    struct hash<Cron> {
-//        auto operator()(const Cron &cron) const -> size_t {
-//            return hash<std::string>()(cron);
-//        }
-//    };
-//}
-
-namespace std {
-    auto to_cron(const std::string& cronString) -> Cron {
-        return Cron(cronString);
-    }
-
-    //    auto operator "" _cron(const char* cron_expression)
-    //    {
-    //        return Cron(cron_expression);
-    //    }
-}    // namespace std
 
 namespace CronExpression {
     // ! TODO: dont works
