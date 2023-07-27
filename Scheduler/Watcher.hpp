@@ -15,7 +15,7 @@ private:
     std::chrono::milliseconds watchInterval = std::chrono::milliseconds(1'000);
 
 public:
-    constexpr static std::string_view watch_sleep       = "[ Watcher | SLEEP ] -> No Jobs Found.";
+    constexpr static std::string_view watch_sleep       = "[ Watcher | SLEEP ] -> No active Watchables Found.";
 
     /// ! for std::format
     /// constexpr static std::string_view found_jobs = "[ Watcher | FOUND ] -> {0} found.";
