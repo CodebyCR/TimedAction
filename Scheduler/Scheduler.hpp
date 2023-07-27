@@ -23,6 +23,7 @@ class Scheduler {
 private:
     std::chrono::system_clock::time_point up_time = {};
     std::map<std::string, std::string> attributes;
+    std::vector<std::shared_ptr<Watchable>> watchables;
     std::shared_ptr<TimeTable> timeTable_ptr;
     Watcher watcher;
 
@@ -37,6 +38,7 @@ private:
         attributes = dispatcher.get_scheduler_attributes();
         watcher.set_attributes(dispatcher.get_watcher_attributes());
         timeTable_ptr = std::make_shared<TimeTable>();
+
         // drop folder support
         timeTable_subscribe_listener();
         timeTable_drop_listener();
@@ -101,7 +103,7 @@ public:
 
     auto start() -> void {
         /// new watcher thread & make it independent
-        auto watcher_thread = watcher.getThread(timeTable_ptr);
+        auto watcher_thread = watcher.getThread(watchables);
         watcher_thread.detach();
     }
 
@@ -115,7 +117,8 @@ public:
         start();
     }
 
-    [[nodiscard]] auto is_running() const -> bool {
+    [[nodiscard]]
+    auto is_running() const -> bool {
         return watcher.isRunning;
     }
 
