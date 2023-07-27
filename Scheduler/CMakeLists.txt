@@ -1,6 +1,8 @@
 
 set(SCHEDULER_SOURCES
         "EventQueue.hpp"
+        "TimeTable.hpp"
+        "WatchableList.hpp"
         "Watcher.hpp"
         "Scheduler.hpp")
 

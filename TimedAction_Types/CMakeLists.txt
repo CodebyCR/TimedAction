@@ -1,5 +1,6 @@
 
 set(TIMED_ACTION_SOURCES
+        "ScheduledAction.hpp"
         "TimedAction.hpp"
         "Light_TimedAction.hpp")
 

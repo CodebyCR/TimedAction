@@ -1,5 +1,7 @@
 set(INTERFACE_SOURCES
         "Message.hpp"
+        "ActionCapsule.hpp"
+        "Watchable.hpp"
         "I_ExecutionTimer.hpp"
         "I_TimedAction.hpp"
         )
