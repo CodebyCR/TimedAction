@@ -9,9 +9,12 @@
 #include <map>
 #include <ranges>
 #include <sstream>
+#include "../Interfaces/Watchable.hpp"
 
 
-class TimeTable : public std::map<std::time_t, std::vector<I_TimedAction*>> {
+class TimeTable : public std::map<std::time_t, std::vector<I_TimedAction*>>,
+                  // INTERFACES:
+                  Watchable{
 private:
     std::function<void(I_TimedAction*)> _subscribe;
     std::function<void(I_TimedAction*)> _listen;
@@ -108,5 +111,24 @@ public:
         this->_subscribe = std::move(subscribe);
     }
 
-    // On empty  for watcher standby mode
+    auto watch(std::time_t const& now) -> void override {
+        auto time_t_vec = this->get(now);
+
+        std::cout << "[ Watcher | CHECKING ] -> " << time_t_vec.size() << " found." << std::endl;
+
+        /// check if jobs for execution
+        std::ranges::for_each(time_t_vec, [&](I_TimedAction*& time_t) {
+            const auto asc_t = std::asctime(std::localtime(&now));
+            std::cout << "[ Watcher | FOUND ] -> " << time_t->getName() << " for execution at " << asc_t << std::endl;
+            time_t->start();
+        });
+
+        /// check if jobs for finished execution
+        this->check_status(time_t_vec, now);
+    }
+
+    auto inactive() -> bool override {
+        return this->empty();
+    }
+
 };
