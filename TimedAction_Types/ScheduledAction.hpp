@@ -27,10 +27,19 @@ public:
                     std::function<void(void)> const& action)
         : I_TimedAction(name, executionTimer, action){}
 
-    ScheduledAction(ActionCapsule const& action)
+    explicit ScheduledAction(ActionCapsule const& action)
         : I_TimedAction(action.name, action.execution_timer, action.action){}
 
     ~ScheduledAction() override = default;
+
+    // copy and move constructors
+    ScheduledAction(ScheduledAction const& other) = delete;
+    ScheduledAction(ScheduledAction&& other) noexcept = default;
+    auto operator=(ScheduledAction const& other) -> ScheduledAction& = delete;
+    auto operator=(ScheduledAction&& other) noexcept -> ScheduledAction& = default;
+
+
+
 
     auto run() -> void {
         if (action) {
@@ -52,15 +61,18 @@ public:
         thread.join();
     }
 
-    auto restart() -> void override {
-        stop();
-        start();
-    }
+//    auto restart() -> void override {
+//        stop();
+//        start();
+//    }
+//
+//    [[nodiscard]]
+//    auto is_running() const -> bool override {
+//        return isRunning;
+//    }
 
-    [[nodiscard]]
-    auto is_running() const -> bool override {
-        return isRunning;
-    }
+    //moved a shared_ptr of this
+
 
 };
 
