@@ -7,10 +7,9 @@
 #include <iostream>
 
 /// This is interface defines the methods for a watchable object.
-struct Watchable {
+class Watchable {
+public:
     virtual auto watch(std::time_t const& time) -> void = 0;
 
     virtual auto inactive() -> bool = 0;
 };
-
-
