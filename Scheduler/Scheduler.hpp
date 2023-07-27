@@ -25,7 +25,7 @@ class Scheduler {
 private:
     std::chrono::system_clock::time_point up_time = {};
     std::map<std::string, std::string> attributes;
-    WatchableList watchables;
+    std::vector<std::shared_ptr<Watchable>> watchables;
     std::shared_ptr<TimeTable> timeTable_ptr;
     Watcher watcher;
 
@@ -40,7 +40,7 @@ private:
         attributes = dispatcher.get_scheduler_attributes();
         watcher.set_attributes(dispatcher.get_watcher_attributes());
         timeTable_ptr = std::make_shared<TimeTable>();
-
+        watchables.emplace_back(timeTable_ptr);
         // drop folder support
         timeTable_subscribe_listener();
         timeTable_drop_listener();
@@ -50,7 +50,7 @@ private:
     /// \details This method is called when a new job is added to the time table.
     /// \note This listener is <b>only</b> active when the scheduler is running.
     auto timeTable_subscribe_listener() -> void {
-        timeTable_ptr->on_subscribe([this](std::shared_ptr<I_TimedAction> job) {
+        timeTable_ptr->on_subscribe([this](std::shared_ptr<I_TimedAction> const& job) {
             std::cout << "[ TimeTable | SUBSCRIBE ] -> '" << job->getName() << "' " << std::endl;
 
             if(job->get_execution_times().empty()) {
@@ -80,7 +80,7 @@ private:
     /// \details This listener is called when a job is dropped from the timeTable.
     /// \note This listener is <b>only</b> active when the scheduler is running.
     auto timeTable_drop_listener() -> void {
-        timeTable_ptr->on_listen([](std::shared_ptr<I_TimedAction> job) {
+        timeTable_ptr->on_listen([](std::shared_ptr<I_TimedAction> const& job) {
             std::cout << "[ TimeTable | DROPPED ] -> '" << job->getName() << "'" << std::endl;
         });
     }
@@ -90,9 +90,9 @@ public:
     virtual ~Scheduler() = default;
 
     // Singleton
-    static auto get_instance() -> Scheduler& {
+    static auto get_instance() -> std::shared_ptr<Scheduler> {
         static Scheduler instance;
-        return instance;
+        return std::make_shared<Scheduler>(instance);
     }
 
     Scheduler(Scheduler const&) = default;
@@ -107,7 +107,12 @@ public:
     }
 
     auto add(std::shared_ptr<Watchable> const& watchable) -> void {
-        watchables.emplace_back(watchable);
+        if(!watchable) {
+            std::cout << "[ WatchableList | ERROR ] -> uninitialised Watchable." << std::endl;
+            return;
+        }
+
+        this->watchables.emplace_back(watchable);
     }
 
     auto start() -> void {
@@ -163,11 +168,13 @@ public:
         auto ss = new std::stringstream ();
         *ss << "[ SCHEDULER | RUNTIME INFO ]" << std::endl;
         *ss << "--------------------------------------------------------------------------------" << std::endl;
-        *ss << "Scheduler is running since " << std::ctime(&time_t) << std::endl;
-        *ss << "Current time is " << std::ctime(&now) << std::endl;
-        *ss << "Scheduler run time is " << days << " days, " << hours << " hours, " << minutes << " minutes and " << seconds << " seconds." << std::endl;
-        *ss << "Scheduler has " << timeTable_ptr->size() << " entries in the time table." << std::endl;
-        *ss << "Scheduler is " << (watcher.isRunning ? "running" : "stopped") << "." << std::endl;
+        *ss << "Running since       " << std::ctime(&time_t) << std::endl;
+        *ss << "Current time:       " << std::ctime(&now) << std::endl;
+        *ss << "Run time:           " << days << " days, " << hours << " hours, "
+            << minutes << " minutes and " << seconds << " seconds." << std::endl;
+        *ss << "Scheduler contains  " << watchables.size() << " watchable(s)." << std::endl;
+        *ss << "Time Table has      " << timeTable_ptr->size() << " entries." << std::endl;
+        *ss << "Scheduler is        " << (watcher.isRunning ? "running" : "stopped") << "." << std::endl;
         *ss << "--------------------------------------------------------------------------------" << std::endl;
 
         std::string result = ss->str();
