@@ -31,7 +31,7 @@ public:
 
 
     [[nodiscard]]
-    auto getThread(const std::span<std::shared_ptr<Watchable>> watchables) const -> std::thread {
+    auto open_watch_thread(const std::span<std::shared_ptr<Watchable>> watchables) const -> std::thread {
 
         return std::thread([&] {
             while(isRunning) {

@@ -103,7 +103,7 @@ public:
 
     auto start() -> void {
         /// new watcher thread & make it independent
-        auto watcher_thread = watcher.getThread(watchables);
+        auto watcher_thread = watcher.open_watch_thread(watchables);
         watcher_thread.detach();
     }
 
