@@ -52,11 +52,11 @@ namespace CronInterpreter {
         ss << "------------------------------------------------" << std::endl;
 
         for(auto const& timeStruct: timePoints) {
-            ss << std::setfill(' ') << std::setw(4) << timeStruct.tm_hour << " "
-               << std::setfill(' ') << std::setw(6) << timeStruct.tm_min << " "
-               << std::setfill(' ') << std::setw(6) << timeStruct.tm_sec << " "
-               << std::setfill(' ') << std::setw(10) << timeStruct.tm_mday << " "
-               << std::setfill(' ') << std::setw(9) << get_month_from_index(timeStruct.tm_mon) << " "
+            ss << std::setfill(' ') << std::setw(4) << timeStruct.tm_hour << ' '
+               << std::setfill(' ') << std::setw(6) << timeStruct.tm_min << ' '
+               << std::setfill(' ') << std::setw(6) << timeStruct.tm_sec << ' '
+               << std::setfill(' ') << std::setw(10) << timeStruct.tm_mday << ' '
+               << std::setfill(' ') << std::setw(9) << get_month_from_index(timeStruct.tm_mon) << ' '
                << std::setfill(' ') << std::setw(4) << timeStruct.tm_year + 1900
                << std::endl;
         }
@@ -86,41 +86,41 @@ namespace CronInterpreter {
         std::cout << "Minute:\n\t" << std::flush;
         for(auto const& entry: cron.getMinuteTimes()) {
             auto minute = duration_cast<std::chrono::minutes>(entry);
-            std::cout << minute.count() << " ";
+            std::cout << minute.count() << ' ';
         }
         std::cout << std::endl;
 
         std::cout << "Hour:\n\t" << std::flush;
         for(auto const& entry: cron.getHourTimes()) {
             auto hour = duration_cast<std::chrono::hours>(entry);
-            std::cout << hour.count() << " ";
+            std::cout << hour.count() << ' ';
         }
         std::cout << std::endl;
 
         std::cout << "Day of month:\n\t" << std::flush;
         for (auto const &entry: cron.getDayOfMonthTimes()) {
             auto day = duration_cast<std::chrono::days>(entry);
-            std::cout << day.count() + 1 << " "; // start at 0 ?
+            std::cout << day.count() + 1 << ' '; // start at 0 ?
         }
         std::cout << std::endl;
 
         std::cout << "Month:\n\t" << std::flush;
         for (auto const &entry: cron.getMonthTimes()) {
             auto day = duration_cast<std::chrono::months>(entry);
-            std::cout << day.count() << " ";
+            std::cout << day.count() << ' ';
         }
         std::cout << std::endl;
 
         std::cout << "Year:\n\t" << std::flush;
         for (auto const &entry: cron.getYearTimes()) {
             auto day = duration_cast<std::chrono::years>(entry);
-            std::cout << day.count() << " ";
+            std::cout << day.count() << ' ';
         }
         std::cout << std::endl;
 
         std::cout << "Allowed Weekdays:\n\t" << std::flush;
         for (auto const &entry: cron.getWeekDayTimes()) {
-            std::cout << entry << " ";
+            std::cout << entry << ' ';
         }
         std::cout << "\n\n" << std::endl;
     }
