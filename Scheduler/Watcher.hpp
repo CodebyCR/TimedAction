@@ -15,7 +15,7 @@ private:
     std::chrono::milliseconds watchInterval = std::chrono::milliseconds(1'000);
 
 public:
-    constexpr static std::string_view watch_sleep       = "[ Watcher | SLEEP ] -> No active Watchables Found.";
+    constexpr static std::string_view watch_sleep       = "[ Watcher | SLEEP ] -> No active Watchables found.";
 
     /// ! for std::format
     /// constexpr static std::string_view found_jobs = "[ Watcher | FOUND ] -> {0} found.";
@@ -30,13 +30,13 @@ public:
 
 
     [[nodiscard]]
-    auto open_watch_thread(const std::span<std::shared_ptr<Watchable>> watchables) const -> std::thread {
+    auto open_watch_thread(std::vector<std::shared_ptr<Watchable>> const& watchables) const -> std::thread {
 
         return std::thread([&] {
             while(isRunning) {
                 std::this_thread::sleep_for(watchInterval);
 
-                bool inactive_watchables = std::ranges::all_of(watchables, [](auto& watchable) {
+                bool inactive_watchables = std::ranges::all_of(watchables, [](auto & watchable) {
                     return watchable->inactive();
                 });
 
@@ -48,13 +48,11 @@ public:
                     continue;
                 }
 
-
                 const std::time_t now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 
-                for(auto const& watchable : watchables){
+                std::ranges::for_each(watchables, [&](auto & watchable) {
                     watchable->watch(now);
-                }
-
+                });
 
             }
         });
