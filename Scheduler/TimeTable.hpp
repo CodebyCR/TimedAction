@@ -12,16 +12,16 @@
 #include "../Interfaces/Watchable.hpp"
 
 
-class TimeTable : public std::map<std::time_t, std::vector<I_TimedAction*>>,
+class TimeTable : public std::map<std::time_t, std::vector<std::shared_ptr<I_TimedAction>>>,
                   // INTERFACES:
                   Watchable{
 private:
-    std::function<void(I_TimedAction*)> _subscribe;
-    std::function<void(I_TimedAction*)> _listen;
+    std::function<void(std::shared_ptr<I_TimedAction>)> _subscribe;
+    std::function<void(std::shared_ptr<I_TimedAction>)> _listen;
 
 
 public:
-    auto add(I_TimedAction* const& action) -> void {
+    auto add(std::shared_ptr<I_TimedAction> const& action) -> void {
         if(_subscribe) {
             _subscribe(action);
         }
@@ -32,7 +32,7 @@ public:
             const auto time_t = std::mktime(&executionTime);
 
             if(this->find(time_t) == this->end()) {
-                this->insert(std::make_pair(time_t, std::vector<I_TimedAction*>()));
+                this->insert(std::make_pair(time_t, std::vector<std::shared_ptr<I_TimedAction>>()));
             }
 
             this->at(time_t).emplace_back(action);
@@ -42,7 +42,7 @@ public:
         //this->sort();
     }
 
-    auto get(std::time_t const& time) -> std::vector<I_TimedAction*> {
+    auto get(std::time_t const& time) -> std::vector<std::shared_ptr<I_TimedAction>> {
         if(this->find(time) == this->end()) {
             return {};
         }
@@ -51,7 +51,7 @@ public:
     }
 
     /// Erased all entries of the action from the timetable.
-    auto drop(I_TimedAction* action) -> void {
+    auto drop(std::shared_ptr<I_TimedAction> const& action) -> void {
         for(auto& entry: *this) {
             auto& actions = entry.second;
 
@@ -73,7 +73,7 @@ public:
 
     /// This methode checks the given list of actions for finished tasks.
     /// <br/>If a task is finished, it will be removed from the timetable.
-    auto check_status(std::vector<I_TimedAction*>& actions, const std::time_t& now) -> void {
+    auto check_status(std::vector<std::shared_ptr<I_TimedAction>>& actions, const std::time_t& now) -> void {
         for (auto& action : actions) {
             std::future<Message> task = action->finished();
 
@@ -103,11 +103,11 @@ public:
 
     /// Listener
 
-    auto on_listen(std::function<void(I_TimedAction*)> listen) -> void {
+    auto on_listen(std::function<void(std::shared_ptr<I_TimedAction>)> listen) -> void {
         this->_listen = std::move(listen);
     }
 
-    auto on_subscribe(std::function<void(I_TimedAction*)> subscribe) -> void {
+    auto on_subscribe(std::function<void(std::shared_ptr<I_TimedAction>)> subscribe) -> void {
         this->_subscribe = std::move(subscribe);
     }
 
@@ -117,7 +117,7 @@ public:
         std::cout << "[ Watcher | CHECKING ] -> " << time_t_vec.size() << " found." << std::endl;
 
         /// check if jobs for execution
-        std::ranges::for_each(time_t_vec, [&](I_TimedAction*& time_t) {
+        std::ranges::for_each(time_t_vec, [&](std::shared_ptr<I_TimedAction>& time_t) {
             const auto asc_t = std::asctime(std::localtime(&now));
             std::cout << "[ Watcher | FOUND ] -> " << time_t->getName() << " for execution at " << asc_t << std::endl;
             time_t->start();
