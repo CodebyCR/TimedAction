@@ -6,6 +6,7 @@
 
 #include "../Cron/CronInterpreter.hpp"
 #include "../Interfaces/I_TimedAction.hpp"
+#include "../TimedAction_Types/ScheduledAction.hpp"
 #include "../Utilities/Dispacher.hpp"
 #include "EventQueue.hpp"
 #include "JobManager.hpp"
@@ -49,7 +50,7 @@ private:
     /// \details This method is called when a new job is added to the time table.
     /// \note This listener is <b>only</b> active when the scheduler is running.
     auto timeTable_subscribe_listener() -> void {
-        timeTable_ptr->on_subscribe([this](I_TimedAction* job) {
+        timeTable_ptr->on_subscribe([this](std::shared_ptr<I_TimedAction> job) {
             std::cout << "[ TimeTable | SUBSCRIBE ] -> '" << job->getName() << "' " << std::endl;
 
             if(job->get_execution_times().empty()) {
@@ -79,7 +80,7 @@ private:
     /// \details This listener is called when a job is dropped from the timeTable.
     /// \note This listener is <b>only</b> active when the scheduler is running.
     auto timeTable_drop_listener() -> void {
-        timeTable_ptr->on_listen([](I_TimedAction* job) {
+        timeTable_ptr->on_listen([](std::shared_ptr<I_TimedAction> job) {
             std::cout << "[ TimeTable | DROPPED ] -> '" << job->getName() << "'" << std::endl;
         });
     }
@@ -97,12 +98,16 @@ public:
     Scheduler(Scheduler const&) = default;
     void operator=(Scheduler const&) = delete;
 
-    auto add(I_TimedAction* action) -> void {
+    auto add( std::shared_ptr<I_TimedAction> const& action) -> void {
         timeTable_ptr->add(action);
     }
 
+    auto add(ActionCapsule const& action) -> void {
+        timeTable_ptr->add(std::make_shared<ScheduledAction>(action));
+    }
+
     auto add(std::shared_ptr<Watchable> const& watchable) -> void {
-        watchables.push_back(watchable);
+        watchables.emplace_back(watchable);
     }
 
     auto start() -> void {
