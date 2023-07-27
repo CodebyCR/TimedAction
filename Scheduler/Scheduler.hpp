@@ -63,7 +63,7 @@ private:
 
                 if(is_single_execution) {
                     std::cout << "[ TimeTable | INFO ] -> '" << job->getName()
-                              << "' will be executed at " << std::asctime(&job->get_execution_times()[0]) << "." << std::endl;
+                              << "' will be executed at " << std::asctime(&job->get_execution_times()[0]) << '.' << std::endl;
                 }
                 else {
                     std::cout << "[ TimeTable | INFO ] -> '" << job->getName()
@@ -87,7 +87,6 @@ private:
 public:
     virtual ~Scheduler() = default;
 
-
     // Singleton
     static auto get_instance() -> Scheduler& {
         static Scheduler instance;
@@ -99,6 +98,10 @@ public:
 
     auto add(I_TimedAction* action) -> void {
         timeTable_ptr->add(action);
+    }
+
+    auto add(std::shared_ptr<Watchable> watchable) -> void {
+        watchables.push_back(watchable);
     }
 
     auto start() -> void {
