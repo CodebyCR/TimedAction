@@ -43,11 +43,11 @@ public:
     virtual auto start() -> void = 0;
 
     virtual auto stop() -> void = 0;
-
-    virtual auto restart() -> void = 0;
-
-    [[nodiscard]]
-    virtual auto is_running() const -> bool = 0;
+//
+//    virtual auto restart() -> void = 0;
+//
+//    [[nodiscard]]
+//    virtual auto is_running() const -> bool = 0;
 
 
     /// << ABSTRACT >>

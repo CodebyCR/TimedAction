@@ -69,10 +69,10 @@ public:
         thread.join();
     }
 
-    auto restart() -> void override {
-        stop();
-        start();
-    }
+//    auto restart() -> void override {
+//        stop();
+//        start();
+//    }
 
     auto setAction(std::function<void(T& value)> const& action) -> void {
         this->action = action;
@@ -94,9 +94,9 @@ public:
         return timeSinceLastAction;
     }
 
-    [[nodiscard]] auto is_running() const -> bool override {
-        return isRunning;
-    }
+//    [[nodiscard]] auto is_running() const -> bool override {
+//        return isRunning;
+//    }
 
 //    [[nodiscard]] auto get_execution_times() const -> std::vector<std::tm> override {
 //        return this->cron.get_execution_times();
