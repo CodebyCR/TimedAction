@@ -12,10 +12,10 @@
 
 class Watcher {
 private:
-    std::chrono::milliseconds watchInterval = std::chrono::milliseconds(1000);
+    std::chrono::milliseconds watchInterval = std::chrono::milliseconds(1'000);
 
 public:
-    constexpr static std::string_view uninit_time_table = "[ Watcher | ERROR ] -> uninitialised TimeTable.";
+    constexpr static std::string_view uninit_watchable = "[ Watcher | ERROR ] -> uninitialised Watchable.";
     constexpr static std::string_view watch_sleep       = "[ Watcher | SLEEP ] -> No Jobs Found.";
 
     /// ! for std::format
@@ -31,16 +31,25 @@ public:
 
 
     [[nodiscard]]
-    auto getThread(const std::shared_ptr<TimeTable>& timeTable_ptr) const -> std::thread {
-        if(!timeTable_ptr) {
-            std::cout << uninit_time_table << std::endl;
-        }
+    auto getThread(const std::span<std::shared_ptr<Watchable>> watchables) const -> std::thread {
 
         return std::thread([&] {
             while(isRunning) {
                 std::this_thread::sleep_for(watchInterval);
 
-                if(timeTable_ptr->empty()) {
+
+                for(auto& watchable : watchables) {
+                    if(!watchable) {
+                        std::cout << uninit_watchable << std::endl; // refactor to scheduler
+                    }
+                }
+
+                bool inactive_watchables = std::ranges::all_of(watchables, [](auto& watchable) {
+                    return watchable->inactive();
+                });
+
+
+                if(inactive_watchables) {
                     if(empty_table_counter++ > trigger_sleep_message) {
                         std::cout << watch_sleep << std::endl;
                         empty_table_counter = 0;
@@ -48,20 +57,17 @@ public:
                     continue;
                 }
 
+
                 const std::time_t now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-                auto time_t_vec = timeTable_ptr->get(now);
 
-                std::cout << "[ Watcher | CHECKING ] -> " << time_t_vec.size() << " found." << std::endl;
 
-                /// check if jobs for execution
-                std::ranges::for_each(time_t_vec, [&](I_TimedAction*& time_t) {
-                    const auto asc_t = std::asctime(std::localtime(&now));
-                    std::cout << "[ Watcher | FOUND ] -> " << time_t->getName() << " for execution at " << asc_t << std::endl;
-                    time_t->start();
-                });
+                for(auto& watchable : watchables){
+                    if(!watchable) {
+                        std::cout << uninit_watchable << std::endl;
+                    }
 
-                /// check if jobs for finished execution
-                timeTable_ptr->check_status(time_t_vec, now);
+                    watchable->watch(now);
+                }
 
             }
         });
