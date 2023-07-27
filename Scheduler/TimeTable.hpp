@@ -12,9 +12,8 @@
 #include "../Interfaces/Watchable.hpp"
 
 
-class TimeTable : public std::map<std::time_t, std::vector<std::shared_ptr<I_TimedAction>>>,
-                  // INTERFACES:
-                  Watchable{
+class TimeTable : public Watchable,
+                  public std::map<std::time_t, std::vector<std::shared_ptr<I_TimedAction>>>{
 private:
     std::function<void(std::shared_ptr<I_TimedAction>)> _subscribe;
     std::function<void(std::shared_ptr<I_TimedAction>)> _listen;
@@ -38,8 +37,6 @@ public:
             this->at(time_t).emplace_back(action);
         }
 
-
-        //this->sort();
     }
 
     auto get(std::time_t const& time) -> std::vector<std::shared_ptr<I_TimedAction>> {
