@@ -2,27 +2,17 @@
 
 #include "Cron/Cron.hpp"
 #include "Interfaces/I_TimedAction.hpp"
-#include "TimedAction_Types/Light_TimedAction.hpp"
 #include "TimedAction_Types/TimedAction.hpp"
 #include <thread>
 
 
 #include "Container/AsyncQueue.hpp"
-#include "Cron/CronInterpreter.hpp"
 #include "Interfaces/ActionCapsule.hpp"
 #include "Scheduler/Scheduler.hpp"
-#include "TimedAction_Types/ScheduledAction.hpp"
-#include "Utilities/Environment.hpp"
 #include "Utilities/Logger.hpp"
 #include <codecvt>
-#include <cstdlib>
-#include <ctime>
 #include <iomanip>
 
-void sayHallo(std::uint32_t& count) {
-    ++count;
-    std::cout << "Hallo nr." << std::to_string(count) << std::endl;
-}
 
 void onAction(const std::string_view& value) {
     std::cout << "onAction " << value << std::endl;
@@ -114,9 +104,6 @@ auto logger_test() {
 }
 
 
-auto json_parser_test() -> void {
-}
-
 auto test_function() -> void {
     std::cout << "test_function" << std::endl;
 }
@@ -133,13 +120,15 @@ auto main() -> int {
                            "===========================================================================\n\x1B[0m";
     std::cout << converter.to_bytes(brand) << std::endl;
 
+    logger_test();
+
     auto cron_try = Cron("0 */1 * * 7 * 2023"); // bug: no execution if year is set?
     auto testCron = Cron("0 */2 * 27 7 * *");
 
     auto c_cron = Cron({.second = "0",
                         .minute = "*/2",
                         .hour = "*",
-                        .dayOfMonth = "27",
+                        .dayOfMonth = "28",
                         .month = "7",
                         .weekday = "*",
                         .year = "*"});
