@@ -14,24 +14,21 @@ public:
         env = ENV::Environment::getInstance(scheduler_json);
     }
 
-    auto get_scheduler_attributes() -> std::map<std::string, std::string> {
-            return env->get_attributes(ENV::SCHEDULER)
-                ? env->get_attributes(ENV::SCHEDULER).value()
-                : std::map<std::string, std::string>(); // add default values
-        }
-
-    auto get_notification_attributes() -> std::optional<std::map<std::string, std::string>> {
-        return env->get_attributes(ENV::NOTIFICATION);
+    [[nodiscard]]
+    auto env_lookup(std::string_view map_key, std::string_view sub_key) -> std::optional<std::string> {
+        return env->lookup(map_key, sub_key);
     }
 
-    auto get_log_attributes() -> std::optional<std::map<std::string, std::string>> {
-        return env->get_attributes(ENV::LOG);
+    static auto to_bool_or_else(std::optional<std::string> const& value, bool default_value = false) -> bool {
+        return value
+               ? value.value() == "true"
+               : default_value;
     }
 
-    auto get_watcher_attributes() -> std::map<std::string, std::string> {
-        return env->get_attributes(ENV::WATCHER)
-            ? env->get_attributes(ENV::WATCHER).value()
-            : std::map<std::string, std::string>(); // add default values
+    static auto to_int_or_else(std::optional<std::string> const& value, int default_value = 0) -> int {
+        return value
+               ? std::stoi(value.value())
+               : default_value;
     }
 
 private:
