@@ -76,22 +76,22 @@ public:
 
             switch(const auto result = task.wait_for(std::chrono::milliseconds(10)); result) {
                 case std::future_status::ready: {
-                    std::cout << "[ Watcher ] -> finished " << action->getName() << std::endl;
+                    std::cout << "[ TimeTable ] -> finished " << action->getName() << std::endl;
                     // start remove execution time from job here...
                     this->remove(now);
                 } break;
 
                 case std::future_status::deferred: {
-                    std::cout << "[ Watcher ] -> deferred for " << action->getName() << std::endl;
+                    std::cout << "[ TimeTable ] -> deferred for " << action->getName() << std::endl;
                 } break;
 
                 case std::future_status::timeout: {
-                    std::cout << "[ Watcher ] -> timeout for " << action->getName() << std::endl;
+                    std::cout << "[ TimeTable ] -> timeout for " << action->getName() << std::endl;
                     this->remove(now);
                 } break;
 
                 default: {
-                    std::cout << "[ Watcher | ERROR ] -> unknown status of " << action->getName() << std::endl;
+                    std::cout << "[ TimeTable | ERROR ] -> unknown status of " << action->getName() << std::endl;
                 }
             }
         }
@@ -111,12 +111,12 @@ public:
     auto watch(std::time_t const& now) -> void override {
         auto time_t_vec = this->get(now);
 
-        std::cout << "[ Watcher | CHECKING ] -> " << time_t_vec.size() << " found." << std::endl;
+//        std::cout << "[ Watcher | CHECKING ] -> " << time_t_vec.size() << " found." << std::endl;
 
         /// check if jobs for execution
         std::ranges::for_each(time_t_vec, [&](std::shared_ptr<I_TimedAction>& time_t) {
             const auto asc_t = std::asctime(std::localtime(&now));
-            std::cout << "[ Watcher | FOUND ] -> " << time_t->getName() << " for execution at " << asc_t << std::endl;
+            std::cout << "[ TimeTable | FOUND ] -> " << time_t->getName() << " for execution at " << asc_t << std::endl;
             time_t->start();
         });
 
