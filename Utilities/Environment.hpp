@@ -9,14 +9,9 @@
 #include "ConfigJSON.hpp"
 
 namespace ENV {
-    constexpr std::string_view SCHEDULER = "Scheduler";
-    constexpr std::string_view NOTIFICATION = "Notification";
-    constexpr std::string_view LOG = "Log";
-    constexpr std::string_view WATCHER = "Watcher";
-
 
     /// return a environment variable or an empty string
-    static auto get_env_variable(std::string_view const env_variable) -> std::string {
+    static auto get_env_variable(std::string_view env_variable) -> std::string {
         auto env_value = std::getenv(env_variable.data());
         if (!env_value) {
             std::cout << env_variable << " not found" << std::endl;
@@ -47,13 +42,17 @@ namespace ENV {
             return json.get_optional_map(key);
         }
 
+        auto lookup(std::string_view map_key, std::string_view sub_key) -> std::optional<std::string> {
+            const auto map = json.get_optional_map(map_key);
+            return map
+                    ? std::optional(map.value().at(sub_key.data()))
+                    : std::nullopt;
+        }
+
         ///// STATIC METHODS /////
 
         static std::shared_ptr<Environment> getInstance(std::string_view input) {
-            static std::shared_ptr<Environment> instance;
-            if(!instance) {
-                instance = std::make_shared<Environment>(input);
-            }
+            static std::shared_ptr<Environment> instance = std::make_shared<Environment> (input);
             return instance;
         }
 
