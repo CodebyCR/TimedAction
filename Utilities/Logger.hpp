@@ -8,6 +8,22 @@
 class Logger : public std::streambuf {
 
 private:
+    /// Map key
+    static constexpr std::string_view LOG = "Log";
+
+    /// Sub keys
+    static constexpr std::string_view LOG_FOLDER = "Log folder";
+    static constexpr std::string_view LOG_LEVEL = "Log level";
+    static constexpr std::string_view LOG_TO_COUT = "Log to cout";
+
+    /// Attributes
+    Dispatcher dispatcher;
+    bool _log_to_cout = Dispatcher::to_bool_or_else(
+            dispatcher.env_lookup(LOG, LOG_TO_COUT), true);
+
+    std::filesystem::path _log_folder = dispatcher.env_lookup(LOG, LOG_FOLDER)
+                                                .value_or("../../logs");
+
     bool m_useCout;
     std::ostream* m_coutStream;
     std::ofstream m_logfile{"log.txt"};
@@ -45,6 +61,11 @@ public:
             // set cout to use this Logger's streambuf instead
             std::cout.rdbuf(this);
         }
+
+        if (!exists(_log_folder)){
+            create_directory(_log_folder);
+        }
+
     }
 
     ~Logger() override {
