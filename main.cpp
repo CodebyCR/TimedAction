@@ -14,8 +14,14 @@
 #include <iomanip>
 
 
+
 void onAction(const std::string_view& value) {
     std::cout << "onAction " << value << std::endl;
+    auto ym = std::chrono::year { 2022 } / std::chrono::July; // ? refactoring
+
+   // auto duration = std::chrono::duration_cast<std::chrono::seconds>(ym - std::chrono::system_clock::now()); // for next execution
+//    std::string msg = std::format("{:*^10}\n{:*>10}\nin{}!", "hello", "world", ym);
+//    std::cout << msg;
 }
 
 void onInterval(const std::string_view& value) {
