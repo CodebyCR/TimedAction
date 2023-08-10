@@ -43,4 +43,4 @@
 - [ ] Central log notification point
 - [x] Configurable
 
-[^1]: Please read [Design decision 10. August 2023](/Design decision 10 August 2023.md)
+[^1]: Please read <a href="https://github.com/CodebyCR/TimedAction/wiki/Design-decision#10-august-2023">Design decision 10. August 2023</a>
