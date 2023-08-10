@@ -15,7 +15,7 @@
     <img height="28" src="https://img.shields.io/badge/SonarLint-CB2029?style=for-the-badge&logo=sonarlint&logoColor=white" alt="Logo">
     <img height="28" src="https://img.shields.io/badge/CMake-064F8C?style=for-the-badge&logo=cmake&logoColor=white" alt="Logo">
     <img height="28" src="https://img.shields.io/github/license/CodeByCR/TimedAction?style=for-the-badge" alt="Logo">
-    <h6><em>A simple, state-of-the-art job Framework.</em></h6>
+    <h6><em>A simple, state-of-the-art timing Framework.</em></h6>
 </div>
 
 ## ! IMPORTANT NOTE !
