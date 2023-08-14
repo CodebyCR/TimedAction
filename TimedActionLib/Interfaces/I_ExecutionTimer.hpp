@@ -9,7 +9,7 @@
 #include <chrono>
 
 /// <br/><b>I_ExecutionTimer</b><br/>
-/// Can used by the TimedAction Object to get the execution times.
+/// Can used by the TimedActionLib Object to get the execution times.
 class I_ExecutionTimer {
 public:
     [[nodiscard]]

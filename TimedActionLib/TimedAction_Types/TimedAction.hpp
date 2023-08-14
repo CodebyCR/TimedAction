@@ -42,7 +42,7 @@ private:
     std::function<void(E &value)> onEnd;
 
 public:
-//    TimedAction(std::string_view const &name,
+//    TimedActionLib(std::string_view const &name,
 //                std::function<void(T &value)> const &action,
 //                T &value,
 //                std::chrono::milliseconds interval) :
@@ -54,7 +54,7 @@ public:
 //        this->name = name;
 //    }
 //
-//    TimedAction(std::string_view const &name,
+//    TimedActionLib(std::string_view const &name,
 //                std::function<void(T &value)> const &action,
 //                T &value,
 //                std::vector<std::tm> &execution_times) :
@@ -66,7 +66,7 @@ public:
 //        this->execution_times(execution_times);
 //    }
 //
-//    TimedAction(std::string_view const &name,
+//    TimedActionLib(std::string_view const &name,
 //                std::function<void(T &value)> const &action,
 //                T &value,
 //                Cron &corn) :

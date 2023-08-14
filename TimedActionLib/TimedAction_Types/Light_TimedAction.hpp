@@ -52,8 +52,8 @@ public:
 
     auto finished() -> std::future<Message> {    // override {
         return std::async(std::launch::async, []() -> Message {
-            auto jobLog = JobLog("TimedAction", "DATE");
-            jobLog.SUCCESS("TimedAction finished");
+            auto jobLog = JobLog("TimedActionLib", "DATE");
+            jobLog.SUCCESS("TimedActionLib finished");
 
             return jobLog;
         });
