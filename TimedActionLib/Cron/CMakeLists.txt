@@ -3,11 +3,7 @@
 # Add CronDebugger library
 set(LIBRARY_CRON_DEBUGGER "CronDebugger")
 add_subdirectory(${LIBRARY_CRON_DEBUGGER})
-if (LIBRARY_CRON_DEBUGGER)
-    message(NOTICE " - [ ${CRON_SUB_LIBRARY_NUMBER}.1/${SUB_LIB_COUNT} ] ${LIBRARY_CRON_DEBUGGER} found")
-else()
-    message(FATAL_ERROR " - [ ${CRON_SUB_LIBRARY_NUMBER}.1/${SUB_LIB_COUNT} ] ${LIBRARY_CRON_DEBUGGER} not found")
-endif()
+
 
 set(CRON_SOURCES
     "CronRegex.hpp"

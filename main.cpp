@@ -1,15 +1,15 @@
 #include <iostream>
 
-#include "Cron/Cron.hpp"
-#include "Interfaces/I_TimedAction.hpp"
-#include "TimedAction_Types/TimedAction.hpp"
+#include "TimedActionLib/Cron/Cron.hpp"
+#include "TimedActionLib/Interfaces/I_TimedAction.hpp"
+#include "TimedActionLib/TimedAction_Types/TimedAction.hpp"
 #include <thread>
 
 
-#include "Container/AsyncQueue.hpp"
-#include "Interfaces/ActionCapsule.hpp"
-#include "Scheduler/Scheduler.hpp"
-#include "Utilities/Logger.hpp"
+#include "TimedActionLib/Container/AsyncQueue.hpp"
+#include "TimedActionLib/Interfaces/ActionCapsule.hpp"
+#include "TimedActionLib/Scheduler/Scheduler.hpp"
+#include "TimedActionLib/Utilities/Logger.hpp"
 #include <codecvt>
 #include <iomanip>
 
