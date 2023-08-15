@@ -1,0 +1,22 @@
+# Binary / Executable
+
+## Versioning
+major_version = 0
+
+minor_version = 4
+
+patch_version = 0
+
+project_version = str(major_version) + "." + str(minor_version) + "." + str(patch_version)
+
+## Name
+project_name = "TimedAction"
+
+print(project_name + ": " + project_version)
+
+cc_binary(
+    name = project_name,
+    srcs = ["main.cpp"],
+    visibility = ["//visibility:public"],
+    deps = ["//TimedActionLib:TimedActionLib"],
+)

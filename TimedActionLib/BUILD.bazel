@@ -1,0 +1,9 @@
+# TimedAction (library)
+package(default_visibility = ["//visibility:public"])
+
+cc_library(
+    name = "TimedActionLib",
+    srcs = glob(["*.cpp"]),
+    hdrs = glob(["*.hpp"]) + glob(["**/*.hpp"]),
+    visibility = ["//visibility:public"],
+)
