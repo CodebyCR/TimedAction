@@ -1,4 +1,6 @@
 # Bazel rc
 build --color=yes
-build --cxxopt="--std=c++23"
-build --sandbox_debug --verbose_failures
+build --cxxopt="--std=c++2b"
+build --sandbox_debug
+--verbose_failures
+
