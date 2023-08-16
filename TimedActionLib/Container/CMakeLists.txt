@@ -1,5 +1,6 @@
 set(CONTAINER_SOURCES
-        "AsyncQueue.hpp")
+        "AsyncQueue.hpp"
+        "DI_Model.hpp")
 
 add_library(${LIBRARY_CONTAINER} INTERFACE ${CONTAINER_SOURCES} )
 
