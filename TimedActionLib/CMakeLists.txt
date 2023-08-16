@@ -4,6 +4,9 @@ add_subdirectory(${UTILITY_LIBRARY})
 set(LIBRARY_INTERFACES "Interfaces")
 add_subdirectory(${LIBRARY_INTERFACES})
 
+set(LIBRARY_EXCEPTION "Exception")
+add_subdirectory(${LIBRARY_EXCEPTION})
+
 set(LIBRARY_CRON "Cron")
 add_subdirectory(${LIBRARY_CRON})
 
@@ -23,7 +26,7 @@ set(LIBRARY_NOTIFICATION "Notification")
 add_subdirectory(${LIBRARY_NOTIFICATION})
 
 
-add_library(${TIMED_ACTION_LIBS} INTERFACE "")
+add_library(${TIMED_ACTION_LIBS} INTERFACE "" )
 
 target_link_libraries(${TIMED_ACTION_LIBS}
         INTERFACE
