@@ -7,12 +7,12 @@
 
 
 #include "TimedActionLib/Container/AsyncQueue.hpp"
+#include "TimedActionLib/Exception/SchedulerException.hpp"
 #include "TimedActionLib/Interfaces/ActionCapsule.hpp"
 #include "TimedActionLib/Scheduler/Scheduler.hpp"
 #include "TimedActionLib/Utilities/Logger.hpp"
 #include <codecvt>
 #include <iomanip>
-
 
 
 void onAction(const std::string_view& value) {
@@ -152,14 +152,45 @@ auto main() -> int {
     scheduler->add(action);
     scheduler->start();
 
-    std::this_thread::sleep_for(std::chrono::minutes(2));
-    std::cout << scheduler->get_runtime_info() << std::endl;
+    // running...
 
-    // waiting for enter 'q'
-    char c;
-    std::cin >> c;
+    std::string command;
 
-    while(c != 'q') { std::cin >> c; }
+    while(true) {
+        std::cin >> command;
+
+        // add 'test_on_the_fly' '0 */2 * * 8 * *' 'Hey there!'
+
+        if(command.contains("add")) {
+            const auto values = StringUtils::save_split(command, ' ', '\'');
+            std::for_each(values.begin(), values.end(), [](const auto& value) {
+                std::cout << value << std::endl;
+            });
+
+            try {
+                const auto actionValues = StringUtils::get_substring(command, '\'', '\'');
+
+                auto cron = Cron(values[1]);
+                auto on_the_fly_action = ActionCapsule{
+                        .name = values[0],
+                        .execution_timer = &cron,
+                        .action = [&values]() -> void {
+                            std::cout << values[2] << std::endl;
+                        }};
+                scheduler->add(on_the_fly_action);
+            }catch (SchedulerException& e ) {
+                std::cout << "Failed:\n" << e.what() << std::endl;
+            }
+        }
+
+        if(command == "q") {
+            break;
+        }
+
+        if(command == "info") {
+            std::cout << scheduler->get_runtime_info() << std::endl;
+        }
+    }
     scheduler->stop();
 
     return 0;
