@@ -25,7 +25,7 @@ add_subdirectory(${LIBRARY_SCHEDULER})
 set(LIBRARY_NOTIFICATION "Notification")
 add_subdirectory(${LIBRARY_NOTIFICATION})
 
-
+set(TIMED_ACTION_LIBS "TimedActionLib")
 add_library(${TIMED_ACTION_LIBS} INTERFACE "" )
 
 target_link_libraries(${TIMED_ACTION_LIBS}
