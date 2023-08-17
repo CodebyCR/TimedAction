@@ -38,11 +38,11 @@ void test(std::string_view const& value) {
 
 
 void test_async_queue() {
-    auto queue = AsyncQueue<int>();
+    auto queue = AsyncQueue<std::uint32_t>();
 
     // Registrieren einer Callback-Funktion, die aufgerufen wird, wenn ein Element in die Warteschlange eingefügt wird.
     queue.on_subscribe(
-            [](int item) { std::cout << "Element " << item << " wurde in die Warteschlange eingefügt." << std::endl; });
+            [](std::uint32_t item) { std::cout << "Element " << item << " wurde in die Warteschlange eingefügt." << std::endl; });
 
     // Fügen Sie Elemente in die Warteschlange ein.
     queue.push(1);
@@ -50,7 +50,7 @@ void test_async_queue() {
     queue.push(3);
 
     queue.on_listen(
-            [](int item) { std::cout << "Element " << item << " wurde aus der Warteschlange entfernt." << std::endl; });
+            [](std::uint32_t item) { std::cout << "Element " << item << " wurde aus der Warteschlange entfernt." << std::endl; });
 
     std::cout << "Elemente in der Warteschlange: " << queue.size() << std::endl;
     // Entfernen Sie Elemente aus der Warteschlange.
