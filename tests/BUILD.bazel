@@ -1,0 +1,12 @@
+package(default_visibility = ["//visibility:public"])
+
+cc_test(
+    name = "lib_gtest",
+    srcs = glob(["*.hpp"]) + glob(["**/*.hpp"]),
+    #includes = ["googletest/include"],
+    visibility = ["//visibility:public"],
+    deps = [
+        "//TimedActionLib",
+        "@com_google_googletest//:gtest_main",
+    ],
+)
