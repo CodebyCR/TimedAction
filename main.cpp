@@ -131,13 +131,14 @@ auto main() -> int {
     auto cron_try = Cron("0 */1 * * 7 * 2023"); // bug: no execution if year is set?
     auto testCron = Cron("0 */2 * 27 7 * *");
 
-    auto c_cron = Cron({.second = "0",
-                        .minute = "*/2",
-                        .hour = "*",
-                        .dayOfMonth = "28",
-                        .month = "7",
-                        .weekday = "*",
-                        .year = "*"});
+    auto c_cron = Cron({
+            .second = "0",
+            .minute = "*/2",
+            .hour = "*",
+            .dayOfMonth = "28",
+            .month = "7",
+            .weekday = "*",
+            .year = "*"});
 
 //    std::cout << c_cron << std::endl;
 
