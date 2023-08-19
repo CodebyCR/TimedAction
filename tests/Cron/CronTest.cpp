@@ -1,8 +1,6 @@
 //
 // Created by Christoph Rohde on 17.08.23.
 //
-#pragma once
-
 #include <iostream>
 
 #include <gtest/gtest.h>
