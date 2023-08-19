@@ -129,7 +129,7 @@ public:
         constructor_processing(cronParts);
      }
 
-
+     virtual ~Cron() = default;
 
     friend std::ostream& operator<<(std::ostream& os, Cron& cron) {
         if(bool has_execution_time = cron.execution_times.empty();

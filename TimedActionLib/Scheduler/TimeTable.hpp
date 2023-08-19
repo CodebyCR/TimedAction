@@ -20,6 +20,12 @@ private:
 
 
 public:
+
+    TimeTable() = default;
+    virtual ~TimeTable() = default;
+
+
+
     auto add(std::shared_ptr<I_TimedAction> const& action) -> void {
         if(_subscribe) {
             _subscribe(action);
