@@ -40,8 +40,7 @@ TEST(StringUtilsTest, solid_split) {
 }
 
 TEST(StringUtilsTest, save_split) {
-    const
-            std::string demoString = "This is a test: 'This text will not be split.' \"This Text will be split.\"";
+    const std::string demoString = "This is a test: 'This text will not be split.' \"This Text will be split.\"";
     const auto values = StringUtils::save_split(demoString, ' ', '\'');
 
     ASSERT_EQ(values.size(), 10) << "The size of the vector should be equal to 3.";
