@@ -102,6 +102,10 @@ private:
 
 
 public:
+    Cron() = delete;
+
+    virtual ~Cron() = default;
+
     explicit Cron(const CronCapsule& capsule) {
         const auto& [second, minute, hour, dayOfMonth, month, weekday, year] = capsule;
 
@@ -128,8 +132,6 @@ public:
 
         constructor_processing(cronParts);
      }
-
-     virtual ~Cron() = default;
 
     friend std::ostream& operator<<(std::ostream& os, Cron& cron) {
         if(bool has_execution_time = cron.execution_times.empty();
