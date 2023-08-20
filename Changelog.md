@@ -16,7 +16,7 @@
 - [ ] TimedActions can contain callback functions
 - [ ] TimedActions create & contain a log 
 - [ ] A central point for log notifications
-- [ ] Compilable with GCC, Clang, MSVC
+- [x] Cross-platform support
 - [x] Efficient resuming of infinite Cron expressions
 
 ---
