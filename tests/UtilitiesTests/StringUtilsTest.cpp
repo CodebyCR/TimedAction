@@ -5,7 +5,7 @@
 #include <iostream>
 
 #include <gtest/gtest.h>
-#include "StringUtils.hpp"
+#include "../../TimedActionLib/Utilities/StringUtils.hpp"
 
 class StringUtilsTest : public ::testing::Test {
 protected:

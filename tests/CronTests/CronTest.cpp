@@ -4,7 +4,7 @@
 #include <iostream>
 
 #include <gtest/gtest.h>
-#include "Cron.hpp"
+#include "../../TimedActionLib/Cron/Cron.hpp"
 
 class CronTest : public ::testing::Test {
 protected:
