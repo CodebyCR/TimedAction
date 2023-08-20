@@ -36,9 +36,9 @@
 - [ ] Thread safe
 - [ ] Simple
 - [x] Strong, example based Documentation
-- [x] Cross platform (Windows, Linux, Mac - per CMake)
+- [x] Cross-platform support (CMake | Bazel)
 - [x] Extendable
-- [ ] ~~Independent of third-party libraries~~[^1]
+- [x] Independent of third-party libraries[^1]
 - [ ] Individual job logging
 - [ ] Central log notification point
 - [x] Configurable
