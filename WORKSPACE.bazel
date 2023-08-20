@@ -1,7 +1,7 @@
 workspace(name = "TimedAction")
 
 ################################
-# **GIT REPOSITORYs**
+# **GIT REPOSITORY**
 ################################
 
 load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
@@ -12,3 +12,8 @@ git_repository(
     remote = "https://github.com/google/googletest",
     # tag = "release-1.13.0",
 )
+
+#local_repository(
+#    name = "google_test",
+#    path = "third_party/google_test",
+#)
