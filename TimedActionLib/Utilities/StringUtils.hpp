@@ -170,99 +170,32 @@ namespace StringUtils {
     }
 
     /// Splits the given string by the given delimiter, but only if the count of the mask is even.
-    [[nodiscard]] [[deprecated("Will be replaced by a string_view version")]]
-    static auto save_split(std::string& str, char delimiter, char mask) -> std::vector<std::string> {
+    [[nodiscard]]
+    static auto save_split(std::string_view str, char delimiter, char mask) -> std::vector<std::string> {
         std::vector<std::string> result;
         std::string currentString;
-        std::uint32_t count = 0;
-
-        for(char c: str) {
-            if(c == mask) {
-                count++;
-            }
-
-            if(c == delimiter && count % 2 == 0) {
-                result.push_back(currentString);
-                currentString.clear();
-            }
-            else {
-                currentString += c;
-            }
-        }
-
-        if(!currentString.empty()) {
-            result.push_back(currentString);
-        }
-
-        return result;
-    }
-
-    /// Splits the given string by the given delimiter, but only if the count of the mask is even.
-    [[nodiscard]]
-    static auto save_split(std::string_view str,
-                           char delimiter,
-                           char mask) -> std::vector<std::string_view> {
-        std::vector<std::string_view> result;
-        std::stringstream string_stream;
         std::size_t count = 0;
 
-        std::ranges::for_each(str, [&](char c) {
+        for (char c : str) {
             if (c == mask) {
                 count++;
             }
 
             if (c == delimiter && count % 2 == 0) {
-                result.emplace_back(string_stream.str());
-                string_stream.flush();
-            } else {
-                string_stream << c;
-            }
-        });
-
-        const std::string last_possible_string = string_stream.str();
-        if (!last_possible_string.empty()) {
-            result.emplace_back(last_possible_string);
-        }
-
-        return result;
-    }
-
-
-    /// For example: start_mask = '{', end_mask = '}', delimiter = ','.
-    /// Splits the given string by the given delimiter, but don't in the mask.
-    [[nodiscard]] [[deprecated("Will be replaced by a string_view version")]]
-    static auto solid_split(const std::string& input,
-                            const char delimiter,
-                            const char start_mask,
-                            const char end_mask) -> std::vector<std::string> {
-        std::vector<std::string> result;
-        std::string currentString;
-        std::uint32_t count1 = 0;
-        std::uint32_t count2 = 0;
-
-        for(char c: input) {
-            if(c == start_mask) {
-                count1++;
-            }
-            else if(c == end_mask) {
-                count2++;
-            }
-
-            if(c == delimiter && count1 == count2) {
                 result.push_back(currentString);
                 currentString.clear();
-            }
-            else {
+            } else {
                 currentString += c;
             }
         }
 
-        if(!currentString.empty()) {
+        if (!currentString.empty()) {
             result.push_back(currentString);
         }
 
         return result;
     }
+
 
     /// For example: start_mask = '{', end_mask = '}', delimiter = ','.
     /// Splits the given string by the given delimiter, but ignored the masked part.
@@ -271,17 +204,16 @@ namespace StringUtils {
     static auto solid_split(std::string_view input,
                             const char delimiter,
                             const char start_mask,
-                            const char end_mask) -> std::vector<std::string_view> {
-        std::vector<std::string_view> result;
+                            const char end_mask) -> std::vector<std::string> {
+        std::vector<std::string> result;
         std::string currentString;
-        std::uint32_t count1 = 0;
-        std::uint32_t count2 = 0;
+        bool closed_mask = true;
 
         std::ranges::for_each(input, [&](char c) {
-            if(c == start_mask) { count1++; }
-            else if(c == end_mask) { count2++; }
+            if(c == start_mask) { closed_mask = false; }
+            else if(c == end_mask) { closed_mask = true; }
 
-            if(c == delimiter && count1 == count2) {
+            if(c == delimiter && closed_mask) {
                 result.push_back(currentString);
                 currentString.clear();
             }
@@ -303,7 +235,7 @@ namespace StringUtils {
     static auto ignore_mask_split(std::string_view str,
                                   const char delimiter,
                                   const char start_mask,
-                                  const char end_mask ) -> std::vector<std::string_view> {
+                                  const char end_mask ) -> std::vector<std::string> {
         return start_mask == end_mask
                 ? save_split(str, delimiter, start_mask)
                 : solid_split(str, delimiter, start_mask, end_mask);
