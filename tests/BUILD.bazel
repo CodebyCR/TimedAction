@@ -2,7 +2,7 @@ package(default_visibility = ["//visibility:public"])
 
 cc_test(
     name = "lib_gtest",
-    srcs = glob(["*.hpp"]) + glob(["**/*.hpp"]),
+    srcs = glob(["*.cpp"]) + glob(["**/*.cpp"]),
     #includes = ["googletest/include"],
     visibility = ["//visibility:public"],
     deps = [
