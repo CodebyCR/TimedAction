@@ -106,7 +106,7 @@ private:
         const auto raw_key = StringUtils::trim(keyValue[0]);
         const auto key = StringUtils::eraseChar(raw_key, '"');
         const auto raw_value = StringUtils::trim(keyValue[1]);
-        const auto value = StringUtils::eraseChar(raw_value, '"');
+        const auto value = StringUtils::eraseChar(raw_value, '"'); /// TODO: check new trim
 
         return std::pair{key, value};
     }
