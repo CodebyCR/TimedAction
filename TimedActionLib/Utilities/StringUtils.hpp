@@ -7,6 +7,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <ranges>
 
 namespace StringUtils {
 
@@ -58,7 +59,10 @@ namespace StringUtils {
         auto end = str.find_first_of(delimiter);
 
         while(end <= std::string::npos) {
-            result.emplace_back(str.substr(start, end - start));
+            std::string_view current_sub_string = str.substr(start, end - start);
+            if(!current_sub_string.empty()) {
+                result.emplace_back(current_sub_string);
+            }
 
             if(end == std::string::npos) {
                 break;
@@ -74,6 +78,7 @@ namespace StringUtils {
 
     /// Erase leading and trailing whitespaces & line breaks from the given string.
     [[nodiscard]]
+    [[deprecated("Use std::ranges::trim instead")]]
     static auto trim(std::string const& str) -> std::string {
         auto start = str.find_first_not_of(" \t\n\r\f\v");
         auto end = str.find_last_not_of(" \t\n\r\f\v");
@@ -84,6 +89,17 @@ namespace StringUtils {
 
         return str.substr(start, end - start + 1);
     }
+
+    /// Erase leading and trailing whitespaces & line breaks from the given string.
+    [[nodiscard]]
+    auto trim(std::string_view input) -> std::string_view {
+        auto trimChar = [](char c) { return std::isspace(c); };
+        auto start = std::ranges::find_if_not(input, trimChar);
+        auto end = std::ranges::find_if_not(input | std::views::reverse, trimChar).base();
+
+        return { start, static_cast<size_t>(std::distance(start, end)) };
+    }
+
 
 
     /**
