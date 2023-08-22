@@ -31,7 +31,7 @@
 # coming soon...
 ```
 
-## Library Targets
+## Framework Targets
 
 - [ ] Thread safe
 - [ ] Simple
