@@ -56,4 +56,23 @@ TEST(StringUtilsTest, save_split) {
     ASSERT_EQ(values[9], "split.\"");
 }
 
+TEST(StringUtilsTest, split_by_multiple_delimiters) {
+    const auto values = StringUtils::split_by("Split::By::Multiple::Colons", ':');
+    EXPECT_EQ(values.size(), 4);
+    EXPECT_EQ(values[0], "Split");
+    EXPECT_EQ(values[1], "By");
+    EXPECT_EQ(values[2], "Multiple");
+    EXPECT_EQ(values[3], "Colons");
+}
 
+TEST(StringUtilsTest, trim) {
+    const std::string demoString = "   This is a test.   ";
+    const auto result = StringUtils::trim(demoString);
+    EXPECT_EQ(result, "This is a test.");
+
+    const std::string demoString2 = "   This is a test.";
+    EXPECT_EQ(StringUtils::trim(demoString2), "This is a test.");
+
+    const std::string demoString3 = "This is a test.    ";
+    EXPECT_EQ(StringUtils::trim(demoString3), "This is a test.");
+}
