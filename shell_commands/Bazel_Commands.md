@@ -1,6 +1,7 @@
-# Commands
+# Bazel
 
-## Bazel
+## Bazel in a nutshell
+- ...
 
 ### Build 
 
