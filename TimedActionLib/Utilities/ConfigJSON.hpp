@@ -89,7 +89,7 @@ private:
     auto readJsonFile() -> std::string {
         std::ifstream file(this->path);
         if(!file.is_open()) {
-            std::cerr << "Fehler beim Öffnen der Datei: " << this->path << std::endl;
+            std::cerr << "Scheduler.json can't be opened.\nNo Scheduler.json found here: " << this->path << std::endl;
             return "";
         }
 
