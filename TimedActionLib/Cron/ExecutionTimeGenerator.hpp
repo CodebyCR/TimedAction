@@ -181,7 +181,8 @@ struct ExecutionTimeGenerator {
             }
         }
 
-        co_return resultTime;
+        co_yield resultTime; // kein co_return???
+
     }
 
 private:
@@ -202,7 +203,7 @@ private:
     }
 
     static auto contained_in_weekdays(const std::vector<int>& weekdays, int weekday) -> bool {
-        return std::find(weekdays.begin(), weekdays.end(), weekday) != weekdays.end();
+        return std::ranges::find(weekdays, weekday) != weekdays.end();
     }
 
 };

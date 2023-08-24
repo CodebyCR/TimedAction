@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 #include <ranges>
+#include <algorithm>
 
 namespace StringUtils {
 
@@ -93,11 +94,17 @@ namespace StringUtils {
     /// Erase leading and trailing whitespaces & line breaks from the given string.
     [[nodiscard]]
     auto trim(std::string_view input) -> std::string_view {
-        auto trimChar = [](char c) { return std::isspace(c); };
-        auto start = std::ranges::find_if_not(input, trimChar);
-        auto end = std::ranges::find_if_not(input | std::views::reverse, trimChar).base();
+//        auto trimChar = [](char c) { return std::isspace(c); };
+//        auto start = std::ranges::find_if_not(input, trimChar);
+//        auto end = std::ranges::find_if_not(input | std::views::reverse, trimChar).base();
+        auto start = input.find_first_not_of(" \t\n\r\f\v");
+        auto end = input.find_last_not_of(" \t\n\r\f\v");
 
-        return { start, static_cast<size_t>(std::distance(start, end)) };
+        if(start == std::string::npos) {
+            return "";
+        }
+
+        return input.substr(start, end - start + 1);
     }
 
 
@@ -180,10 +187,19 @@ namespace StringUtils {
     }
 
     /// Helper function to count occurrences of a character in a string
-    [[nodiscard]] [[deprecated("Use std::ranges::count instead")]]
-    static auto count_occurrences(std::string_view str, char character) -> std::uint32_t {
-        return std::ranges::count(str, character);
+    [[nodiscard]]
+    static auto count_occurrences(std::string_view str, char character) -> std::size_t {
+        std::size_t count = 0;
+        for(const char c: str) {
+            if(c == character) {
+                count++;
+            }
+        }
+        return count;
+//        return std::ranges::count(str, character);
     }
+
+
 
     /// Splits the given string by the given delimiter, but only if the count of the mask is even.
     [[nodiscard]]
@@ -225,7 +241,8 @@ namespace StringUtils {
         std::string currentString;
         bool closed_mask = true;
 
-        std::ranges::for_each(input, [&](char c) {
+//        std::ranges::for_each(input, [&](char c) {
+        std::for_each(input.begin(), input.end(), [&](char c) {
             if(c == start_mask) { closed_mask = false; }
             else if(c == end_mask) { closed_mask = true; }
 
