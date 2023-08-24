@@ -15,3 +15,8 @@ git rm -f a/submodule
 git rm --cached path_to_submodule (no trailing slash)
 rm -rf .git/modules/path_to_submodule
 
+## Clone a repo with submodules
+git clone --recursive <url>
+
+## reload missing submodules
+git submodule update
