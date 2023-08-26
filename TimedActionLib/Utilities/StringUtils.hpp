@@ -13,22 +13,22 @@
 namespace StringUtils {
 
     /// Remove all chars out of the given string where equals the given char.
+    /// You can choose if the comparison should be case sensitive or not.
+    /// Default is case insensitive.
     [[nodiscard]]
-    static auto eraseChar(std::string const& str, char character) -> std::string {
+    static auto erase(std::string_view str, char character, bool case_sensitive=false) -> std::string {
         std::string result;
-        for(char c: str) {
-            if(c != character) {
-                result += c;
-            }
-        }
+        case_sensitive
+        ? std::ranges::copy_if(str, std::back_inserter(result), [&](char c) { return std::tolower(c) != std::tolower(character); })
+        : std::ranges::copy_if(str, std::back_inserter(result), [&](char c) { return c != character; });
+
         return result;
     }
 
     /// Remove the first char that equal to the given char out of the given string.
     [[nodiscard]]
     static auto erase_first_of(std::string& str, char character) -> std::string {
-        auto pos = str.find_first_of(character);
-        if(pos != std::string::npos) {
+        if(auto pos = str.find_first_of(character); pos != std::string::npos) {
             str.erase(pos, 1);
         }
         return str;
@@ -37,8 +37,7 @@ namespace StringUtils {
     /// Remove the last char that equal to the given char out of the given string.
     [[nodiscard]]
     static auto erase_last_of(std::string& str, char character) -> std::string {
-        auto pos = str.find_last_of(character);
-        if(pos != std::string::npos) {
+        if(auto pos = str.find_last_of(character); pos != std::string::npos) {
             str.erase(pos, 1);
         }
         return str;
@@ -48,10 +47,10 @@ namespace StringUtils {
     /// starting at the given char(included)
     /// and ending at the given char(included).
     [[nodiscard]]
-    static auto get_substring(std::string const& str, const char start, const char end) -> std::string {
+    static auto get_substring(std::string_view str, const char start, const char end) -> std::string {
         auto startPos = str.find_first_of(start);
         auto endPos = str.find_last_of(end);
-        return str.substr(startPos, endPos - startPos + 1);
+        return str.substr(startPos, endPos - startPos + 1).data();
     }
 
     static auto split_by(std::string_view str, const char delimiter) -> std::vector<std::string> {
@@ -60,8 +59,7 @@ namespace StringUtils {
         auto end = str.find_first_of(delimiter);
 
         while(end <= std::string::npos) {
-            std::string_view current_sub_string = str.substr(start, end - start);
-            if(!current_sub_string.empty()) {
+            if(std::string_view current_sub_string = str.substr(start, end - start); !current_sub_string.empty()) {
                 result.emplace_back(current_sub_string);
             }
 
@@ -74,21 +72,6 @@ namespace StringUtils {
         }
 
         return result;
-    }
-
-
-    /// Erase leading and trailing whitespaces & line breaks from the given string.
-    [[nodiscard]]
-    [[deprecated("Use std::ranges::trim instead")]]
-    static auto trim(std::string const& str) -> std::string {
-        auto start = str.find_first_not_of(" \t\n\r\f\v");
-        auto end = str.find_last_not_of(" \t\n\r\f\v");
-
-        if(start == std::string::npos) {
-            return "";
-        }
-
-        return str.substr(start, end - start + 1);
     }
 
     /// Erase leading and trailing whitespaces & line breaks from the given string.
@@ -115,7 +98,7 @@ namespace StringUtils {
      * @param delimiters
      * @return
      */
-    static auto split_by_any_of(std::string& str, std::string_view delimiters) -> std::vector<std::string> {
+    [[maybe_unused]] static auto split_by_any_of(std::string& str, std::string_view delimiters) -> std::vector<std::string> {
         std::vector<std::string> result;
 
         if(str.empty()) {
@@ -140,10 +123,9 @@ namespace StringUtils {
     /// Find the given character in the given string
     /// and return the position of leading whitespace, the position of the character if no leading whitespace was found.
     /// or std::string::npos if the character was not found.
-    [[nodiscard]]
+    [[maybe_unused]] [[nodiscard]]
     static auto find_leading_whitespace(std::string_view str, const char character) -> std::size_t {
-        auto pos = str.find_first_of(character);
-        if(pos != std::string::npos) {
+        if(auto pos = str.find_first_of(character); pos != std::string::npos) {
             return str.find_first_not_of(" \t\n\r\f\v", pos);
         }
         return std::string::npos;
@@ -152,10 +134,9 @@ namespace StringUtils {
     /// Find the given character in the given string
     /// and return the position of trailing whitespace, the position of the character if no trailing whitespace was found.
     /// or std::string::npos if the character was not found.
-    [[nodiscard]]
+    [[maybe_unused]] [[nodiscard]]
     static auto find_trailing_whitespace(std::string_view str, const char character) -> std::size_t {
-        auto pos = str.find_last_of(character);
-        if(pos != std::string::npos) {
+        if(auto pos = str.find_last_of(character); pos != std::string::npos) {
             return str.find_last_not_of(" \t\n\r\f\v", pos);
         }
         return std::string::npos;
@@ -166,7 +147,7 @@ namespace StringUtils {
     /// @param sequence
     /// @param replacement
     /// @return
-    [[nodiscard]]
+    [[maybe_unused]] [[nodiscard]]
     static auto replace_sequence(std::string_view str, std::string_view sequence, std::string_view replacement) -> std::string {
         auto result = std::string(str);
         auto pos = result.find(sequence);
@@ -179,15 +160,15 @@ namespace StringUtils {
 
     static auto is_number(std::string_view str) -> bool {
         return !str.empty() &&
-               std::find_if(str.begin(), str.end(), [](char c) { return !std::isdigit(c); }) == str.end();
+               std::ranges::find_if_not(str, [](char c) { return std::isdigit(c); }) == str.end();
     }
 
     static auto to_upper(std::string& str) -> void {
-        std::transform(str.begin(), str.end(), str.begin(), ::toupper);
+        std::ranges::transform(str, str.begin(), ::toupper);
     }
 
     /// Helper function to count occurrences of a character in a string
-    [[nodiscard]]
+    [[maybe_unused]] [[nodiscard]]
     static auto count_occurrences(std::string_view str, char character) -> std::size_t {
         std::size_t count = 0;
         for(const char c: str) {
@@ -242,7 +223,7 @@ namespace StringUtils {
         bool closed_mask = true;
 
 //        std::ranges::for_each(input, [&](char c) {
-        std::for_each(input.begin(), input.end(), [&](char c) {
+        std::ranges::for_each(input, [&](char c) {
             if(c == start_mask) { closed_mask = false; }
             else if(c == end_mask) { closed_mask = true; }
 
@@ -264,7 +245,7 @@ namespace StringUtils {
 
     /// Splits the given string by the given delimiter.
     /// This function handels the processing for the given mask.
-    [[nodiscard]]
+    [[maybe_unused]] [[nodiscard]]
     static auto ignore_mask_split(std::string_view str,
                                   const char delimiter,
                                   const char start_mask,

@@ -104,9 +104,9 @@ private:
     static auto split_key_value_pair(std::string& pair) -> std::pair<std::string, std::string> {
         std::vector<std::string> keyValue = StringUtils::save_split(pair, ':', '"');
         const auto raw_key = StringUtils::trim(keyValue[0]);
-        const auto key = StringUtils::eraseChar(raw_key, '"');
+        const auto key = StringUtils::erase(raw_key, '"');
         const auto raw_value = StringUtils::trim(keyValue[1]);
-        const auto value = StringUtils::eraseChar(raw_value, '"'); /// TODO: check new trim
+        const auto value = StringUtils::erase(raw_value, '"');
 
         return std::pair{key, value};
     }
@@ -136,7 +136,7 @@ private:
     auto insert_key_variant_pairs(std::vector<std::string> const& key_variant_pairs) -> void {
         for(auto& pair: key_variant_pairs) {
             auto current_map_pair = StringUtils::solid_split(pair, ':', '{', '}');
-            std::string key = StringUtils::eraseChar(
+            std::string key = StringUtils::erase(
                     StringUtils::get_substring(current_map_pair.at(0), '"', '"'),
                     '"');
 
@@ -147,7 +147,7 @@ private:
                 value = ConfigJSON::parse_string_map(raw_value);
             }
             else {
-                value = StringUtils::eraseChar(raw_value, '"');
+                value = StringUtils::erase(raw_value, '"');
             }
 
             auto current_pair = std::pair<std::string, std::variant<std::string, std::map<std::string, std::string>>>(
