@@ -76,3 +76,29 @@ TEST(StringUtilsTest, trim) {
     const std::string demoString3 = "This is a test.    ";
     EXPECT_EQ(StringUtils::trim(demoString3), "This is a test.");
 }
+
+TEST(StringUtilsTest, erase) {
+    const std::string demoString = "This is a test.";
+    const auto result = StringUtils::erase(demoString, ' ');
+    EXPECT_EQ(result, "Thisisatest.");
+
+    const std::string demoString2 = "This is a test.";
+    const auto result2 = StringUtils::erase(demoString2, 'i');
+    EXPECT_EQ(result2, "Ths s a test.");
+
+    const std::string demoString3 = "This is a 'T' test.";
+    const auto result3 = StringUtils::erase(demoString3, 't', true);
+    EXPECT_EQ(result3, "his is a '' es.");
+
+    const std::string demoString4 = "This is a 'T' test.";
+    const auto result4 = StringUtils::erase(demoString3, 't', false);
+    EXPECT_EQ(result4, "This is a 'T' es.");
+}
+
+TEST(StringUtils, is_number){
+    const std::string demoString = "123";
+    EXPECT_TRUE(StringUtils::is_number(demoString));
+
+    const std::string demoString5 = "'123'";
+    EXPECT_FALSE(StringUtils::is_number(demoString5));
+}
