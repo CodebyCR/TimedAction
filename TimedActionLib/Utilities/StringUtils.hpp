@@ -12,9 +12,8 @@
 
 namespace StringUtils {
 
-    /// Remove all chars out of the given string where equals the given char.
-    /// You can choose if the comparison should be case sensitive or not.
-    /// Default is case insensitive.
+    /// Remove all chars out of the given string where equals the given char.<br/>
+    /// Optional with case sensitive comparison, default is case insensitive.
     [[nodiscard]]
     static auto erase(std::string_view str, char character, bool case_sensitive=false) -> std::string {
         std::string result;
@@ -90,15 +89,14 @@ namespace StringUtils {
         return input.substr(start, end - start + 1);
     }
 
-
-
     /**
      * returns a string as vector of strings, split by the delimiter characters
      * @param str
      * @param delimiters
      * @return
      */
-    [[maybe_unused]] static auto split_by_any_of(std::string& str, std::string_view delimiters) -> std::vector<std::string> {
+    [[maybe_unused]]
+    static auto split_by_any_of(std::string& str, std::string_view delimiters) -> std::vector<std::string> {
         std::vector<std::string> result;
 
         if(str.empty()) {
@@ -178,9 +176,9 @@ namespace StringUtils {
         }
         return count;
 //        return std::ranges::count(str, character);
+        // ? compiler support for std::ranges::count
+        // apple clang | yes
     }
-
-
 
     /// Splits the given string by the given delimiter, but only if the count of the mask is even.
     [[nodiscard]]
@@ -243,7 +241,7 @@ namespace StringUtils {
         return result;
     }
 
-    /// Splits the given string by the given delimiter.
+    /// Splits the given string by the given delimiter.<br/>
     /// This function handels the processing for the given mask.
     [[maybe_unused]] [[nodiscard]]
     static auto ignore_mask_split(std::string_view str,
