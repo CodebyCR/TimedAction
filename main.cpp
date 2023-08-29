@@ -1,16 +1,16 @@
-#include <iostream>
 
 #include "TimedActionLib/Cron/Cron.hpp"
 #include "TimedActionLib/Interfaces/I_TimedAction.hpp"
 #include "TimedActionLib/TimedAction_Types/TimedAction.hpp"
-#include <thread>
-
-
 #include "TimedActionLib/Container/AsyncQueue.hpp"
 #include "TimedActionLib/Exception/SchedulerException.hpp"
 #include "TimedActionLib/Interfaces/ActionCapsule.hpp"
 #include "TimedActionLib/Scheduler/Scheduler.hpp"
 #include "TimedActionLib/Utilities/Logger.hpp"
+#include "TimedActionLib/Container/Consumer.hpp"
+
+#include <iostream>
+#include <thread>
 #include <codecvt>
 #include <iomanip>
 
@@ -109,6 +109,18 @@ auto logger_test() {
     return 0;
 }
 
+auto test_consumer(Consumer<std::string_view> consumer) -> void {
+    consumer.accept("Hello World");
+}
+
+auto test_consumer_call() -> void {
+    auto consumer = Consumer<std::string_view>([](std::string_view value) -> void {
+        std::cout << value << std::endl;
+    });
+
+    test_consumer(consumer);
+}
+
 
 auto test_function() -> void {
     std::cout << "test_function" << std::endl;
@@ -127,6 +139,9 @@ auto main() -> int {
     std::cout << converter.to_bytes(brand) << std::endl;
 
     logger_test();
+
+
+
 
     auto cron_try = Cron("0 */1 * * 7 * 2023"); // bug: no execution if year is set?
     auto testCron = Cron("0 */2 * 27 7 * *");
