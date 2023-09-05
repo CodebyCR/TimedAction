@@ -3,6 +3,7 @@
 #include <iostream>
 #include <memory>
 
+[[maybe_unused]]
 template <typename T>
 class DI_Model {
 public:
@@ -13,10 +14,15 @@ public:
     [[NoExplicit]]
     DI_Model(const DI_Model& value) : ptr_(std::make_unique<T>(*value.ptr_)) {}
 
-    [[NoExplicit]]
-    DI_Model(const T& value) : ptr_(std::make_unique<T>(value)) {}
 
-    operator T&() {
+    explicit DI_Model(const T& value) : ptr_(std::make_unique<T>(value)) {}
+
+    explicit DI_Model( const T&& value) : ptr_(std::make_unique<T>(std::move(value))) {}
+
+    ~DI_Model() = default;
+
+
+    explicit operator T&() {
         return *ptr_;
     }
 
@@ -37,3 +43,9 @@ public:
 private:
     std::unique_ptr<T> ptr_;
 };
+
+// example usage:
+// DI_Model<I_ExecutionTimer> di = Cron("0 */1 * * 7 * 2023");
+// di->execute();
+// di = Cron("0 */1 * * 7 * 2024");
+// di->execute();
