@@ -1,18 +1,20 @@
 
-#include "TimedActionLib/Cron/Cron.hpp"
-#include "TimedActionLib/Interfaces/I_TimedAction.hpp"
-#include "TimedActionLib/TimedAction_Types/TimedAction.hpp"
+
+#include "TimedActionLib/Container/Action.hpp"
 #include "TimedActionLib/Container/AsyncQueue.hpp"
+#include "TimedActionLib/Container/Consumer.hpp"
+#include "TimedActionLib/Cron/Cron.hpp"
 #include "TimedActionLib/Exception/SchedulerException.hpp"
 #include "TimedActionLib/Interfaces/ActionCapsule.hpp"
+#include "TimedActionLib/Interfaces/I_TimedAction.hpp"
 #include "TimedActionLib/Scheduler/Scheduler.hpp"
+#include "TimedActionLib/TimedAction_Types/TimedAction.hpp"
 #include "TimedActionLib/Utilities/Logger.hpp"
-#include "TimedActionLib/Container/Consumer.hpp"
 
-#include <iostream>
-#include <thread>
 #include <codecvt>
 #include <iomanip>
+#include <iostream>
+#include <thread>
 
 
 void onAction(const std::string_view& value) {
@@ -41,8 +43,8 @@ void test_async_queue() {
     auto queue = AsyncQueue<std::uint32_t>();
 
     // Registrieren einer Callback-Funktion, die aufgerufen wird, wenn ein Element in die Warteschlange eingefügt wird.
-    queue.on_subscribe(
-            [](std::uint32_t item) { std::cout << "Element " << item << " wurde in die Warteschlange eingefügt." << std::endl; });
+    queue.on_subscribe([](std::uint32_t item) {
+        std::cout << "Element " << item << " wurde in die Warteschlange eingefügt." << std::endl; });
 
     // Fügen Sie Elemente in die Warteschlange ein.
     queue.push(1);
@@ -50,7 +52,7 @@ void test_async_queue() {
     queue.push(3);
 
     queue.on_listen(
-            [](std::uint32_t item) { std::cout << "Element " << item << " wurde aus der Warteschlange entfernt." << std::endl; });
+            [](auto item) { std::cout << "Element " << item << " wurde aus der Warteschlange entfernt." << std::endl; });
 
     std::cout << "Elemente in der Warteschlange: " << queue.size() << std::endl;
     // Entfernen Sie Elemente aus der Warteschlange.
@@ -96,25 +98,25 @@ void test_future_task(I_TimedAction& action) {
 }
 
 
-auto logger_test() {
-    Logger logger(true);
-
-    std::ostream logstream(&logger);
-    logstream << "This line will be logged and printed to cout" << std::endl;
-
-    // Schreibe einige weitere Zeilen in den Log-Stream und flushe den Logger
-    logstream << "This line will be logged and printed to cout and log file" << std::endl;
-    logger.flush();
-
-    return 0;
-}
+//auto logger_test() {
+//    Logger logger(true);
+//
+//    std::ostream logstream(&logger);
+//    logstream << "This line will be logged and printed to cout" << std::endl;
+//
+//    // Schreibe einige weitere Zeilen in den Log-Stream und flushe den Logger
+//    logstream << "This line will be logged and printed to cout and log file" << std::endl;
+//    logger.flush();
+//
+//    return 0;
+//}
 
 auto test_consumer(Consumer<std::string_view> consumer) -> void {
     consumer.accept("Hello World");
 }
 
 auto test_consumer_call() -> void {
-    auto consumer = Consumer<std::string_view>([](std::string_view value) -> void {
+    auto consumer = Consumer<std::string_view>([&](std::string_view value) -> void {
         std::cout << value << std::endl;
     });
 
@@ -138,10 +140,7 @@ auto main() -> int {
                            "===========================================================================\n\x1B[0m";
     std::cout << converter.to_bytes(brand) << std::endl;
 
-    logger_test();
-
-
-
+//    logger_test();
 
     auto cron_try = Cron("0 */1 * * 7 * 2023"); // bug: no execution if year is set?
     auto testCron = Cron("0 */2 * 27 7 * *");
@@ -160,8 +159,8 @@ auto main() -> int {
     auto action = ActionCapsule{
             .name = "My first Job",
             .execution_timer = &c_cron,
-            .action = []() -> void {
-                std::cout << "Hello from 'My first Job'." << std::endl;
+            .action = []() {
+                std::cout << "Hello World" << std::endl;
             }};
 
     auto scheduler = Scheduler::get_instance();
