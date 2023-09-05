@@ -1,8 +1,9 @@
 
 #pragma once
 
-#include <iostream>
+#include "Dispacher.hpp"
 #include <fstream>
+#include <iostream>
 #include <sstream>
 
 class Logger : public std::streambuf {
@@ -30,6 +31,19 @@ private:
     std::stringstream m_buffer;
     std::streambuf* m_coutbuf;
 
+//#include <source_location>
+//    void log(const std::string_view message,
+//             const std::source_location location =
+//                     std::source_location::current())
+//    {
+//        std::clog << "file: "
+//                  << location.file_name() << '('
+//                  << location.line() << ':'
+//                  << location.column() << ") `"
+//                  << location.function_name() << "`: "
+//                  << message << '\n';
+//    }
+
 
 protected:
     int_type overflow(int_type c) override {
@@ -53,8 +67,7 @@ protected:
     }
 
 public:
-    explicit Logger(bool use_cout = false)
-            : m_useCout(use_cout), m_coutStream(nullptr) {
+    explicit Logger(bool use_cout = false): m_useCout(use_cout), m_coutStream(nullptr) {
         if (m_useCout) {
             // save the original cout streambuf
             m_coutbuf = std::cout.rdbuf();
@@ -77,6 +90,12 @@ public:
 
     auto operator<<(std::ostream& (*pf)(std::ostream&)) -> Logger& {
         pf(m_buffer);
+        return *this;
+    }
+
+    auto info(std::string_view info) -> Logger& {
+        m_buffer << "[INFO]: " << info << std::endl;
+
         return *this;
     }
 
