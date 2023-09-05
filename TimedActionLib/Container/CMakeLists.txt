@@ -1,7 +1,8 @@
 set(CONTAINER_SOURCES
         "AsyncQueue.hpp"
         "DI_Model.hpp"
-        "Consumer.hpp")
+        "Consumer.hpp"
+        "Action.hpp")
 
 add_library(${LIBRARY_CONTAINER} INTERFACE ${CONTAINER_SOURCES} )
 
