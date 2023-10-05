@@ -4,7 +4,9 @@
 git submodule add <url> <path>
 
 ## Update a submodule
-git submodule update --init --recursive
+```bash
+    git submodule update --init --recursive
+```
 
 ## Remove a submodule
 git submodule deinit -f -- a/submodule
