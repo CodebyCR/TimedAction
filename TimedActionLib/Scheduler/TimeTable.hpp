@@ -10,6 +10,7 @@
 #include <ranges>
 #include <sstream>
 #include "../Interfaces/Watchable.hpp"
+#include <print>
 
 
 class TimeTable : public Watchable,
@@ -18,6 +19,8 @@ private:
     std::function<void(std::shared_ptr<I_TimedAction>)> _subscribe;
     std::function<void(std::shared_ptr<I_TimedAction>)> _listen;
 
+
+    static constexpr std::string_view WATCHABLES_FOUND = "[ TimeTable | FOUND ] -> {} for execution at {}";
 
 public:
 
@@ -82,22 +85,22 @@ public:
 
             switch(const auto result = task.wait_for(std::chrono::milliseconds(10)); result) {
                 case std::future_status::ready: {
-                    std::cout << "[ TimeTable ] -> finished " << action->getName() << std::endl;
+                    std::println("[ TimeTable ] -> finished {}", action->getName());
                     // start remove execution time from job here...
                     this->remove(now);
                 } break;
 
                 case std::future_status::deferred: {
-                    std::cout << "[ TimeTable ] -> deferred for " << action->getName() << std::endl;
+                    std::println("[ TimeTable ] -> deferred for {}", action->getName());
                 } break;
 
                 case std::future_status::timeout: {
-                    std::cout << "[ TimeTable ] -> timeout for " << action->getName() << std::endl;
+                    std::println("[ TimeTable ] -> timeout for {}", action->getName());
                     this->remove(now);
                 } break;
 
                 default: {
-                    std::cout << "[ TimeTable | ERROR ] -> unknown status of " << action->getName() << std::endl;
+                    std::println("[ TimeTable | ERROR ] -> unknown status for {}", action->getName());
                 }
             }
         }
@@ -114,6 +117,8 @@ public:
         this->_subscribe = std::move(subscribe);
     }
 
+
+
     auto watch(std::time_t const& now) -> void override {
         auto time_t_vec = this->get(now);
 
@@ -122,7 +127,8 @@ public:
         /// check if jobs for execution
         std::ranges::for_each(time_t_vec, [&](std::shared_ptr<I_TimedAction>& time_t) {
             const auto asc_t = std::asctime(std::localtime(&now));
-            std::cout << "[ TimeTable | FOUND ] -> " << time_t->getName() << " for execution at " << asc_t << std::endl;
+            std::println("[ TimeTable | FOUND ] -> {} for execution at {}\n", time_t->getName(), asc_t);
+            std::println(WATCHABLES_FOUND, time_t->getName(), asc_t);
             time_t->start();
         });
 

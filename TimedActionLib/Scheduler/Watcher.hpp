@@ -30,7 +30,7 @@ public:
     constexpr static std::string_view watch_sleep = "[ Watcher | SLEEP ] -> No active Watchables found.";
 
     /// ! for std::format
-    /// constexpr static std::string_view found_jobs = "[ Watcher | FOUND ] -> {0} found.";
+    constexpr static std::string_view found_jobs = "[ Watcher | FOUND ] -> {0} found.";
     /// constexpr static std::string_view watcher_checking = "[ Watcher | CHECKING ] -> {0} for execution at {1}.";
     /// and so on...
 

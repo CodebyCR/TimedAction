@@ -11,7 +11,7 @@ class WatchableList: public std::vector<std::shared_ptr<Watchable>> {
 public:
     auto add(std::shared_ptr<Watchable> const& watchable) -> void {
         if(!watchable) {
-            std::cout << "[ WatchableList | ERROR ] -> uninitialised Watchable." << std::endl;
+            std::println("[ WatchableList | ERROR ] -> uninitialised Watchable.)");
             return;
         }
 

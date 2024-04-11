@@ -5,6 +5,7 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
+#include <source_location>
 
 class Logger : public std::streambuf {
 
@@ -31,18 +32,18 @@ private:
     std::stringstream m_buffer;
     std::streambuf* m_coutbuf;
 
-//#include <source_location>
-//    void log(const std::string_view message,
-//             const std::source_location location =
-//                     std::source_location::current())
-//    {
-//        std::clog << "file: "
-//                  << location.file_name() << '('
-//                  << location.line() << ':'
-//                  << location.column() << ") `"
-//                  << location.function_name() << "`: "
-//                  << message << '\n';
-//    }
+
+
+    void log(const std::string_view message,
+             const std::source_location location =
+                     std::source_location::current()){
+        std::clog << "file: "
+                  << location.file_name() << '('
+                  << location.line() << ':'
+                  << location.column() << ") `"
+                  << location.function_name() << "`: "
+                  << message << '\n';
+    }
 
 
 protected:

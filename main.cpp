@@ -1,6 +1,4 @@
 
-
-#include "TimedActionLib/Container/Action.hpp"
 #include "TimedActionLib/Container/AsyncQueue.hpp"
 #include "TimedActionLib/Container/Consumer.hpp"
 #include "TimedActionLib/Cron/Cron.hpp"
@@ -8,16 +6,15 @@
 #include "TimedActionLib/Interfaces/ActionCapsule.hpp"
 #include "TimedActionLib/Interfaces/I_TimedAction.hpp"
 #include "TimedActionLib/Scheduler/Scheduler.hpp"
-#include "TimedActionLib/TimedAction_Types/TimedAction.hpp"
-#include "TimedActionLib/Utilities/Logger.hpp"
 
 #include <codecvt>
 #include <iomanip>
 #include <iostream>
-#include <thread>
+#include <print>
+#include <source_location>
 
 
-void onAction(const std::string_view& value) {
+void onAction(std::string_view value) {
     std::cout << "onAction " << value << std::endl;
     auto ym = std::chrono::year { 2022 } / std::chrono::July; // ? refactoring
 
@@ -26,15 +23,15 @@ void onAction(const std::string_view& value) {
 //    std::cout << msg;
 }
 
-void onInterval(const std::string_view& value) {
+void onInterval(std::string_view value) {
     std::cout << "onInterval " << value << std::endl;
 }
 
-void onEnd(const std::string_view& value) {
+void onEnd(std::string_view value) {
     std::cout << "onEnd " << value << std::endl;
 }
 
-void test(std::string_view const& value) {
+void test(std::string_view value) {
     std::cout << value << std::endl;
 }
 
@@ -77,22 +74,22 @@ void test_future_task(I_TimedAction& action) {
 
     switch(const auto result = task.wait_for(std::chrono::milliseconds(10)); result) {
         case std::future_status::ready: {
-            std::cout << "Watcher: finished " << action.getName() << std::endl;
+            std::println("Watcher: finished {}", action.getName());
 
             auto notification = task.get();
 
         } break;
 
         case std::future_status::deferred: {
-            std::cout << "Watcher: deferred for " << action.getName() << std::endl;
+            std::println("Watcher: deferred for {}", action.getName());
         } break;
 
         case std::future_status::timeout: {
-            std::cout << "Watcher: timeout for " << action.getName() << std::endl;
+            std::println("Watcher: timeout for {}", action.getName());
         } break;
 
         default: {
-            std::cout << "Watcher: unknown status for " << action.getName() << std::endl;
+            std::println("Watcher: unknown status for {}", action.getName());
         }
     }
 }
@@ -117,7 +114,7 @@ auto test_consumer(Consumer<std::string_view> consumer) -> void {
 
 auto test_consumer_call() -> void {
     auto consumer = Consumer<std::string_view>([&](std::string_view value) -> void {
-        std::cout << value << std::endl;
+        std::println("{}", value);
     });
 
     test_consumer(consumer);
@@ -138,9 +135,14 @@ auto main() -> int {
                            "Copyright © 2023. Christoph Rohde\n"
                            "Licence: MIT\n"
                            "===========================================================================\n\x1B[0m";
-    std::cout << converter.to_bytes(brand) << std::endl;
+    std::println("{}", converter.to_bytes(brand));
 
 //    logger_test();
+
+    auto u8str = U"Hello World 🌍";
+    std::println("u8str: {}", converter.to_bytes(u8str));
+    // format test
+//    std::string msg = std::format("{:*^10}\n{:*>10}\nin{}!", "hello", "world", "2022");
 
     auto cron_try = Cron("0 */1 * * 7 * 2023"); // bug: no execution if year is set?
     auto testCron = Cron("0 */2 * 27 7 * *");
@@ -148,9 +150,9 @@ auto main() -> int {
     auto c_cron = Cron({
             .second = "0",
             .minute = "*/2",
-            .hour = "*",
-            .dayOfMonth = "28",
-            .month = "7",
+            .hour = "21",
+            .dayOfMonth = "31",
+            .month = "4",
             .weekday = "*",
             .year = "*"});
 
@@ -160,7 +162,7 @@ auto main() -> int {
             .name = "My first Job",
             .execution_timer = &c_cron,
             .action = []() {
-                std::cout << "Hello World" << std::endl;
+                std::println("Hello from my first job");
             }};
 
     auto scheduler = Scheduler::get_instance();
@@ -194,7 +196,8 @@ auto main() -> int {
                         }};
                 scheduler->add(on_the_fly_action);
             }catch (SchedulerException& e ) {
-                std::cout << "Failed:\n" << e.what() << std::endl;
+                std::cerr << "Failed:\n" << e.what() << std::endl;
+//                std::println(std::cerr, "Failed:\n{}", e.what());
             }
         }
 
@@ -203,7 +206,7 @@ auto main() -> int {
         }
 
         if(command == "info") {
-            std::cout << scheduler->get_runtime_info() << std::endl;
+            std::println("{}", scheduler->get_runtime_info());
         }
     }
     scheduler->stop();
