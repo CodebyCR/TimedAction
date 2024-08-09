@@ -32,8 +32,6 @@ private:
     std::stringstream m_buffer;
     std::streambuf* m_coutbuf;
 
-
-
     void log(const std::string_view message,
              const std::source_location location =
                      std::source_location::current()){

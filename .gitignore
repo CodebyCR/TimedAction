@@ -27,3 +27,4 @@
 /bazel-testlogs/
 /bazel-out/
 /bazel-bin/
+/cmake-build-release-event-trace/

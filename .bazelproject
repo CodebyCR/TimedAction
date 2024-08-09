@@ -1,0 +1,46 @@
+directories:
+  .
+  - tests
+  - TimedActionLib
+  - third_party
+
+targets:
+  TimedAction:
+    type: executable
+    sources:
+      - main.cpp
+    dependencies:
+      - TimedActionLib
+  TimedActionLib:
+    type: library
+    sources:
+      - src/TimedAction.cpp
+    include_directories:
+      - include
+  tests:
+    type: executable
+    sources:
+      - tests/main.cpp
+    dependencies:
+      - TimedActionLib
+    include_directories:
+      - include
+    libraries:
+      - gtest
+      - gtest_main
+      - pthread
+
+  build:
+    cxx_standard: 23
+    color: yes
+    sandbox_debug: true
+    verbose_failures: true
+    test_verbose_timeout_warnings: true
+
+  install:
+    - target: TimedAction
+      destination: bin
+    - target: TimedActionLib
+      destination: lib
+    - target: tests
+      destination: bin

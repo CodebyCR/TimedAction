@@ -5,6 +5,7 @@
 #pragma once
 
 #include "Environment.hpp"
+#include <functional>
 
 class Dispatcher{
 public:
@@ -29,6 +30,15 @@ public:
         return value
                ? std::stoi(value.value())
                : default_value;
+    }
+
+    template<typename R>
+    auto get_mapped(std::string_view map_key, std::string_view sub_key, std::function<std::string(R)> const& func) -> std::optional<R> {
+        const auto optional_value = env_lookup(map_key, sub_key);
+        if(optional_value){
+            return func(optional_value.value());
+        }
+        return std::nullopt;
     }
 
 private:
