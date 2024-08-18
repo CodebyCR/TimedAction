@@ -18,8 +18,8 @@
     <h6><em>An easy, state-of-the-art timing Framework.</em></h6>
 </div>
 
-## ! IMPORTANT NOTE !
 
+> [!IMPORTANT]
 > This repo an experimental stage and will currently maintain as trunk.<br/>
 > This will change with Version 1.0.0 to a release branch.<br/>
 > The current version is <b>0.4.0</b><br/>
